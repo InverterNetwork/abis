@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.1](https://github.com/InverterNetwork/abis/compare/v0.0.1-beta.1...v0.0.1) (2023-12-13)
+
+
+### Features
+
+* add current set of dev contracts ([2b5e7a3](https://github.com/InverterNetwork/abis/commit/2b5e7a35cb4bb6c26bcc57b181a45aff7cf23dd3))
+
 ### [0.0.1-beta.1](https://github.com/InverterNetwork/abis/compare/v0.0.1-beta.0...v0.0.1-beta.1) (2023-12-13)
 
 

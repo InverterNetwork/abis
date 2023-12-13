@@ -1,6 +1,6 @@
 {
   "name": "@inverter-network/abis",
-  "version": "0.0.1-beta.1",
+  "version": "0.0.1",
   "description": "INVERTER typescript ABIs",
   "main": "./dist/cjs/index.js",
   "module": "./dist/index.js",
