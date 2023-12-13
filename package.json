@@ -1,7 +1,7 @@
 {
-  "name": "npm",
+  "name": "@inverter-network/abis",
   "version": "0.0.0",
-  "description": "NPM Template for the INVERTER Projects",
+  "description": "INVERTER typescript ABIs",
   "main": "./dist/cjs/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -51,15 +51,16 @@
     "web3",
     "ethereum",
     "solidity",
-    "evm"
+    "evm",
+    "abis"
   ],
   "homepage": "https://github.com/InverterNetwork/npm",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/InverterNetwork/npm.git"
+    "url": "git+ssh://git@github.com/InverterNetwork/abis.git"
   },
   "bugs": {
-    "url": "https://github.com/InverterNetwork/npm"
+    "url": "https://github.com/InverterNetwork/abis"
   },
   "dependencies": {},
   "devDependencies": {
