@@ -1,0 +1,4 @@
+{
+  "exec": "npm run build",
+  "watch": ["in"]
+}

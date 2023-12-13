@@ -7,18 +7,31 @@
 
 </div>
 
-## Inverter / NPM Template
+## Inverter / ABIs
 
-Bun + Commit Safe + Latest as of 2023 Q3 => Npm Publish Template Repo
+Bun + Npm + ABI Bundler = Type Safe ABIs
 
 ## Summary
 
-This package contains all common npm practices for [INVERTER](https://github.com/InverterNetwork).
+This package contains ABI Bundling scipts and the typescript ABIs themselves for [INVERTER](https://github.com/InverterNetwork).
 Learn more about INVERTER on (https://inverter.network).
 
 Check out the [Changelog](./CHANGELOG.md) to see what changed in the last releases.
 
 ## Install dependencies
+
+Install Bun ( bun is used for testing for primitives no bun is needed ):
+
+```bash
+# Supported on macOS, Linux, and WSL
+
+curl -fsSL https://bun.sh/install | bash
+
+# Upgrade Bun every once in a while
+
+bun upgrage
+
+```
 
 Install dependencies:
 
@@ -32,20 +45,26 @@ or
 npm install @inverter-network/npm
 ```
 
-## How to make a release
+## Adding a new ABI
 
-**Install Bun**:
+Adding a new ABI:
+
+1. Add the .sol dir or json itseld to the `./in` folder
 
 ```bash
-# Supported on macOS, Linux, and WSL
+# Dev dev is watch mode build
 
-curl -fsSL https://bun.sh/install | bash
+bun run dev
+```
 
-# Upgrade Bun every once in a while
+or
 
-bun upgrage
+```bash
+bun run build
 
 ```
+
+## How to make a release
 
 **For the Maintainer**: Add NPM_TOKEN to the GitHub Secrets.
 
@@ -60,4 +79,4 @@ bun upgrage
 
 ## Summary
 
-This package contains npm configurations for INVERTER projects (https://github.com/InverterNetwork).
+This package contains ABI Bundling scipts and the typescript ABIs themselves for [INVERTER projects](https://github.com/InverterNetwork).
