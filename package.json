@@ -18,7 +18,7 @@
     "package": "npm run build && npm pack",
     "test": "bun test",
     "test:cov": "bun test --coverage",
-    "addscope": "node tools/packagejson name @inverter-network/npm",
+    "addscope": "node tools/packagejson name @inverter-network/abis",
     "pre-commit": "lint-staged",
     "pre-push": "npm run build",
     "lint:fix": "eslint --ext .tsx --ext .ts ./src --fix",
@@ -55,7 +55,7 @@
     "evm",
     "abis"
   ],
-  "homepage": "https://github.com/InverterNetwork/npm",
+  "homepage": "https://github.com/InverterNetwork/abis",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/InverterNetwork/abis.git"
