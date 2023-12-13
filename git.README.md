@@ -60,7 +60,7 @@ bun run dev
 or
 
 ```bash
-bun run build
+bun run bundle
 
 ```
 

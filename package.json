@@ -11,8 +11,9 @@
   },
   "scripts": {
     "dev": "nodemon",
+    "bundle": "node tools/mapts && prettier --write ./src/index.ts",
     "watch": "tsc -w -p ./tsconfig.json",
-    "build": "node tools/mapts && prettier --write ./src/index.ts && node tools/cleanup && tsc -p ./tsconfig.json && tsc -p ./tsconfig.cjs.json",
+    "build": "node tools/cleanup && tsc -p ./tsconfig.json && tsc -p ./tsconfig.cjs.json",
     "clean": "node tools/cleanup",
     "package": "npm run build && npm pack",
     "test": "bun test",

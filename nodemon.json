@@ -1,4 +1,4 @@
 {
-  "exec": "npm run build",
+  "exec": "npm run bundle",
   "watch": ["in"]
 }
