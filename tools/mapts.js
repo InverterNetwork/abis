@@ -4,7 +4,7 @@ const path = require('path')
 /* eslint-enable */
 
 const dirPath = path.join(__dirname, '../in')
-const indexPath = path.join(__dirname, '../src', 'index.ts')
+const abisPath = path.join(__dirname, '../src', 'abis.ts')
 
 let indexModules = {}
 
@@ -42,4 +42,4 @@ for (const moduleName in indexModules) {
   )} as const;\n`
 }
 
-fs.writeFileSync(indexPath, indexContent)
+fs.writeFileSync(abisPath, indexContent)
