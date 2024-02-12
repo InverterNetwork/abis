@@ -11,7 +11,7 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "bundle": "node tools/mapts && prettier --write ./src/index.ts",
+    "bundle": "bun run tools/compile/index.ts && prettier --write ./src/data.ts",
     "watch": "tsc -w -p ./tsconfig.json",
     "build": "node tools/cleanup && tsc -p ./tsconfig.json && tsc -p ./tsconfig.cjs.json",
     "clean": "node tools/cleanup",
@@ -63,7 +63,6 @@
   "bugs": {
     "url": "https://github.com/InverterNetwork/abis"
   },
-  "dependencies": {},
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",

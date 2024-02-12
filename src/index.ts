@@ -1,5 +1,5 @@
-import * as abis from './abis'
-export { abis }
+import * as data from './data'
+export { data }
 
-export type AbiKeys = keyof typeof abis
-export type AbiVersionKeys = keyof (typeof abis)[AbiKeys]
+export type AbiKeys = keyof typeof data
+export type AbiVersionKeys = keyof (typeof data)[AbiKeys]
