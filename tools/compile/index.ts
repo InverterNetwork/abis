@@ -4,7 +4,7 @@ import { getModuleMeta, getModuleMethodMetas } from './utils/getMetas'
 import read from './utils/read'
 import write from './utils/write'
 
-const dirname = import.meta.dir
+const dirname = import.meta.dirname
 
 const inPath = path.join(dirname, '../../in')
 const destPath = path.join(dirname, '../../src/data.ts')
