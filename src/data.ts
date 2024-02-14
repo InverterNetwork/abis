@@ -6,115 +6,144 @@ export const BountyManager = {
     moduletype: 'logicModule',
     methodMetas: {
       addBounty: {
-        tags: {
-          minimumPayoutAmount: 'decimal',
-          maximumPayoutAmount: 'decimal',
-          details: 'any(string)',
-        },
         descriptions: {
-          method: 'Reverts if an argument invalid.',
+          method: 'Adds a new Bounty.',
           details: "The Bounty's details.",
           maximumPayoutAmount:
             'The maximum amount of tokens the Bounty will pay out upon being claimed',
           minimumPayoutAmount:
             'The minimum amount of tokens the Bounty will pay out upon being claimed',
+          returns: { _0: "The newly added Bounty's id." },
         },
-        returns: { _0: "The newly added Bounty's id." },
-      },
-      addClaim: {
-        tags: { claimAmount: 'decimal', details: 'any(string)' },
-        descriptions: {
-          method: 'Reverts if an argument invalid.',
-          contributors: 'The contributor information for the Claim',
-          details: "The Claim's details.",
-        },
-        returns: { _0: "The newly added Claim's id." },
-      },
-      collectPaymentOrders: {
-        descriptions: {
-          method:
-            "Marks the orders as completed for the client. The responsibility to fulfill the orders are now in the caller's hand!",
-        },
-        returns: {
-          _0: 'list of payment orders',
-          _1: 'total amount of token to pay',
-        },
-      },
-      getBountyInformation: {
         tags: {
           minimumPayoutAmount: 'decimal',
           maximumPayoutAmount: 'decimal',
           details: 'any(string)',
         },
-        descriptions: { bountyId: 'The id of the Bounty to return.' },
-        returns: { _0: 'Bounty with id `id`.' },
+      },
+      addClaim: {
+        descriptions: {
+          method: 'Adds a new Claim.',
+          contributors: 'The contributor information for the Claim',
+          details: "The Claim's details.",
+          returns: { _0: "The newly added Claim's id." },
+        },
+        tags: { claimAmount: 'decimal', details: 'any(string)' },
+      },
+      collectPaymentOrders: {
+        descriptions: {
+          method: 'Collects outstanding payment orders.',
+          returns: {
+            _0: 'list of payment orders',
+            _1: 'total amount of token to pay',
+          },
+        },
+      },
+      getBountyInformation: {
+        descriptions: {
+          method: 'Returns the Bounty instance with id `id`.',
+          bountyId: 'The id of the Bounty to return.',
+          returns: { _0: 'Bounty with id `id`.' },
+        },
+        tags: {
+          minimumPayoutAmount: 'decimal',
+          maximumPayoutAmount: 'decimal',
+          details: 'any(string)',
+        },
       },
       getClaimInformation: {
+        descriptions: {
+          method: 'Returns the Claim instance with id `id`.',
+          claimId: 'The id of the Claim to return.',
+          returns: { _0: 'Claim with id `id`.' },
+        },
         tags: { claimAmount: 'decimal', details: 'any(string)' },
-        descriptions: { claimId: 'The id of the Claim to return.' },
-        returns: { _0: 'Claim with id `id`.' },
       },
       isExistingBountyId: {
-        descriptions: { bountyId: 'The id of the Bounty to test.' },
-        returns: { _0: 'True if Claim with id `id` exists, false otherwise.' },
+        descriptions: {
+          method: 'Returns whether Bounty with id `id` exists.',
+          bountyId: 'The id of the Bounty to test.',
+          returns: {
+            _0: 'True if Claim with id `id` exists, false otherwise.',
+          },
+        },
       },
       isExistingClaimId: {
-        descriptions: { claimId: 'The id of the Bounty to test.' },
-        returns: { _0: 'True if Claim with id `id` exists, false otherwise.' },
+        descriptions: {
+          method: 'Returns whether Claim with id `id` exists.',
+          claimId: 'The id of the Bounty to test.',
+          returns: {
+            _0: 'True if Claim with id `id` exists, false otherwise.',
+          },
+        },
       },
       listBountyIds: {
-        descriptions: { method: 'List is in ascending order.' },
-        returns: { _0: 'List of Bounty ids.' },
+        descriptions: {
+          method: 'Returns total list of Bounty ids.',
+          returns: { _0: 'List of Bounty ids.' },
+        },
       },
       listClaimIds: {
-        descriptions: { method: 'List is in ascending order.' },
-        returns: { _0: 'List of Claim ids.' },
+        descriptions: {
+          method: 'Returns total list of Claim ids.',
+          returns: { _0: 'List of Claim ids.' },
+        },
       },
       listClaimIdsForContributorAddress: {
         descriptions: {
-          method: 'List is in ascending order.Returns an empty .',
+          method:
+            'Returns a list of Claim ids in which contributor Address is used.',
           contributorAddrs: 'claim ids are filtered by the contributor address',
+          returns: { _0: 'List of Claim ids.' },
         },
-        returns: { _0: 'List of Claim ids.' },
       },
       lockBounty: {
         descriptions: {
-          method:
-            'Only callable by authorized addresses.Reverts if id invalid.',
+          method: 'Locks the Bounty so it cant be claimed.',
           bountyId: 'The id of the Bounty that will be locked.',
         },
       },
-      updateBounty: {
-        tags: { details: 'any(string)' },
+      outstandingTokenAmount: {
         descriptions: {
-          method: 'Reverts if an argument invalid.',
+          method: 'Returns the total outstanding token payment amount.',
+        },
+      },
+      paymentOrders: {
+        descriptions: {
+          method: 'Returns the list of outstanding payment orders.',
+        },
+      },
+      updateBounty: {
+        descriptions: {
+          method: "Updates a Bounty's informations.",
           bountyId: 'The id of the Bounty that will be updated.',
           details: "The Bounty's details.",
         },
+        tags: { details: 'any(string)' },
       },
       updateClaimContributors: {
-        tags: { claimAmount: 'decimal' },
         descriptions: {
-          method: 'Reverts if an argument invalid.',
+          method: "Updates a Claim's contributor informations.",
           claimId: 'The id of the Claim that will be updated.',
           contributors: 'The contributor information for the Claim.',
         },
+        tags: { claimAmount: 'decimal' },
       },
       updateClaimDetails: {
-        tags: { details: 'any(string)' },
         descriptions: {
+          method: 'Updates a Claim Details.',
           claimId: 'The id of the Claim that will be updated.',
           details: "The Claim's details.",
         },
+        tags: { details: 'any(string)' },
       },
       verifyClaim: {
-        tags: { claimAmount: 'decimal' },
         descriptions: {
-          method:
-            'Only callable by authorized addresses.Reverts if id invalid.contributors should be copied out of the given Claim. The parameter is used to prevent front running.',
+          method: 'Completes a Bounty by verifying a claim.',
           claimId: 'The id of the Claim that wants to claim the Bounty.',
           contributors: 'The contributor information for the Claim.',
         },
+        tags: { claimAmount: 'decimal' },
       },
     },
     abi: [

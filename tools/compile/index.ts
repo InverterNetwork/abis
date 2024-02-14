@@ -27,9 +27,7 @@ export function compile() {
     )
 
     // Get the function metas
-    const methodMetas = getModuleMethodMetas(
-      fileContent.metadata.output.devdoc.methods
-    )
+    const methodMetas = getModuleMethodMetas(fileContent.metadata.output)
 
     // If the module name does not exist in the index, create it
     if (!indexModules[name]) indexModules[name] = {}

@@ -46,14 +46,14 @@ function handleCustomTags(value: string): Record<string, any> {
 }
 
 export function formatMethodEntries(items: Record<string, any>) {
-  const result = {} as Record<'descriptions' | 'tags' | 'returns', any>
+  const result = {} as Record<'descriptions' | 'tags', any>
 
   for (const [key, value] of Object.entries(items)) {
     switch (key) {
       case 'custom:tags':
         result.tags = handleCustomTags(value as string)
         break
-      case 'details':
+      case 'notice':
         result.descriptions = {
           ...result.descriptions,
           method: value.replace(/\s+/g, ' '),
@@ -62,8 +62,9 @@ export function formatMethodEntries(items: Record<string, any>) {
       case 'params':
         result.descriptions = { ...result.descriptions, ...value }
         break
-      default:
-        result[key] = value
+      case 'returns':
+        result.descriptions = { ...result.descriptions, returns: value }
+        break
     }
   }
 
