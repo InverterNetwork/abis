@@ -3,6 +3,7 @@ import path from 'path'
 import { getModuleMeta, getModuleMethodMetas } from './utils/getMetas'
 import read from './utils/read'
 import write from './utils/write'
+import updateAbiOutputs from './utils/updateAbiOutputs'
 
 const dirname = import.meta.dirname
 
@@ -29,6 +30,8 @@ export function compile() {
     // Get the function metas
     const methodMetas = getModuleMethodMetas(fileContent.metadata.output)
 
+    const updatedAbi = updateAbiOutputs(abi, methodMetas)
+
     // If the module name does not exist in the index, create it
     if (!indexModules[name]) indexModules[name] = {}
 
@@ -39,7 +42,7 @@ export function compile() {
       version,
       moduletype,
       methodMetas,
-      abi,
+      abi: updatedAbi,
     }
   })
 

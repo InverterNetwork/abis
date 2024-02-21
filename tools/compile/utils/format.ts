@@ -46,7 +46,10 @@ function handleCustomTags(value: string): Record<string, any> {
 }
 
 export function formatMethodEntries(items: Record<string, any>) {
-  const result = {} as Record<'descriptions' | 'tags', any>
+  const result = {
+    descriptions: {},
+    tags: {},
+  } as Record<'descriptions' | 'tags', any>
 
   for (const [key, value] of Object.entries(items)) {
     switch (key) {
@@ -63,7 +66,18 @@ export function formatMethodEntries(items: Record<string, any>) {
         result.descriptions = { ...result.descriptions, ...value }
         break
       case 'returns':
-        result.descriptions = { ...result.descriptions, returns: value }
+        const returnsValues: string[] = Object.values(value)
+        // get the first word from returns objects field and use it as key on returns object
+        // after getting the first word remove it from the string
+        const returns = returnsValues.reduce(
+          (acc, val) => {
+            const [key, ...rest] = val.split(' ')
+            acc[key] = rest.join(' ')
+            return acc
+          },
+          {} as Record<string, string>
+        )
+        result.descriptions = { ...result.descriptions, returns }
         break
     }
   }

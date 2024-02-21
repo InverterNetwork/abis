@@ -21,15 +21,19 @@ export function getModuleMethodMetas(metadataOutput: Record<string, object>) {
     userdoc: { methods: Record<string, any> }
   }
 
-  const result = {} as Record<string, any>
+  const result = {} as Record<
+    string,
+    {
+      descriptions: Record<string, string | Record<string, string>>
+      tags: Record<string, any>
+    }
+  >
 
   // first initialize the result object with the userdoc
   for (const [key, value] of Object.entries(userdoc.methods)) {
     const [name] = key.split('(')
     result[name] = formatMethodEntries(value)
   }
-
-  console.log(result)
 
   // then update the result object with the devdoc
   for (const [key, value] of Object.entries(devdoc.methods)) {

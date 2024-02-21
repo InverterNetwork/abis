@@ -1,13 +1,65 @@
 {
   "name": "@inverter-network/abis",
   "version": "0.0.2",
-  "description": "INVERTER typescript ABIs",
+  "author": "InverterNetwork <github@InverterNetwork>",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/InverterNetwork/abis.git"
+  },
   "main": "./dist/cjs/index.js",
   "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "devDependencies": {
+    "@commitlint/cli": "^18.4.3",
+    "@commitlint/config-conventional": "^18.4.3",
+    "@types/bun": "^1.0.5",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "nodemon": "^3.0.2",
+    "npm-run-all": "^4.1.5",
+    "pinst": "^3.0.0",
+    "prettier": "^3.1.1",
+    "standard-version": "^9.5.0",
+    "type-fest": "^4.10.2"
+  },
+  "peerDependencies": {
+    "eslint": "^8",
+    "typescript": "^5"
+  },
   "exports": {
     "require": "./dist/cjs/index.js",
     "import": "./dist/index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/InverterNetwork/abis"
+  },
+  "description": "INVERTER typescript ABIs",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/InverterNetwork/abis",
+  "keywords": [
+    "InverterNetwork",
+    "npm",
+    "contracts",
+    "web3",
+    "ethereum",
+    "solidity",
+    "evm",
+    "abis"
+  ],
+  "license": "LGPL-3.0",
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "npm run lint:fix",
+      "npm run prettier:fix"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "dev": "nodemon",
@@ -31,56 +83,5 @@
     "release": "standard-version",
     "postRelease": "git push --follow-tags origin main"
   },
-  "lint-staged": {
-    "src/**/*.{ts,tsx}": [
-      "npm run lint:fix",
-      "npm run prettier:fix"
-    ]
-  },
-  "files": [
-    "dist"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "author": "InverterNetwork <github@InverterNetwork>",
-  "license": "LGPL-3.0",
-  "keywords": [
-    "InverterNetwork",
-    "npm",
-    "contracts",
-    "web3",
-    "ethereum",
-    "solidity",
-    "evm",
-    "abis"
-  ],
-  "homepage": "https://github.com/InverterNetwork/abis",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/InverterNetwork/abis.git"
-  },
-  "bugs": {
-    "url": "https://github.com/InverterNetwork/abis"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^18.4.3",
-    "@commitlint/config-conventional": "^18.4.3",
-    "@types/bun": "^1.0.5",
-    "@typescript-eslint/eslint-plugin": "^6.14.0",
-    "@typescript-eslint/parser": "^6.14.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.0.1",
-    "husky": "^8.0.3",
-    "lint-staged": "^15.2.0",
-    "nodemon": "^3.0.2",
-    "npm-run-all": "^4.1.5",
-    "pinst": "^3.0.0",
-    "prettier": "^3.1.1",
-    "standard-version": "^9.5.0"
-  },
-  "peerDependencies": {
-    "eslint": "^8",
-    "typescript": "^5"
-  }
+  "types": "./dist/index.d.ts"
 }
