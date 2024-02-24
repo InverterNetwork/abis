@@ -116,9 +116,32 @@ export type Abis = ModuleVersions['abi']
 export type AbiFunction<
   K extends ModuleKeys,
   V extends ModuleVersionKeys,
-> = Extract<Abi<K, V>[number], { type: 'function' }>
+  MK extends MethodKey<K, V> = MethodKeys,
+> = Extract<Abi<K, V>[number], { type: 'function'; name: MK }>
 // All the function abis
 export type AbiFunctions = Extract<Abis[number], { type: 'function' }>
+
+// Selectable AbiReadFunction
+export type AbiReadFunction<
+  K extends ModuleKeys,
+  V extends ModuleVersionKeys,
+> = Extract<AbiFunction<K, V>, { stateMutability: 'view' | 'pure' }>
+// All the read function abis
+export type AbiReadFunctions = Extract<
+  AbiFunctions,
+  { stateMutability: 'view' | 'pure' }
+>
+
+// Selectable AbiWriteFunction
+export type AbiWriteFunction<
+  K extends ModuleKeys,
+  V extends ModuleVersionKeys,
+> = Extract<AbiFunction<K, V>, { stateMutability: 'nonpayable' | 'payable' }>
+// All the write function abis
+export type AbiWriteFunctions = Extract<
+  AbiFunctions,
+  { stateMutability: 'nonpayable' | 'payable' }
+>
 
 // Selectable AbiEvent
 export type AbiEvent<
@@ -132,7 +155,8 @@ export type AbiEvents = Extract<Abis[number], { type: 'event' }>
 export type FunctionInput<
   K extends ModuleKeys,
   V extends ModuleVersionKeys,
-> = AbiFunction<K, V>['inputs'][number]
+  MK extends MethodKey<K, V> = MethodKeys,
+> = AbiFunction<K, V, MK>['inputs'][number]
 // All the function inputs
 export type FunctionInputs = AbiFunctions['inputs'][number]
 
@@ -140,6 +164,7 @@ export type FunctionInputs = AbiFunctions['inputs'][number]
 export type FunctionOutput<
   K extends ModuleKeys,
   V extends ModuleVersionKeys,
-> = AbiFunction<K, V>['outputs'][number]
+  MK extends MethodKey<K, V> = MethodKeys,
+> = AbiFunction<K, V, MK>['outputs'][number]
 // All the function outputs
 export type FunctionOutputs = AbiFunctions['outputs'][number]
