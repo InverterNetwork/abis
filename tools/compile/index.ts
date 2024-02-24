@@ -32,6 +32,11 @@ export function compile() {
 
     const updatedAbi = updateAbiOutputs(abi, methodMetas)
 
+    const methodMetasArr = Object.entries(methodMetas).map(([key, value]) => ({
+      name: key,
+      ...value,
+    }))
+
     // If the module name does not exist in the index, create it
     if (!indexModules[name]) indexModules[name] = {}
 
@@ -41,7 +46,7 @@ export function compile() {
       description,
       version,
       moduletype,
-      methodMetas,
+      methodMetas: methodMetasArr,
       abi: updatedAbi,
     }
   })

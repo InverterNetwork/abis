@@ -4,8 +4,9 @@ export const BountyManager = {
     description: 'A module for managing bounties',
     version: '1.0',
     moduletype: 'logicModule',
-    methodMetas: {
-      addBounty: {
+    methodMetas: [
+      {
+        name: 'addBounty',
         descriptions: {
           method: 'Adds a new Bounty.',
           details: "The Bounty's details.",
@@ -21,7 +22,8 @@ export const BountyManager = {
           details: 'any(string)',
         },
       },
-      addClaim: {
+      {
+        name: 'addClaim',
         descriptions: {
           method: 'Adds a new Claim.',
           contributors: 'The contributor information for the Claim',
@@ -30,7 +32,8 @@ export const BountyManager = {
         },
         tags: { claimAmount: 'decimal', details: 'any(string)' },
       },
-      amountPaid: {
+      {
+        name: 'amountPaid',
         descriptions: {
           method:
             'Notifies the PaymentClient, that tokens have been paid out accordingly',
@@ -38,7 +41,8 @@ export const BountyManager = {
         },
         tags: {},
       },
-      collectPaymentOrders: {
+      {
+        name: 'collectPaymentOrders',
         descriptions: {
           method: 'Collects outstanding payment orders.',
           returns: {
@@ -48,7 +52,8 @@ export const BountyManager = {
         },
         tags: {},
       },
-      getBountyInformation: {
+      {
+        name: 'getBountyInformation',
         descriptions: {
           method: 'Returns the Bounty instance with id `id`.',
           bountyId: 'The id of the Bounty to return.',
@@ -60,7 +65,8 @@ export const BountyManager = {
           details: 'any(string)',
         },
       },
-      getClaimInformation: {
+      {
+        name: 'getClaimInformation',
         descriptions: {
           method: 'Returns the Claim instance with id `id`.',
           claimId: 'The id of the Claim to return.',
@@ -68,7 +74,8 @@ export const BountyManager = {
         },
         tags: { claimAmount: 'decimal', details: 'any(string)' },
       },
-      isExistingBountyId: {
+      {
+        name: 'isExistingBountyId',
         descriptions: {
           method: 'Returns whether Bounty with id `id` exists.',
           bountyId: 'The id of the Bounty to test.',
@@ -79,7 +86,8 @@ export const BountyManager = {
         },
         tags: {},
       },
-      isExistingClaimId: {
+      {
+        name: 'isExistingClaimId',
         descriptions: {
           method: 'Returns whether Claim with id `id` exists.',
           claimId: 'The id of the Bounty to test.',
@@ -90,21 +98,24 @@ export const BountyManager = {
         },
         tags: {},
       },
-      listBountyIds: {
+      {
+        name: 'listBountyIds',
         descriptions: {
           method: 'Returns total list of Bounty ids.',
           returns: { bountyIds: 'List of Bounty ids.' },
         },
         tags: {},
       },
-      listClaimIds: {
+      {
+        name: 'listClaimIds',
         descriptions: {
           method: 'Returns total list of Claim ids.',
           returns: { claimIds: 'List of Claim ids.' },
         },
         tags: {},
       },
-      listClaimIdsForContributorAddress: {
+      {
+        name: 'listClaimIdsForContributorAddress',
         descriptions: {
           method:
             'Returns a list of Claim ids in which contributor Address is used.',
@@ -113,26 +124,30 @@ export const BountyManager = {
         },
         tags: {},
       },
-      lockBounty: {
+      {
+        name: 'lockBounty',
         descriptions: {
           method: 'Locks the Bounty so it cant be claimed.',
           bountyId: 'The id of the Bounty that will be locked.',
         },
         tags: {},
       },
-      outstandingTokenAmount: {
+      {
+        name: 'outstandingTokenAmount',
         descriptions: {
           method: 'Returns the total outstanding token payment amount.',
         },
         tags: {},
       },
-      paymentOrders: {
+      {
+        name: 'paymentOrders',
         descriptions: {
           method: 'Returns the list of outstanding payment orders.',
         },
         tags: {},
       },
-      updateBounty: {
+      {
+        name: 'updateBounty',
         descriptions: {
           method: "Updates a Bounty's informations.",
           bountyId: 'The id of the Bounty that will be updated.',
@@ -140,7 +155,8 @@ export const BountyManager = {
         },
         tags: { details: 'any(string)' },
       },
-      updateClaimContributors: {
+      {
+        name: 'updateClaimContributors',
         descriptions: {
           method: "Updates a Claim's contributor informations.",
           claimId: 'The id of the Claim that will be updated.',
@@ -148,7 +164,8 @@ export const BountyManager = {
         },
         tags: { claimAmount: 'decimal' },
       },
-      updateClaimDetails: {
+      {
+        name: 'updateClaimDetails',
         descriptions: {
           method: 'Updates a Claim Details.',
           claimId: 'The id of the Claim that will be updated.',
@@ -156,7 +173,8 @@ export const BountyManager = {
         },
         tags: { details: 'any(string)' },
       },
-      verifyClaim: {
+      {
+        name: 'verifyClaim',
         descriptions: {
           method: 'Completes a Bounty by verifying a claim.',
           claimId: 'The id of the Claim that wants to claim the Bounty.',
@@ -164,7 +182,7 @@ export const BountyManager = {
         },
         tags: { claimAmount: 'decimal' },
       },
-    },
+    ],
     abi: [
       {
         inputs: [],

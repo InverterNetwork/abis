@@ -28,26 +28,27 @@ export type ModuleVersions = BaseData[ModuleKeys][ModuleVersionKeys]
 export type MethodKey<
   K extends ModuleKeys,
   V extends ModuleVersionKeys,
-> = keyof ModuleVersion<K, V>['methodMetas']
+> = ModuleVersion<K, V>['methodMetas'][number]['name']
 
 // All the MethodMeta keys
-export type MethodKeys = KeysOfUnion<ModuleVersions['methodMetas']>
+export type MethodKeys = ModuleVersions['methodMetas'][number]['name']
 
 // The value of the methodMetas object
 export type MethodMeta<
   K extends ModuleKeys,
   V extends ModuleVersionKeys,
-> = ModuleVersion<K, V>['methodMetas']
+  MK extends MethodKey<K, V>,
+> = Extract<ModuleVersion<K, V>['methodMetas'][number], { name: MK }>
 
 // All the methodMetas
-export type MethodMetas = ValueOf<ModuleVersions['methodMetas']>
+export type MethodMetas = ModuleVersions['methodMetas'][number]
 
 // Selectable tag key
 export type TagKey<
   K extends ModuleKeys,
   V extends ModuleVersionKeys,
   MK extends MethodKeys,
-> = keyof MethodMeta<K, V>[MK]['tags']
+> = keyof MethodMeta<K, V, MK>['tags']
 
 // All the tag keys
 export type TagKeys = KeysOfUnion<MethodMetas['tags']>
@@ -57,7 +58,7 @@ export type Tag<
   V extends ModuleVersionKeys,
   MK extends MethodKeys,
   TK extends TagKey<K, V, MK>,
-> = MethodMeta<K, V>[MK]['tags'][TK]
+> = MethodMeta<K, V, MK>['tags'][TK]
 // All Tags
 export type Tags = UnionToIntersection<MethodMetas['tags']>
 
@@ -66,7 +67,7 @@ export type DescriptionKey<
   K extends ModuleKeys,
   V extends ModuleVersionKeys,
   MK extends MethodKeys,
-> = keyof MethodMeta<K, V>[MK]['descriptions']
+> = keyof MethodMeta<K, V, MK>['descriptions']
 // All the description keys
 export type DescriptionKeys = KeysOfUnion<MethodMetas['descriptions']>
 export type ReturnDescriptionKeys = KeysOfUnion<
@@ -80,7 +81,7 @@ export type Description<
   V extends ModuleVersionKeys,
   MK extends MethodKeys,
   DK extends DescriptionKey<K, V, MK>,
-> = MethodMeta<K, V>[MK]['descriptions'][DK]
+> = MethodMeta<K, V, MK>['descriptions'][DK]
 // All Descriptions
 export type Descriptions = ValueOf<MethodMetas['descriptions']>
 // Selectable return description
@@ -90,7 +91,7 @@ export type ReturnDescription<
   MK extends MethodKeys,
 > = UnionToIntersection<
   Extract<
-    MethodMeta<K, V>[MK],
+    MethodMeta<K, V, MK>,
     {
       descriptions: {
         returns: object
