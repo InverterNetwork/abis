@@ -1,9 +1,10 @@
 import fs from 'fs'
 import path from 'path'
-import { getModuleMeta, getModuleMethodMetas } from './utils/getMetas'
+import getMetas from './utils/getMetas'
 import read from './utils/read'
 import write from './utils/write'
 import updateAbiOutputs from './utils/updateAbiOutputs'
+import itterate from './utils/itterate'
 
 const dirname = import.meta.dirname
 
@@ -23,19 +24,13 @@ export function compile() {
     const abi = fileContent.abi
 
     // Get the module meta
-    const { name, version, moduletype, description } = getModuleMeta(
-      fileContent.ast.nodes
-    )
+    const { name, version, moduletype, description } = getMetas.module(
+        fileContent.ast.nodes
+      ),
+      methodMetas = getMetas.method(fileContent.metadata.output)
 
-    // Get the function metas
-    const methodMetas = getModuleMethodMetas(fileContent.metadata.output)
-
-    const updatedAbi = updateAbiOutputs(abi, methodMetas)
-
-    const methodMetasArr = Object.entries(methodMetas).map(([key, value]) => ({
-      name: key,
-      ...value,
-    }))
+    const updatedAbi = updateAbiOutputs(abi, methodMetas),
+      itterable = itterate(updatedAbi, methodMetas)
 
     // If the module name does not exist in the index, create it
     if (!indexModules[name]) indexModules[name] = {}
@@ -46,7 +41,7 @@ export function compile() {
       description,
       version,
       moduletype,
-      methodMetas: methodMetasArr,
+      itterable,
       abi: updatedAbi,
     }
   })

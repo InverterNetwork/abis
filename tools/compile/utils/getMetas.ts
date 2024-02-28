@@ -1,6 +1,6 @@
 import { formatMethodEntries, formatModuleTags } from './format'
 
-export function getModuleMeta(nodes: any[]) {
+function module(nodes: any[]) {
   const node = nodes[nodes.length - 1],
     rawName = node?.name
   if (!rawName) throw new Error('Module name not found')
@@ -15,7 +15,7 @@ export function getModuleMeta(nodes: any[]) {
   return { name, version, moduletype, description }
 }
 
-export function getModuleMethodMetas(metadataOutput: Record<string, object>) {
+function method(metadataOutput: Record<string, object>) {
   const { devdoc, userdoc } = metadataOutput as {
     devdoc: { methods: Record<string, any> }
     userdoc: { methods: Record<string, any> }
@@ -50,4 +50,9 @@ export function getModuleMethodMetas(metadataOutput: Record<string, object>) {
   }
 
   return result
+}
+
+export default {
+  module,
+  method,
 }

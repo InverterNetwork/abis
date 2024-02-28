@@ -4,220 +4,183 @@ export const BountyManager = {
     description: 'A module for managing bounties',
     version: '1.0',
     moduletype: 'logicModule',
-    itterable: [
+    methodMetas: [
       {
-        type: 'read',
-        name: 'getBountyInformation',
-        description: 'Returns the Bounty instance with id `id`.',
-        inputs: [{ name: 'bountyId', type: 'uint256' }],
-        outputs: [
-          {
-            name: 'bounty',
-            type: 'tuple',
-            components: [
-              { name: 'minimumPayoutAmount', type: 'uint256', tag: 'decimal' },
-              { name: 'maximumPayoutAmount', type: 'uint256', tag: 'decimal' },
-              { name: 'details', type: 'bytes', tag: 'any(string)' },
-              { name: 'locked', type: 'bool' },
-            ],
-          },
-        ],
-      },
-      {
-        type: 'read',
-        name: 'getClaimInformation',
-        description: 'Returns the Claim instance with id `id`.',
-        inputs: [{ name: 'claimId', type: 'uint256' }],
-        outputs: [
-          {
-            name: 'claim',
-            type: 'tuple',
-            components: [
-              { name: 'bountyId', type: 'uint256' },
-              { name: 'contributors', type: 'tuple[]' },
-              { name: 'details', type: 'bytes', tag: 'any(string)' },
-              { name: 'claimed', type: 'bool' },
-            ],
-          },
-        ],
-      },
-      {
-        type: 'read',
-        name: 'isExistingBountyId',
-        description: 'Returns whether Bounty with id `id` exists.',
-        inputs: [{ name: 'bountyId', type: 'uint256' }],
-        outputs: [{ name: 'isExistingBountyId', type: 'bool' }],
-      },
-      {
-        type: 'read',
-        name: 'isExistingClaimId',
-        description: 'Returns whether Claim with id `id` exists.',
-        inputs: [{ name: 'claimId', type: 'uint256' }],
-        outputs: [{ name: 'isExistingClaimId', type: 'bool' }],
-      },
-      {
-        type: 'read',
-        name: 'listBountyIds',
-        description: 'Returns total list of Bounty ids.',
-        inputs: [],
-        outputs: [{ name: 'bountyIds', type: 'uint256[]' }],
-      },
-      {
-        type: 'read',
-        name: 'listClaimIds',
-        description: 'Returns total list of Claim ids.',
-        inputs: [],
-        outputs: [{ name: 'claimIds', type: 'uint256[]' }],
-      },
-      {
-        type: 'read',
-        name: 'listClaimIdsForContributorAddress',
-        description:
-          'Returns a list of Claim ids in which contributor Address is used.',
-        inputs: [{ name: 'contributorAddrs', type: 'address' }],
-        outputs: [{ name: 'contributorClaimIds', type: 'uint256[]' }],
-      },
-      {
-        type: 'read',
-        name: 'outstandingTokenAmount',
-        description: 'Returns the total outstanding token payment amount.',
-        inputs: [],
-        outputs: [{ name: '', type: 'uint256' }],
-      },
-      {
-        type: 'read',
-        name: 'paymentOrders',
-        description: 'Returns the list of outstanding payment orders.',
-        inputs: [],
-        outputs: [
-          {
-            name: '',
-            type: 'tuple[]',
-            components: [
-              { name: 'recipient', type: 'address' },
-              { name: 'amount', type: 'uint256' },
-              { name: 'createdAt', type: 'uint256' },
-              { name: 'dueTo', type: 'uint256' },
-            ],
-          },
-        ],
-      },
-      {
-        type: 'write',
         name: 'addBounty',
-        description: 'Adds a new Bounty.',
-        inputs: [
-          { name: 'minimumPayoutAmount', type: 'uint256', tag: 'decimal' },
-          { name: 'maximumPayoutAmount', type: 'uint256', tag: 'decimal' },
-          { name: 'details', type: 'bytes', tag: 'any(string)' },
-        ],
-        outputs: [{ name: 'bountyId', type: 'uint256' }],
+        descriptions: {
+          method: 'Adds a new Bounty.',
+          details: "The Bounty's details.",
+          maximumPayoutAmount:
+            'The maximum amount of tokens the Bounty will pay out upon being claimed',
+          minimumPayoutAmount:
+            'The minimum amount of tokens the Bounty will pay out upon being claimed',
+          returns: { bountyId: "The newly added Bounty's id." },
+        },
+        tags: {
+          minimumPayoutAmount: 'decimal',
+          maximumPayoutAmount: 'decimal',
+          details: 'any(string)',
+        },
       },
       {
-        type: 'write',
         name: 'addClaim',
-        description: 'Adds a new Claim.',
-        inputs: [
-          { name: 'bountyId', type: 'uint256' },
-          {
-            name: 'contributors',
-            type: 'tuple[]',
-            components: [
-              { name: 'addr', type: 'address' },
-              { name: 'claimAmount', type: 'uint256', tag: 'decimal' },
-            ],
-          },
-          { name: 'details', type: 'bytes', tag: 'any(string)' },
-        ],
-        outputs: [{ name: 'claimId', type: 'uint256' }],
+        descriptions: {
+          method: 'Adds a new Claim.',
+          contributors: 'The contributor information for the Claim',
+          details: "The Claim's details.",
+          returns: { claimId: "The newly added Claim's id." },
+        },
+        tags: { claimAmount: 'decimal', details: 'any(string)' },
       },
       {
-        type: 'write',
         name: 'amountPaid',
-        description:
-          'Notifies the PaymentClient, that tokens have been paid out accordingly',
-        inputs: [{ name: 'amount', type: 'uint256' }],
-        outputs: [],
+        descriptions: {
+          method:
+            'Notifies the PaymentClient, that tokens have been paid out accordingly',
+          amount: 'amount of tokens that have been paid out',
+        },
+        tags: {},
       },
       {
-        type: 'write',
         name: 'collectPaymentOrders',
-        description: 'Collects outstanding payment orders.',
-        inputs: [],
-        outputs: [
-          {
-            name: 'paymentOrders',
-            type: 'tuple[]',
-            components: [
-              { name: 'recipient', type: 'address' },
-              { name: 'amount', type: 'uint256' },
-              { name: 'createdAt', type: 'uint256' },
-              { name: 'dueTo', type: 'uint256' },
-            ],
+        descriptions: {
+          method: 'Collects outstanding payment orders.',
+          returns: {
+            paymentOrders: 'list of payment orders',
+            totalTokenAmount: 'total amount of token to pay',
           },
-          { name: 'totalTokenAmount', type: 'uint256' },
-        ],
+        },
+        tags: {},
       },
       {
-        type: 'write',
+        name: 'getBountyInformation',
+        descriptions: {
+          method: 'Returns the Bounty instance with id `id`.',
+          bountyId: 'The id of the Bounty to return.',
+          returns: { bounty: 'Bounty with id `id`.' },
+        },
+        tags: {
+          minimumPayoutAmount: 'decimal',
+          maximumPayoutAmount: 'decimal',
+          details: 'any(string)',
+        },
+      },
+      {
+        name: 'getClaimInformation',
+        descriptions: {
+          method: 'Returns the Claim instance with id `id`.',
+          claimId: 'The id of the Claim to return.',
+          returns: { claim: 'Claim with id `id`.' },
+        },
+        tags: { claimAmount: 'decimal', details: 'any(string)' },
+      },
+      {
+        name: 'isExistingBountyId',
+        descriptions: {
+          method: 'Returns whether Bounty with id `id` exists.',
+          bountyId: 'The id of the Bounty to test.',
+          returns: {
+            isExistingBountyId:
+              'True if Claim with id `id` exists, false otherwise.',
+          },
+        },
+        tags: {},
+      },
+      {
+        name: 'isExistingClaimId',
+        descriptions: {
+          method: 'Returns whether Claim with id `id` exists.',
+          claimId: 'The id of the Bounty to test.',
+          returns: {
+            isExistingClaimId:
+              'True if Claim with id `id` exists, false otherwise.',
+          },
+        },
+        tags: {},
+      },
+      {
+        name: 'listBountyIds',
+        descriptions: {
+          method: 'Returns total list of Bounty ids.',
+          returns: { bountyIds: 'List of Bounty ids.' },
+        },
+        tags: {},
+      },
+      {
+        name: 'listClaimIds',
+        descriptions: {
+          method: 'Returns total list of Claim ids.',
+          returns: { claimIds: 'List of Claim ids.' },
+        },
+        tags: {},
+      },
+      {
+        name: 'listClaimIdsForContributorAddress',
+        descriptions: {
+          method:
+            'Returns a list of Claim ids in which contributor Address is used.',
+          contributorAddrs: 'claim ids are filtered by the contributor address',
+          returns: { contributorClaimIds: 'List of Claim ids.' },
+        },
+        tags: {},
+      },
+      {
         name: 'lockBounty',
-        description: 'Locks the Bounty so it cant be claimed.',
-        inputs: [{ name: 'bountyId', type: 'uint256' }],
-        outputs: [],
+        descriptions: {
+          method: 'Locks the Bounty so it cant be claimed.',
+          bountyId: 'The id of the Bounty that will be locked.',
+        },
+        tags: {},
       },
       {
-        type: 'write',
+        name: 'outstandingTokenAmount',
+        descriptions: {
+          method: 'Returns the total outstanding token payment amount.',
+        },
+        tags: {},
+      },
+      {
+        name: 'paymentOrders',
+        descriptions: {
+          method: 'Returns the list of outstanding payment orders.',
+        },
+        tags: {},
+      },
+      {
         name: 'updateBounty',
-        description: "Updates a Bounty's informations.",
-        inputs: [
-          { name: 'bountyId', type: 'uint256' },
-          { name: 'details', type: 'bytes', tag: 'any(string)' },
-        ],
-        outputs: [],
+        descriptions: {
+          method: "Updates a Bounty's informations.",
+          bountyId: 'The id of the Bounty that will be updated.',
+          details: "The Bounty's details.",
+        },
+        tags: { details: 'any(string)' },
       },
       {
-        type: 'write',
         name: 'updateClaimContributors',
-        description: "Updates a Claim's contributor informations.",
-        inputs: [
-          { name: 'claimId', type: 'uint256' },
-          {
-            name: 'contributors',
-            type: 'tuple[]',
-            components: [
-              { name: 'addr', type: 'address' },
-              { name: 'claimAmount', type: 'uint256', tag: 'decimal' },
-            ],
-          },
-        ],
-        outputs: [],
+        descriptions: {
+          method: "Updates a Claim's contributor informations.",
+          claimId: 'The id of the Claim that will be updated.',
+          contributors: 'The contributor information for the Claim.',
+        },
+        tags: { claimAmount: 'decimal' },
       },
       {
-        type: 'write',
         name: 'updateClaimDetails',
-        description: 'Updates a Claim Details.',
-        inputs: [
-          { name: 'claimId', type: 'uint256' },
-          { name: 'details', type: 'bytes', tag: 'any(string)' },
-        ],
-        outputs: [],
+        descriptions: {
+          method: 'Updates a Claim Details.',
+          claimId: 'The id of the Claim that will be updated.',
+          details: "The Claim's details.",
+        },
+        tags: { details: 'any(string)' },
       },
       {
-        type: 'write',
         name: 'verifyClaim',
-        description: 'Completes a Bounty by verifying a claim.',
-        inputs: [
-          { name: 'claimId', type: 'uint256' },
-          {
-            name: 'contributors',
-            type: 'tuple[]',
-            components: [
-              { name: 'addr', type: 'address' },
-              { name: 'claimAmount', type: 'uint256', tag: 'decimal' },
-            ],
-          },
-        ],
-        outputs: [],
+        descriptions: {
+          method: 'Completes a Bounty by verifying a claim.',
+          claimId: 'The id of the Claim that wants to claim the Bounty.',
+          contributors: 'The contributor information for the Claim.',
+        },
+        tags: { claimAmount: 'decimal' },
       },
     ],
     abi: [

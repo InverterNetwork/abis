@@ -1,4 +1,4 @@
-import { getModuleMethodMetas } from './getMetas'
+import { MethodMetas } from '../types'
 
 function outputName(
   indexValueArr: (readonly [number, string])[],
@@ -16,10 +16,7 @@ function outputName(
   return updatedOutputs
 }
 
-export default function updateAbiOutputs(
-  abi: any[],
-  methodMetas: ReturnType<typeof getModuleMethodMetas>
-) {
+export default function updateAbiOutputs(abi: any[], methodMetas: MethodMetas) {
   // Update abi outputs with decipher return names
   for (const method in methodMetas) {
     const methodMeta = methodMetas[method]

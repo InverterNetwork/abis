@@ -1,37 +1,36 @@
-import { KeysOfUnion } from 'type-fest'
 import * as data from './data'
-export * from './function'
 export * from './base'
-export * from './meta'
 export { data }
 
 type BaseData = typeof data
 
-// All the keys of the data object
 export type ModuleKeys = keyof BaseData
-// All the version keys
-export type ModuleVersionKeys = KeysOfUnion<BaseData[ModuleKeys]>
 
-// Selectable version
+export type ModuleVersionKey<K extends ModuleKeys = ModuleKeys> =
+  keyof BaseData[K]
+
 export type ModuleVersion<
   K extends ModuleKeys,
-  V extends ModuleVersionKeys,
+  V extends ModuleVersionKey,
 > = BaseData[K][V]
 
-// All ModuleDatas
-type ModuleVersions = BaseData[ModuleKeys][ModuleVersionKeys]
-
-// Selectable MethodMetas key
-export type MethodKey<
-  K extends ModuleKeys,
-  V extends ModuleVersionKeys,
-> = ModuleVersion<K, V>['methodMetas'][number]['name']
-
-// All the MethodMeta keys
-export type MethodKeys = ModuleVersions['methodMetas'][number]['name']
-
-// Selectable Abi
 export type Abi<
   K extends ModuleKeys,
-  V extends ModuleVersionKeys,
+  V extends ModuleVersionKey,
 > = ModuleVersion<K, V>['abi']
+
+export type MethodKey<
+  K extends ModuleKeys,
+  V extends ModuleVersionKey,
+> = ModuleVersion<K, V>['itterable'][number]['name']
+
+export type Itterable<
+  K extends ModuleKeys,
+  V extends ModuleVersionKey,
+  MK extends MethodKey<K, V> = MethodKey<K, V>,
+> = Extract<
+  ModuleVersion<K, V>['itterable'][number],
+  {
+    name: MK
+  }
+>
