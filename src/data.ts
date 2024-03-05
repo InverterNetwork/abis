@@ -34,7 +34,14 @@ export const BountyManager = {
             type: 'tuple',
             components: [
               { name: 'bountyId', type: 'uint256' },
-              { name: 'contributors', type: 'tuple[]' },
+              {
+                name: 'contributors',
+                type: 'tuple[]',
+                components: [
+                  { name: 'addr', type: 'address' },
+                  { name: 'claimAmount', type: 'uint256', tag: 'decimal' },
+                ],
+              },
               { name: 'details', type: 'bytes', tag: 'any(string)' },
               { name: 'claimed', type: 'bool' },
             ],

@@ -28,6 +28,10 @@ export default function decipher(
         const { name, type } = component as (typeof components)[number] & {
           name: string
         }
+
+        if (type === 'tuple[]' || type === 'tuple')
+          return decipher(variant, component, methodMeta)
+
         const tag = tags?.[name],
           description = [
             variant === 'input' ? descriptions : descriptions?.returns,
