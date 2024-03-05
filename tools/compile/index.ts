@@ -33,7 +33,7 @@ export function compile() {
       methodMetas = getMetas.method(fileContent.metadata.output)
 
     const updatedAbi = updateAbiOutputs(abi, methodMetas),
-      itterable = itterate(updatedAbi, methodMetas)
+      finalAbi = itterate(updatedAbi, methodMetas)
 
     // If the module name does not exist in the index, create it
     if (!indexModules[name]) indexModules[name] = {}
@@ -44,8 +44,7 @@ export function compile() {
       description,
       version,
       moduleType,
-      itterable,
-      abi: updatedAbi,
+      abi: finalAbi,
     }
   })
 

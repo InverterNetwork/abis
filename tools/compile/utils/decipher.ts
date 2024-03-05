@@ -9,7 +9,7 @@ export default function decipher(
   const { descriptions, tags } = methodMeta
 
   if (inputOrOutput.type === 'tuple[]' || inputOrOutput.type === 'tuple') {
-    const { name, type, components } = inputOrOutput as AbiParameter & {
+    const { name, components } = inputOrOutput as AbiParameter & {
       name: string
       components: AbiParameter[]
     }
@@ -20,8 +20,7 @@ export default function decipher(
       ]?.[name]
 
     return {
-      name,
-      type,
+      ...inputOrOutput,
       tag,
       description,
       components: components.map((component) => {
@@ -38,8 +37,7 @@ export default function decipher(
           ]?.[name]
 
         return {
-          name,
-          type,
+          ...component,
           tag,
           description,
         }
@@ -47,7 +45,7 @@ export default function decipher(
     }
   }
 
-  const { name, type } = inputOrOutput as AbiParameter & { name: string }
+  const { name } = inputOrOutput as AbiParameter & { name: string }
 
   const tag = tags?.[name],
     description = [
@@ -55,8 +53,7 @@ export default function decipher(
     ]?.[name]
 
   return {
-    name,
-    type,
+    ...inputOrOutput,
     tag,
     description,
   }

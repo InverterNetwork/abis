@@ -19,17 +19,17 @@ export type Abi<
   V extends ModuleVersionKey,
 > = ModuleVersion<K, V>['abi']
 
-export type MethodKey<
-  K extends ModuleKeys,
-  V extends ModuleVersionKey,
-> = ModuleVersion<K, V>['itterable'][number]['name']
+export type MethodKey<K extends ModuleKeys, V extends ModuleVersionKey> = Abi<
+  K,
+  V
+>[number]['name']
 
-export type Itterable<
+export type AbiItem<
   K extends ModuleKeys,
   V extends ModuleVersionKey,
   MK extends MethodKey<K, V> = MethodKey<K, V>,
 > = Extract<
-  ModuleVersion<K, V>['itterable'][number],
+  Abi<K, V>[number],
   {
     name: MK
   }

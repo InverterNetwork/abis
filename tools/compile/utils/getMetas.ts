@@ -10,7 +10,7 @@ function module(nodes: any[]) {
   const tags = formatModuleTags(node?.documentation?.text),
     version = tags?.version,
     moduletype = tags?.moduletype,
-    description = tags?.description
+    description = tags?.description ?? ''
 
   return { name, version, moduletype, description }
 }

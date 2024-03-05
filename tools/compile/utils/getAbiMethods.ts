@@ -1,5 +1,12 @@
 import { Abi, AbiFunction } from 'abitype'
 
+function functions(abi: Abi) {
+  return abi.filter(
+    (item): item is Extract<typeof item, { type: 'function' }> =>
+      item.type === 'function'
+  )
+}
+
 function readFunctions(abi: Abi) {
   return abi.filter(
     (
@@ -34,6 +41,7 @@ function events(abi: Abi) {
 }
 
 export default {
+  functions,
   readFunctions,
   writeFunctions,
   events,
