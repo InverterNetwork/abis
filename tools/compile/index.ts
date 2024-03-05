@@ -8,7 +8,7 @@ import itterate from './utils/itterate'
 
 const dirname = import.meta.dirname
 
-const inPath = path.join(dirname, '../../in')
+const inPath = path.join(dirname, '../../deployments/build')
 const destPath = path.join(dirname, '../../src/data.ts')
 
 export function compile() {
@@ -17,6 +17,8 @@ export function compile() {
 
   // Read the directory
   read(inPath, (itemPath: string) => {
+    const parts = itemPath.split('/')
+
     // Parse the file content
     const fileContent = JSON.parse(fs.readFileSync(itemPath, 'utf8'))
 
@@ -24,9 +26,10 @@ export function compile() {
     const abi = fileContent.abi
 
     // Get the module meta
-    const { name, version, moduletype, description } = getMetas.module(
-        fileContent.ast.nodes
-      ),
+    const { description } = getMetas.module(fileContent.ast.nodes),
+      moduleType = parts[parts.length - 3],
+      name = parts[parts.length - 2],
+      version = parts[parts.length - 1].replace('.json', ''),
       methodMetas = getMetas.method(fileContent.metadata.output)
 
     const updatedAbi = updateAbiOutputs(abi, methodMetas),
@@ -36,11 +39,11 @@ export function compile() {
     if (!indexModules[name]) indexModules[name] = {}
 
     // Add the module to the index
-    indexModules[name][`v${version}`] = {
+    indexModules[name][version] = {
       name,
       description,
       version,
-      moduletype,
+      moduleType,
       itterable,
       abi: updatedAbi,
     }

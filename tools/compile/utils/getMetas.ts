@@ -7,10 +7,10 @@ function module(nodes: any[]) {
   // Remove the first character if it is a capital I ( I for Interface )
   const name = rawName[0] === 'I' ? rawName.slice(1) : rawName
   // Get the tags of the node
-  const tags = formatModuleTags(node?.documentation.text),
-    version = tags.version,
-    moduletype = tags.moduletype,
-    description = tags.description
+  const tags = formatModuleTags(node?.documentation?.text),
+    version = tags?.version,
+    moduletype = tags?.moduletype,
+    description = tags?.description
 
   return { name, version, moduletype, description }
 }
@@ -42,7 +42,7 @@ function method(metadataOutput: Record<string, object>) {
     const newValue = formatMethodEntries(value)
     result[name] = {
       descriptions: {
-        ...prevValue.descriptions,
+        ...prevValue?.descriptions,
         ...newValue?.descriptions,
       },
       tags: newValue?.tags,

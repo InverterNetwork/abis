@@ -1,4 +1,5 @@
-export function formatModuleTags(str: string) {
+export function formatModuleTags(str: string | undefined) {
+  if (!str) return undefined
   // Split the string by new line and reduce it to an object
   const obj = str.split('\n').reduce(
     (acc, line) => {
