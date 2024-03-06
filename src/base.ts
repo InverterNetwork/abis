@@ -1,4 +1,4 @@
-export type ModuleTypes =
+export type ModuleType =
   | 'logicModule'
   | 'paymentProcessor'
   | 'authorizer'
