@@ -10,6 +10,6 @@ export type ModuleVersionKey<K extends ModuleKeys = ModuleKeys> =
   keyof BaseData[K]
 
 export type ModuleVersion<
-  K extends ModuleKeys,
-  V extends ModuleVersionKey,
+  K extends ModuleKeys = ModuleKeys,
+  V extends ModuleVersionKey = ModuleVersionKey,
 > = BaseData[K][V]
