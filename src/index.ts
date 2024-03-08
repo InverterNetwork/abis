@@ -1,5 +1,6 @@
 import * as data from './data'
 export * from './base'
+export * from './flat'
 export { data }
 
 type BaseData = typeof data
