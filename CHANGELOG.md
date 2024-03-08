@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/InverterNetwork/abis/compare/v0.0.2...v0.0.3) (2024-03-08)
+
+
+### Features
+
+* name, version, moduleType from dir names and sub module as in ([1fff42d](https://github.com/InverterNetwork/abis/commit/1fff42de39b586516bc6ed089ffc93f261481f05))
+* recursive at decipher ([306bb65](https://github.com/InverterNetwork/abis/commit/306bb651c80028b721dca14f45c727096a6a5c07))
+
 ### [0.0.2](https://github.com/InverterNetwork/abis/compare/v0.0.1...v0.0.2) (2023-12-15)
 
 ### [0.0.1](https://github.com/InverterNetwork/abis/compare/v0.0.1-beta.1...v0.0.1) (2023-12-13)
