@@ -14,3 +14,10 @@ export type ModuleVersion<
   K extends ModuleKeys = ModuleKeys,
   V extends ModuleVersionKey = ModuleVersionKey,
 > = BaseData[K][V]
+
+export function getModuleVersion<
+  K extends ModuleKeys = ModuleKeys,
+  V extends ModuleVersionKey = ModuleVersionKey,
+>(module: K, version: V): ModuleVersion<K, V> {
+  return data[module][version]
+}

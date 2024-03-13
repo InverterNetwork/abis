@@ -1,6 +1,6 @@
 {
   "name": "@inverter-network/abis",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "InverterNetwork <github@InverterNetwork>",
   "repository": {
     "type": "git",
@@ -14,6 +14,7 @@
     "@types/bun": "^1.0.5",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.14.0",
+    "abitype": "^1.0.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.0.1",
     "husky": "^8.0.3",

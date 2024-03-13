@@ -1,3 +1,188 @@
+export const ERC20 = {
+  'v1.0': {
+    name: 'ERC20',
+    description: 'Interface of the ERC-20 standard as defined in the ERC.',
+    version: 'v1.0',
+    moduleType: 'external',
+    abi: [
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'owner',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'spender',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+          },
+        ],
+        name: 'Approval',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'from',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+          },
+        ],
+        name: 'Transfer',
+        type: 'event',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'owner', type: 'address' },
+          { internalType: 'address', name: 'spender', type: 'address' },
+        ],
+        name: 'allowance',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'allowance',
+            type: 'uint256',
+            tag: 'decimal',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Returns the remaining number of tokens that `spender` will be allowed to spend on behalf of `owner` through {transferFrom}. This is zero by default.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'spender', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tag: 'decimal',
+          },
+        ],
+        name: 'approve',
+        outputs: [{ internalType: 'bool', name: 'success', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          "Sets a `amount` amount of tokens as the allowance of `spender` over the caller's tokens.",
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'balanceOf',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'balance',
+            type: 'uint256',
+            tag: 'decimal',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the amount of tokens owned by `account`.',
+      },
+      {
+        inputs: [],
+        name: 'decimals',
+        outputs: [{ internalType: 'uint8', name: 'decimals', type: 'uint8' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the decimals of the token.',
+      },
+      {
+        inputs: [],
+        name: 'name',
+        outputs: [{ internalType: 'string', name: 'name', type: 'string' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the name of the token.',
+      },
+      {
+        inputs: [],
+        name: 'symbol',
+        outputs: [{ internalType: 'string', name: 'symbol', type: 'string' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the symbol of the token.',
+      },
+      {
+        inputs: [],
+        name: 'totalSupply',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'totalSupply',
+            type: 'uint256',
+            tag: 'decimal',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the amount of tokens in existence.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'to', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tag: 'decimal',
+          },
+        ],
+        name: 'transfer',
+        outputs: [{ internalType: 'bool', name: 'success', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          "Transfers a `amount` amount of tokens from the caller's account to `to`.",
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'from', type: 'address' },
+          { internalType: 'address', name: 'to', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tag: 'decimal',
+          },
+        ],
+        name: 'transferFrom',
+        outputs: [{ internalType: 'bool', name: 'success', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          "Moves a `amount` amount of tokens from `from` to `to` using the allowance mechanism. `amount` is then deducted from the caller's allowance.",
+      },
+    ],
+  },
+} as const
 export const BountyManager = {
   'v1.0': {
     name: 'BountyManager',
