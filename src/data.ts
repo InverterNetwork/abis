@@ -191,6 +191,11 @@ export const BountyManager = {
     moduleType: 'logicModule',
     abi: [
       {
+        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
+        name: 'Module_OrchestratorCallbackFailed',
+        type: 'error',
+      },
+      {
         inputs: [],
         name: 'Module__BountyManager__AlreadyClaimed',
         type: 'error',
@@ -246,6 +251,15 @@ export const BountyManager = {
         type: 'error',
       },
       {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'caller', type: 'address' },
+        ],
+        name: 'Module__CallerNotAuthorized',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__CannotCallInit2Again', type: 'error' },
+      {
         inputs: [],
         name: 'Module__ERC20PaymentClient__ArrayLengthMismatch',
         type: 'error',
@@ -275,6 +289,14 @@ export const BountyManager = {
         name: 'Module__ERC20PaymentClient__TokenTransferFailed',
         type: 'error',
       },
+      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
+      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__NoDependencyOrMalformedDependencyData',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
       {
         anonymous: false,
         inputs: [
@@ -434,6 +456,37 @@ export const BountyManager = {
           {
             indexed: true,
             internalType: 'address',
+            name: 'parentOrchestrator',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'string',
+            name: 'moduleTitle',
+            type: 'string',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'majorVersion',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'minorVersion',
+            type: 'uint256',
+          },
+        ],
+        name: 'ModuleInitialized',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
             name: 'recipient',
             type: 'address',
           },
@@ -446,6 +499,27 @@ export const BountyManager = {
         ],
         name: 'PaymentOrderAdded',
         type: 'event',
+      },
+      {
+        inputs: [],
+        name: 'BOUNTY_ISSUER_ROLE',
+        outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'CLAIMANT_ROLE',
+        outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'VERIFIER_ROLE',
+        outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+        stateMutability: 'view',
+        type: 'function',
       },
       {
         inputs: [
@@ -632,6 +706,74 @@ export const BountyManager = {
       },
       {
         inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'addr', type: 'address' },
+        ],
+        name: 'grantModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'identifier',
+        outputs: [{ internalType: 'bytes32', name: 'The', type: 'bytes32' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's identifier.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'orchestrator',
+            type: 'address',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
+            internalType: 'struct IModule.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+          },
+          { internalType: 'bytes', name: 'configData', type: 'bytes' },
+        ],
+        name: 'init',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: "The module's initializer function.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'orchestrator',
+            type: 'address',
+          },
+          { internalType: 'bytes', name: 'configData', type: 'bytes' },
+        ],
+        name: 'init2',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Second initialization function of the module to take care of dependencies.',
+      },
+      {
+        inputs: [
           { internalType: 'uint256', name: 'bountyId', type: 'uint256' },
         ],
         name: 'isExistingBountyId',
@@ -651,6 +793,16 @@ export const BountyManager = {
         stateMutability: 'view',
         type: 'function',
         description: 'Returns whether Claim with id `id` exists.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'forwarder', type: 'address' },
+        ],
+        name: 'isTrustedForwarder',
+        outputs: [{ internalType: 'bool', name: 'bool', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Checks if the provided address is the trusted forwarder',
       },
       {
         inputs: [],
@@ -701,6 +853,21 @@ export const BountyManager = {
       },
       {
         inputs: [],
+        name: 'orchestrator',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'The',
+            type: 'address',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          "Returns the module's {IOrchestrator} orchestrator instance.",
+      },
+      {
+        inputs: [],
         name: 'outstandingTokenAmount',
         outputs: [
           {
@@ -738,6 +905,24 @@ export const BountyManager = {
         stateMutability: 'view',
         type: 'function',
         description: 'Returns the list of outstanding payment orders.',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'addr', type: 'address' },
+        ],
+        name: 'revokeModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'title',
+        outputs: [{ internalType: 'string', name: 'The', type: 'string' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's title.",
       },
       {
         inputs: [
@@ -796,6 +981,14 @@ export const BountyManager = {
         description: 'Updates a Claim Details.',
       },
       {
+        inputs: [],
+        name: 'url',
+        outputs: [{ internalType: 'string', name: 'The', type: 'string' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's URL.",
+      },
+      {
         inputs: [
           { internalType: 'uint256', name: 'claimId', type: 'uint256' },
           {
@@ -819,6 +1012,14 @@ export const BountyManager = {
         type: 'function',
         description: 'Completes a Bounty by verifying a claim.',
       },
+      {
+        inputs: [],
+        name: 'version',
+        outputs: [{ internalType: 'uint256', name: 'The', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's version.",
+      },
     ],
   },
 } as const
@@ -829,6 +1030,23 @@ export const RebasingFundingManager = {
     version: 'v1.0',
     moduleType: 'fundingManager',
     abi: [
+      { inputs: [], name: 'InvalidAmount', type: 'error' },
+      { inputs: [], name: 'InvalidRecipient', type: 'error' },
+      { inputs: [], name: 'MaxSupplyReached', type: 'error' },
+      {
+        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
+        name: 'Module_OrchestratorCallbackFailed',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'caller', type: 'address' },
+        ],
+        name: 'Module__CallerNotAuthorized',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__CannotCallInit2Again', type: 'error' },
       {
         inputs: [],
         name: 'Module__FundingManager__CannotSelfDeposit',
@@ -843,6 +1061,39 @@ export const RebasingFundingManager = {
         inputs: [],
         name: 'Module__FundingManager__InvalidAddress',
         type: 'error',
+      },
+      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
+      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__NoDependencyOrMalformedDependencyData',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'owner',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'spender',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'value',
+            type: 'uint256',
+          },
+        ],
+        name: 'Approval',
+        type: 'event',
       },
       {
         anonymous: false,
@@ -867,6 +1118,81 @@ export const RebasingFundingManager = {
           },
         ],
         name: 'Deposit',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'parentOrchestrator',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'string',
+            name: 'moduleTitle',
+            type: 'string',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'majorVersion',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'minorVersion',
+            type: 'uint256',
+          },
+        ],
+        name: 'ModuleInitialized',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'epoch',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'newScalar',
+            type: 'uint256',
+          },
+        ],
+        name: 'Rebase',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'from',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'value',
+            type: 'uint256',
+          },
+        ],
+        name: 'Transfer',
         type: 'event',
       },
       {
@@ -914,6 +1240,92 @@ export const RebasingFundingManager = {
         type: 'event',
       },
       {
+        inputs: [],
+        name: 'DOMAIN_SEPARATOR',
+        outputs: [
+          { internalType: 'bytes32', name: 'domainSeparator', type: 'bytes32' },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the EIP-712 domain separator hash.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'owner', type: 'address' },
+          { internalType: 'address', name: 'spender', type: 'address' },
+        ],
+        name: 'allowance',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'allowance',
+            type: 'uint256',
+            tag: 'decimal',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Returns the remaining number of tokens that `spender` will be allowed to spend on behalf of `owner` through {transferFrom}. This is zero by default.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'spender', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tag: 'decimal',
+          },
+        ],
+        name: 'approve',
+        outputs: [{ internalType: 'bool', name: 'success', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          "Sets a `amount` amount of tokens as the allowance of `spender` over the caller's tokens.",
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'balanceOf',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'balance',
+            type: 'uint256',
+            tag: 'decimal',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the amount of tokens owned by `account`.',
+      },
+      {
+        inputs: [],
+        name: 'decimals',
+        outputs: [{ internalType: 'uint8', name: 'decimals', type: 'uint8' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the decimals of the token.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'spender', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'tokens',
+            type: 'uint256',
+            tag: 'decimal',
+          },
+        ],
+        name: 'decreaseAllowance',
+        outputs: [{ internalType: 'bool', name: 'success', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Decreases the amount of tokens that msg.sender has allowed to spender.',
+      },
+      {
         inputs: [
           {
             internalType: 'uint256',
@@ -945,6 +1357,213 @@ export const RebasingFundingManager = {
         description: 'Deposits an amount of the token for an adddress.',
       },
       {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'addr', type: 'address' },
+        ],
+        name: 'grantModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'identifier',
+        outputs: [{ internalType: 'bytes32', name: 'The', type: 'bytes32' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's identifier.",
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'spender', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'tokens',
+            type: 'uint256',
+            tag: 'decimal',
+          },
+        ],
+        name: 'increaseAllowance',
+        outputs: [{ internalType: 'bool', name: 'success', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Increases the amount of tokens that msg.sender has allowed to spender.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'orchestrator',
+            type: 'address',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
+            internalType: 'struct IModule.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+          },
+          { internalType: 'bytes', name: 'configData', type: 'bytes' },
+        ],
+        name: 'init',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: "The module's initializer function.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'orchestrator',
+            type: 'address',
+          },
+          { internalType: 'bytes', name: 'configData', type: 'bytes' },
+        ],
+        name: 'init2',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Second initialization function of the module to take care of dependencies.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'forwarder', type: 'address' },
+        ],
+        name: 'isTrustedForwarder',
+        outputs: [{ internalType: 'bool', name: 'bool', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Checks if the provided address is the trusted forwarder',
+      },
+      {
+        inputs: [],
+        name: 'name',
+        outputs: [{ internalType: 'string', name: 'name', type: 'string' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the name of the token.',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'who', type: 'address' }],
+        name: 'nonces',
+        outputs: [{ internalType: 'uint256', name: 'nonces', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the number of successful permits for an address.',
+      },
+      {
+        inputs: [],
+        name: 'orchestrator',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'The',
+            type: 'address',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          "Returns the module's {IOrchestrator} orchestrator instance.",
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'owner', type: 'address' },
+          { internalType: 'address', name: 'spender', type: 'address' },
+          { internalType: 'uint256', name: 'value', type: 'uint256' },
+          { internalType: 'uint256', name: 'deadline', type: 'uint256' },
+          { internalType: 'uint8', name: 'v', type: 'uint8' },
+          { internalType: 'bytes32', name: 'r', type: 'bytes32' },
+          { internalType: 'bytes32', name: 's', type: 'bytes32' },
+        ],
+        name: 'permit',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Sets the amount of tokens that owner has allowed to spender.',
+      },
+      {
+        inputs: [],
+        name: 'rebase',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Triggers the next rebase, if applicable.',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'addr', type: 'address' },
+        ],
+        name: 'revokeModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'who', type: 'address' }],
+        name: 'scaledBalanceOf',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'scaledBalance',
+            type: 'uint256',
+            tag: 'decimals',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the fixed balance of the specified address.',
+      },
+      {
+        inputs: [],
+        name: 'scaledTotalSupply',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'scaledTotalSupply',
+            type: 'uint256',
+            tag: 'decimals',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the total fixed supply.',
+      },
+      {
+        inputs: [],
+        name: 'symbol',
+        outputs: [{ internalType: 'string', name: 'symbol', type: 'string' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the symbol of the token.',
+      },
+      {
+        inputs: [],
+        name: 'title',
+        outputs: [{ internalType: 'string', name: 'The', type: 'string' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's title.",
+      },
+      {
         inputs: [],
         name: 'token',
         outputs: [
@@ -953,6 +1572,76 @@ export const RebasingFundingManager = {
         stateMutability: 'view',
         type: 'function',
         description: 'Returns the IERC20 token of the funding manager.',
+      },
+      {
+        inputs: [],
+        name: 'totalSupply',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'totalSupply',
+            type: 'uint256',
+            tag: 'decimal',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the amount of tokens in existence.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'to', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tag: 'decimal',
+          },
+        ],
+        name: 'transfer',
+        outputs: [{ internalType: 'bool', name: 'success', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          "Transfers a `amount` amount of tokens from the caller's account to `to`.",
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'to', type: 'address' }],
+        name: 'transferAll',
+        outputs: [{ internalType: 'bool', name: 'success', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          "Transfer all of the sender's balance to a specified address.",
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'from', type: 'address' },
+          { internalType: 'address', name: 'to', type: 'address' },
+        ],
+        name: 'transferAllFrom',
+        outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Transfer all balance tokens from one address to another.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'from', type: 'address' },
+          { internalType: 'address', name: 'to', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tag: 'decimal',
+          },
+        ],
+        name: 'transferFrom',
+        outputs: [{ internalType: 'bool', name: 'success', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          "Moves a `amount` amount of tokens from `from` to `to` using the allowance mechanism. `amount` is then deducted from the caller's allowance.",
       },
       {
         inputs: [
@@ -969,6 +1658,22 @@ export const RebasingFundingManager = {
         stateMutability: 'nonpayable',
         type: 'function',
         description: 'Transfers the orchestrator token to a specific address.',
+      },
+      {
+        inputs: [],
+        name: 'url',
+        outputs: [{ internalType: 'string', name: 'The', type: 'string' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's URL.",
+      },
+      {
+        inputs: [],
+        name: 'version',
+        outputs: [{ internalType: 'uint256', name: 'The', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's version.",
       },
       {
         inputs: [
@@ -1248,7 +1953,7 @@ export const RoleAuthorizer = {
         ],
         name: 'generateRoleId',
         outputs: [{ internalType: 'bytes32', name: 'roleId', type: 'bytes32' }],
-        stateMutability: 'nonpayable',
+        stateMutability: 'pure',
         type: 'function',
         description:
           'Helper function to generate a bytes32 role hash for a module role',
