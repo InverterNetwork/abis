@@ -1,41 +1,35 @@
+import { Abi } from 'abitype'
 import { MethodMetas } from '../types'
 
-function outputName(
-  indexValueArr: (readonly [number, string])[],
-  outputs: any[]
-) {
-  if (!outputs) return
-
-  const updatedOutputs = indexValueArr.map(([index, value]) => {
-    const output = outputs[index]
-    output.name = value
-
-    return output
-  })
-
-  return updatedOutputs
-}
-
-export default function updateAbiOutputs(abi: any[], methodMetas: MethodMetas) {
-  // Update abi outputs with decipher return names
+export default function (abi: Abi, methodMetas: MethodMetas) {
+  // 1- Itterate over the method metas
   for (const method in methodMetas) {
-    const methodMeta = methodMetas[method]
-    const { descriptions } = methodMeta
-    const { returns } = descriptions
-    if (returns) {
-      const indexValueArr = Object.keys(returns).map(
-        (key, index) => [index, key] as const
-      )
+    // 2- Get the method metas -> returnsNames field
+    const methodMeta = methodMetas[method],
+      returnsNames = methodMeta.returnsNames
 
-      const methodIndex = abi.findIndex((item) => item.name === method)
-      if (methodIndex !== -1) {
-        const updatedOutputs = outputName(
-          indexValueArr,
-          abi[methodIndex].outputs
+    // 3- Check if the returnsNames is defined
+    if (!!returnsNames) {
+      // 4- Get the name with index
+      const nameWithIndex = returnsNames.map(
+          (key, index) => [index, key] as const
+        ),
+        // 5- Find the index of the method in the ABI
+        methodIndex = abi.findIndex(
+          (item) => 'name' in item && item.name === method
         )
-        if (updatedOutputs) {
-          abi[methodIndex].outputs = updatedOutputs
-        }
+
+      // 6- Check if the method index is found
+      if (methodIndex !== -1) {
+        // 7- Update the outputs of the method with the nameWithIndex
+        const updatedOutputs = nameWithIndex.map(([index, value]) => {
+          const output = (abi[methodIndex] as any)?.outputs[index]
+          output.name = value
+
+          return output
+        })
+
+        if (updatedOutputs) (abi[methodIndex] as any).outputs = updatedOutputs
       }
     }
   }

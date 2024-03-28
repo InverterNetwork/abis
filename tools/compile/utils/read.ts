@@ -1,6 +1,12 @@
 import fs from 'fs'
 import path from 'path'
 
+/**
+ * Read the files of a directory recursively until hitting a JSON file
+ * @param dirPath The path of the directory
+ * @param callback Call your logic here with the path of the JSON file
+ * @returns void
+ */
 export default function read(
   dirPath: string,
   callback: (itemPath: string) => void

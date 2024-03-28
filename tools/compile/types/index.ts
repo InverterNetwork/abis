@@ -1,4 +1,4 @@
-export type MetadataOutput = Record<string, object>
+export { default as Out } from './out'
 
 export type ModuleMeta = {
   name: any
@@ -8,8 +8,9 @@ export type ModuleMeta = {
 }
 
 export type MethodMeta = {
-  descriptions: Record<string, string | Record<string, string>>
-  tags: Record<string, any>
+  descriptions: Record<string, string>
+  tags: Record<string, string>
+  returnsNames?: string[]
 }
 
 export type MethodMetas = Record<string, MethodMeta>
