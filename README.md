@@ -45,22 +45,12 @@ or
 npm install @inverter-network/abis
 ```
 
-## Adding a new ABI
+## Updating the ABIs
 
-Adding a new ABI:
-
-1. Add the .sol dir or json itseld to the `./in` folder
+1. Update the deployments submodules in the `deployments` directory.
 
 ```bash
-# Dev dev is watch mode build
-
-bun run dev
-```
-
-or
-
-```bash
-bun run bundle
+bun compile
 
 ```
 
@@ -72,9 +62,9 @@ bun run bundle
 2. Merge PR into main
 3. Checkout main
 4. `git pull`
-5. `npm run release`
+5. `bun release`
 6. Make sure everything looks good (e.g. in CHANGELOG.md)
-7. `npm run postRelease`
+7. lastly follow the instructions given by release log
 8. Done
 
 ## Summary
