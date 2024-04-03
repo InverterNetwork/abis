@@ -1,3 +1,184 @@
+export const ERC20 = {
+  'v1.0': {
+    name: 'ERC20',
+    description:
+      ' Interface for the optional metadata functions from the ERC20 standard.\n _Available since v4.1._\n @author OpenZeppelin',
+    version: 'v1.0',
+    moduleType: 'external',
+    abi: [
+      {
+        type: 'function',
+        name: 'allowance',
+        inputs: [
+          { name: 'owner', type: 'address', internalType: 'address' },
+          { name: 'spender', type: 'address', internalType: 'address' },
+        ],
+        outputs: [
+          {
+            name: 'allowance',
+            type: 'uint256',
+            internalType: 'uint256',
+            tag: 'decimals',
+          },
+        ],
+        stateMutability: 'view',
+        description:
+          'Returns the remaining number of tokens that `spender` will be allowed to spend on behalf of `owner` through {transferFrom}. This is zero by default.',
+      },
+      {
+        type: 'function',
+        name: 'approve',
+        inputs: [
+          { name: 'spender', type: 'address', internalType: 'address' },
+          {
+            name: 'value',
+            type: 'uint256',
+            internalType: 'uint256',
+            tag: 'decimals',
+          },
+        ],
+        outputs: [],
+        stateMutability: 'nonpayable',
+        description:
+          "Sets a `value` amount of tokens as the allowance of `spender` over the caller's tokens.",
+      },
+      {
+        type: 'function',
+        name: 'balanceOf',
+        inputs: [{ name: 'account', type: 'address', internalType: 'address' }],
+        outputs: [
+          {
+            name: 'value',
+            type: 'uint256',
+            internalType: 'uint256',
+            tag: 'decimals',
+          },
+        ],
+        stateMutability: 'view',
+        description: 'Returns the value of tokens owned by `account`.',
+      },
+      {
+        type: 'function',
+        name: 'decimals',
+        inputs: [],
+        outputs: [{ name: 'decimals', type: 'uint8', internalType: 'uint8' }],
+        stateMutability: 'view',
+        description: 'Returns the decimals places of the token.',
+      },
+      {
+        type: 'function',
+        name: 'name',
+        inputs: [],
+        outputs: [{ name: 'name', type: 'string', internalType: 'string' }],
+        stateMutability: 'view',
+        description: 'Returns the name of the token.',
+      },
+      {
+        type: 'function',
+        name: 'symbol',
+        inputs: [],
+        outputs: [{ name: 'symbol', type: 'string', internalType: 'string' }],
+        stateMutability: 'view',
+        description: 'Returns the symbol of the token.',
+      },
+      {
+        type: 'function',
+        name: 'totalSupply',
+        inputs: [],
+        outputs: [
+          {
+            name: 'totalSupply',
+            type: 'uint256',
+            internalType: 'uint256',
+            tag: 'decimals',
+          },
+        ],
+        stateMutability: 'view',
+        description: 'Returns the value of tokens in existence.',
+      },
+      {
+        type: 'function',
+        name: 'transfer',
+        inputs: [
+          { name: 'to', type: 'address', internalType: 'address' },
+          { name: 'value', type: 'uint256', internalType: 'uint256' },
+        ],
+        outputs: [{ name: 'boolean', type: 'bool', internalType: 'bool' }],
+        stateMutability: 'nonpayable',
+        description:
+          "Moves a `value` amount of tokens from the caller's account to `to`.",
+      },
+      {
+        type: 'function',
+        name: 'transferFrom',
+        inputs: [
+          { name: 'from', type: 'address', internalType: 'address' },
+          { name: 'to', type: 'address', internalType: 'address' },
+          {
+            name: 'value',
+            type: 'uint256',
+            internalType: 'uint256',
+            tag: 'decimals',
+          },
+        ],
+        outputs: [{ name: 'boolean', type: 'bool', internalType: 'bool' }],
+        stateMutability: 'nonpayable',
+        description:
+          "Moves a `value` amount of tokens from `from` to `to` using the allowance mechanism. `value` is then deducted from the caller's allowance.",
+      },
+      {
+        type: 'event',
+        name: 'Approval',
+        inputs: [
+          {
+            name: 'owner',
+            type: 'address',
+            indexed: true,
+            internalType: 'address',
+          },
+          {
+            name: 'spender',
+            type: 'address',
+            indexed: true,
+            internalType: 'address',
+          },
+          {
+            name: 'value',
+            type: 'uint256',
+            indexed: false,
+            internalType: 'uint256',
+          },
+        ],
+        anonymous: false,
+      },
+      {
+        type: 'event',
+        name: 'Transfer',
+        inputs: [
+          {
+            name: 'from',
+            type: 'address',
+            indexed: true,
+            internalType: 'address',
+          },
+          {
+            name: 'to',
+            type: 'address',
+            indexed: true,
+            internalType: 'address',
+          },
+          {
+            name: 'value',
+            type: 'uint256',
+            indexed: false,
+            internalType: 'uint256',
+          },
+        ],
+        anonymous: false,
+      },
+    ],
+  },
+} as const
 export const BountyManager = {
   'v1.0': {
     name: 'BountyManager',
@@ -207,7 +388,7 @@ export const BountyManager = {
         type: 'function',
         name: 'identifier',
         inputs: [],
-        outputs: [{ name: 'The', type: 'bytes32', internalType: 'bytes32' }],
+        outputs: [{ name: '', type: 'bytes32', internalType: 'bytes32' }],
         stateMutability: 'view',
         description: "Returns the module's identifier.",
       },
@@ -339,11 +520,7 @@ export const BountyManager = {
         name: 'orchestrator',
         inputs: [],
         outputs: [
-          {
-            name: 'The',
-            type: 'address',
-            internalType: 'contract IOrchestrator',
-          },
+          { name: '', type: 'address', internalType: 'contract IOrchestrator' },
         ],
         stateMutability: 'view',
         description:
@@ -406,7 +583,7 @@ export const BountyManager = {
         type: 'function',
         name: 'title',
         inputs: [],
-        outputs: [{ name: 'The', type: 'string', internalType: 'string' }],
+        outputs: [{ name: '', type: 'string', internalType: 'string' }],
         stateMutability: 'view',
         description: "Returns the module's title.",
       },
@@ -460,7 +637,7 @@ export const BountyManager = {
         type: 'function',
         name: 'url',
         inputs: [],
-        outputs: [{ name: 'The', type: 'string', internalType: 'string' }],
+        outputs: [{ name: '', type: 'string', internalType: 'string' }],
         stateMutability: 'view',
         description: "Returns the module's URL.",
       },
@@ -493,8 +670,8 @@ export const BountyManager = {
         name: 'version',
         inputs: [],
         outputs: [
-          { name: 'The', type: 'uint256', internalType: 'uint256' },
-          { name: 'The', type: 'uint256', internalType: 'uint256' },
+          { name: '', type: 'uint256', internalType: 'uint256' },
+          { name: '', type: 'uint256', internalType: 'uint256' },
         ],
         stateMutability: 'view',
         description: "Returns the module's version.",
@@ -1053,8 +1230,8 @@ export const Orchestrator = {
         ],
         name: 'executeTxFromModule',
         outputs: [
-          { internalType: 'bool', name: 'Whether', type: 'bool' },
-          { internalType: 'bytes', name: 'The', type: 'bytes' },
+          { internalType: 'bool', name: '', type: 'bool' },
+          { internalType: 'bytes', name: '', type: 'bytes' },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
@@ -1118,7 +1295,7 @@ export const Orchestrator = {
       {
         inputs: [{ internalType: 'address', name: 'module', type: 'address' }],
         name: 'isModule',
-        outputs: [{ internalType: 'bool', name: 'True', type: 'bool' }],
+        outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
         stateMutability: 'nonpayable',
         type: 'function',
         description: 'Returns whether the address `module` is added as module.',
@@ -1136,9 +1313,7 @@ export const Orchestrator = {
       {
         inputs: [],
         name: 'listModules',
-        outputs: [
-          { internalType: 'address[]', name: 'List', type: 'address[]' },
-        ],
+        outputs: [{ internalType: 'address[]', name: '', type: 'address[]' }],
         stateMutability: 'view',
         type: 'function',
         description: 'Returns the list of all modules.',

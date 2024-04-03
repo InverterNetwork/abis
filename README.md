@@ -64,7 +64,7 @@ bun compile
 4. `git pull`
 5. `bun release`
 6. Make sure everything looks good (e.g. in CHANGELOG.md)
-7. lastly follow the instructions given by release log
+7. Lastly follow the instructions given by release log
 8. Done
 
 ## Summary

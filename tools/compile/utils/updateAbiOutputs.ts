@@ -24,8 +24,7 @@ export default function (abi: Abi, methodMetas: MethodMetas) {
         // 7- Update the outputs of the method with the nameWithIndex
         const updatedOutputs = nameWithIndex.map(([index, value]) => {
           const output = (abi[methodIndex] as any)?.outputs[index]
-          output.name = value
-
+          if (!isCapitalLetter(value[0])) output.name = value
           return output
         })
 
@@ -35,4 +34,8 @@ export default function (abi: Abi, methodMetas: MethodMetas) {
   }
 
   return abi
+}
+
+function isCapitalLetter(letter: string) {
+  return letter === letter.toUpperCase()
 }

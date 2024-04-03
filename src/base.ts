@@ -8,4 +8,4 @@ export type ModuleType =
 
 export type Tuple = { type: 'tuple' | 'tuple[]' }
 
-export type Tags = 'any(string)' | 'decimal'
+export type Tags = 'any' | 'decimals'

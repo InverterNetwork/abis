@@ -1,6 +1,6 @@
 import fs from 'fs'
 
-export default function write(data: Record<string, any>, destPath: string) {
+export default function (data: Record<string, any>, destPath: string) {
   let indexContent = ''
 
   for (const moduleName in data) {

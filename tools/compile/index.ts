@@ -6,7 +6,6 @@ import write from './utils/write'
 import updateAbiOutputs from './utils/updateAbiOutputs'
 import itterate from './utils/itterate'
 import { Out } from './types'
-import { writeLog } from '../utils'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files
@@ -35,8 +34,6 @@ export default function compile() {
       updatedAbi = updateAbiOutputs(abi, methodMetas),
       // 7- Itterate over the updated ABI outputs
       finalAbi = itterate(updatedAbi, methodMetas)
-
-    writeLog(methodMetas, 'MethodMetas-' + name)
 
     // 8- Add the module to the accumulated data
     if (!accumulated[name]) accumulated[name] = {}
