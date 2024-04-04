@@ -1,6 +1,6 @@
 import { getEntries } from '../../utils'
-import { MethodMeta } from '../types'
-import { MethodIdentifiers } from '../types/out'
+import { MethodMeta } from '../../types'
+import { MethodIdentifiers } from '../../types/out'
 import { ValueOf } from 'type-fest'
 
 function handleParamWithTags(param: string) {

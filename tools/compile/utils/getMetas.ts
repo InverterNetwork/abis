@@ -1,5 +1,5 @@
 import { getEntries } from '../../utils'
-import { MethodMetas, Out } from '../types'
+import { MethodMetas, Out } from '../../types'
 import formatMethodMeta from './formatMethodMeta'
 
 function module(astNodes: Out['ast']['nodes'], itemPath: string) {

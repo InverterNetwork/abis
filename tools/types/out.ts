@@ -18,17 +18,19 @@ type Bytecode = {
 type Metadata = {
   compiler: { version: string }
   language: string
-  output: { abi: Abi; devdoc: Doc; userdoc: Doc }
+  output: { abi: Abi; devdoc: DocBase; userdoc: DocBase }
   settings: Settings
   sources: Sources
   version: number
 }
 
-type Doc = {
+type DocBase = {
   kind: string
   methods: MethodIdentifiers
   version: number
 }
+
+type ParsedDoc = DocBase & { events: MethodIdentifiers }
 
 type Settings = {
   remappings: string[]
@@ -111,6 +113,15 @@ type Ast = {
   src: string
   nodes: Node[]
   license: string
+}
+
+export type ParsedRawMetadata = {
+  compiler: { version: string }
+  language: string
+  output: { abi: Abi; devdoc: ParsedDoc; userdoc: ParsedDoc }
+  settings: Settings
+  sources: Sources
+  version: number
 }
 
 export default interface Root {

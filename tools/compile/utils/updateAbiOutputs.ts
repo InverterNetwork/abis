@@ -1,5 +1,5 @@
 import { Abi } from 'abitype'
-import { MethodMetas } from '../types'
+import { MethodMetas } from '../../types'
 
 export default function (abi: Abi, methodMetas: MethodMetas) {
   // 1- Itterate over the method metas

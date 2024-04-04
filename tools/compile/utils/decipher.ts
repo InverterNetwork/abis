@@ -1,5 +1,5 @@
 import { AbiParameter } from 'abitype'
-import { MethodMeta } from '../types'
+import { MethodMeta } from '../../types'
 
 export default function decipher(
   variant: 'input' | 'output',

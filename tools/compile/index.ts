@@ -1,11 +1,11 @@
 import fs from 'fs'
 import path from 'path'
 import getMetas from './utils/getMetas'
-import read from './utils/read'
+import readJson from '../utils/readJson'
 import write from './utils/write'
 import updateAbiOutputs from './utils/updateAbiOutputs'
 import itterate from './utils/itterate'
-import { Out } from './types'
+import { Out } from '../types'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files
@@ -18,7 +18,7 @@ export default function compile() {
   const accumulated = {} as Record<string, Record<string, any>>
 
   // 2- Read the directory recursively
-  read(inPath, (itemPath: string) => {
+  readJson(inPath, (itemPath: string) => {
     // 3- Parse the file content of the JSON file
     const { abi, ast, metadata }: Out = JSON.parse(
         fs.readFileSync(itemPath, 'utf8')

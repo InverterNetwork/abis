@@ -61,6 +61,7 @@
     "access": "public"
   },
   "scripts": {
+    "prep:configs": "bun tools/prep/configs/index.ts && prettier --write ./deployments > /dev/null 2>&1",
     "compile": "bun tools/compile/index.ts && prettier --write ./src/data.ts",
     "watch": "tsc -w -p ./tsconfig.json",
     "build": "bun clean && tsc -p ./tsconfig.json && tsc -p ./tsconfig.cjs.json",

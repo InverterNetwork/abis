@@ -1,4 +1,4 @@
-import { MethodMetas } from '../types'
+import { MethodMetas } from '../../types'
 import decipher from './decipher'
 import { Abi } from 'abitype'
 

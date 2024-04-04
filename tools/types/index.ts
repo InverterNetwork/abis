@@ -1,4 +1,6 @@
 export { default as Out } from './out'
+export * from './config'
+export * from './out'
 
 export type ModuleMeta = {
   name: any
