@@ -1,10 +1,10 @@
 import { AbiParameter } from 'abitype'
-import { MethodMeta } from '../../types'
+import { AbiMemberMeta } from '../../types'
 
 export default function decipher(
   variant: 'input' | 'output',
   inputOrOutput: AbiParameter,
-  methodMeta: MethodMeta
+  methodMeta: AbiMemberMeta
 ) {
   const { descriptions, tags } = methodMeta
 

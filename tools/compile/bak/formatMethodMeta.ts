@@ -1,7 +1,8 @@
 import { getEntries } from '../../utils'
-import { MethodMeta } from '../../types'
+import { AbiMemberMeta, Tags } from '../../types'
 import { MethodIdentifiers } from '../../types/out'
 import { ValueOf } from 'type-fest'
+import { Tag } from '../../../src/base'
 
 function handleParamWithTags(param: string) {
   // 1- Get the parts of the param
@@ -14,12 +15,12 @@ function handleParamWithTags(param: string) {
     .map((tag) => tag.trim())
 
   // 3- Setup the tags object
-  const tagsObject = {} as Record<string, string>
+  const tagsObject = {} as Tags
 
   // 4- Itterate over the tags
   for (const tag of tags) {
     // 5- Split the tag into key and value
-    const [key, value] = tag.split(':')
+    const [key, value] = tag.split(':') as [string, Tag]
 
     // 6- Add the key and value to the tags object
     tagsObject[key] = value
@@ -33,7 +34,7 @@ function handleParamObject(obj: Record<string, string>) {
   const accumulated = {
     descriptions: {},
     tags: {},
-  } as MethodMeta
+  } as AbiMemberMeta
 
   // 1- Get the entries of the object
   const entries = getEntries(obj)
@@ -74,7 +75,7 @@ export default function (items: ValueOf<MethodIdentifiers>) {
     descriptions: {},
     tags: {},
     returnsNames: [],
-  } as MethodMeta
+  } as AbiMemberMeta
 
   for (const [key, value] of getEntries(items)) {
     switch (key) {

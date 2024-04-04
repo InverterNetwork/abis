@@ -1,8 +1,8 @@
-import { MethodMetas } from '../../types'
+import { AbiMemberMetas } from '../../types'
 import decipher from './decipher'
 import { Abi } from 'abitype'
 
-export default function (abi: Abi, methodMetas: MethodMetas) {
+export default function (abi: Abi, methodMetas: AbiMemberMetas) {
   return abi.map((item) => {
     if ('name' in item && !!methodMetas[item.name]) {
       return {

@@ -1,7 +1,7 @@
 import { Abi } from 'abitype'
-import { MethodMetas } from '../../types'
+import { AbiMemberMetas } from '../types'
 
-export default function (abi: Abi, methodMetas: MethodMetas) {
+export default function (abi: Abi, methodMetas: AbiMemberMetas) {
   // 1- Itterate over the method metas
   for (const method in methodMetas) {
     // 2- Get the method metas -> returnsNames field

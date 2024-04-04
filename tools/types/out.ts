@@ -3,7 +3,7 @@ import { Abi } from 'abitype'
 type LinkReferences = Record<string, unknown>
 export type MethodIdentifiers = Record<
   string,
-  | Record<string, string>
+  | { notice: string }
   | { returns: Record<string, string> }
   | { params: Record<string, string> }
 >
@@ -30,7 +30,8 @@ type DocBase = {
   version: number
 }
 
-type ParsedDoc = DocBase & { events: MethodIdentifiers }
+type ParsedDevDoc = DocBase & { events: MethodIdentifiers }
+type ParsedUserDoc = DocBase & { events: MethodIdentifiers; notice?: string }
 
 type Settings = {
   remappings: string[]
@@ -118,7 +119,7 @@ type Ast = {
 export type ParsedRawMetadata = {
   compiler: { version: string }
   language: string
-  output: { abi: Abi; devdoc: ParsedDoc; userdoc: ParsedDoc }
+  output: { abi: Abi; devdoc: ParsedDevDoc; userdoc: ParsedUserDoc }
   settings: Settings
   sources: Sources
   version: number

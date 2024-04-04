@@ -1,5 +1,5 @@
 import { getEntries } from '../../utils'
-import { MethodMetas, Out } from '../../types'
+import { AbiMemberMetas, Out } from '../../types'
 import formatMethodMeta from './formatMethodMeta'
 
 function module(astNodes: Out['ast']['nodes'], itemPath: string) {
@@ -17,7 +17,7 @@ function module(astNodes: Out['ast']['nodes'], itemPath: string) {
 }
 
 function method({ devdoc, userdoc }: Out['metadata']['output']) {
-  const accumulated = {} as MethodMetas
+  const accumulated = {} as AbiMemberMetas
 
   // 1- initialize the accumulation with the userdoc
   for (const [key, value] of getEntries(userdoc.methods)) {

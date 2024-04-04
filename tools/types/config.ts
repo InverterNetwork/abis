@@ -1,11 +1,24 @@
+import { Tag } from '../../src/base'
+
+export type DeploymentArgData = {
+  name: string
+  type: string
+}
+
+export type DeploymentArgs = {
+  configData?: DeploymentArgData[]
+  dependencyData?: DeploymentArgData[]
+}
+
+export type AbiMemberConfig = {
+  tags: Record<string, Tag>
+  returnsNames: string[]
+}
+
+export type AbiMemberConfigs = Record<string, AbiMemberConfig>
+
 export type Config =
   | {
-      deploymentArgs: { configData: object[]; dependencyData: object[] }
+      deploymentArgs: DeploymentArgs
     }
-  | Record<
-      string,
-      {
-        tags: Record<string, import('../../src/base').Tags>
-        returnsNames: string[]
-      }
-    >
+  | AbiMemberConfigs

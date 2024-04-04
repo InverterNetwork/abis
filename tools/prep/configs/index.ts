@@ -3,7 +3,8 @@ import path from 'path'
 import getMetas from './getMetas'
 import readJson from '../../utils/readJson'
 import write from './write'
-import { Config, Out, ParsedRawMetadata } from '../../types'
+import { Config } from '../../types'
+import getParsedRawMetadata from '../../utils/getParsedRawMetadata'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files
@@ -20,19 +21,17 @@ export default function prep() {
       // 3- If the configPath file exists, skip the file
       if (fs.existsSync(configPath)) return
 
-      // 4- Parse the file content of the JSON file
-      const { rawMetadata }: Out = JSON.parse(fs.readFileSync(itemPath, 'utf8'))
-
-      // 5- Parse the raw metadata and get the event and method names
-      const parsedRawMetadata: ParsedRawMetadata = JSON.parse(rawMetadata),
+      // 4- Parse the raw metadata and get the event and method names
+      const parsedRawMetadata = getParsedRawMetadata(itemPath),
         eventNames = getMetas.eventNames(
           parsedRawMetadata.output.userdoc.events
         ),
         methodNames = getMetas.methodNames(
           parsedRawMetadata.output.userdoc.methods
-        )
+        ),
+        returnsNames = getMetas.returnNames(parsedRawMetadata.output)
 
-      // 6- Create a new object with the event and method names + the config fields
+      // 5- Create a new object with the event and method names + the config fields
       const data: Config = {
         deploymentArgs: {
           configData: [],
@@ -41,7 +40,7 @@ export default function prep() {
         ...eventNames.concat(methodNames).reduce((acc, name: string) => {
           acc[name] = {
             tags: {},
-            returnsNames: [],
+            returnsNames: returnsNames[name] || [],
           }
           return acc
         }, {}),

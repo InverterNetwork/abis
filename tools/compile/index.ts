@@ -1,11 +1,10 @@
-import fs from 'fs'
 import path from 'path'
-import getMetas from './utils/getMetas'
+import write from './write'
+import updateAbiOutputs from './updateAbiOutputs'
 import readJson from '../utils/readJson'
-import write from './utils/write'
-import updateAbiOutputs from './utils/updateAbiOutputs'
-import itterate from './utils/itterate'
-import { Out } from '../types'
+import getParsedRawMetadata from '../utils/getParsedRawMetadata'
+import { Compiled } from '../types'
+import constructAbiMeta from './constructAbiMeta'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files
@@ -15,23 +14,20 @@ const dirname = import.meta.dirname,
 
 export default function compile() {
   // 1- Initialize the accumulated data
-  const accumulated = {} as Record<string, Record<string, any>>
+  const accumulated = {} as Compiled
 
   // 2- Read the directory recursively
   readJson(inPath, (itemPath: string) => {
-    // 3- Parse the file content of the JSON file
-    const { abi, ast, metadata }: Out = JSON.parse(
-        fs.readFileSync(itemPath, 'utf8')
+    // 3- Parse the raw metadata
+    const parsedMetadata = getParsedRawMetadata(itemPath),
+      // 4- Get ABI metadata
+      { abiMemberMetas, moduleMeta, deploymentArgs } = constructAbiMeta(
+        itemPath,
+        parsedMetadata
       ),
-      // 4- Get the module meta data
-      { description, moduleType, name, version } = getMetas.module(
-        ast.nodes,
-        itemPath
-      ),
-      // 5- Get an object containing the method metas
-      methodMetas = getMetas.method(metadata.output),
+      { name, description, version, moduleType } = moduleMeta,
       // 6- Update the ABI outputs
-      updatedAbi = updateAbiOutputs(abi, methodMetas),
+      updatedAbi = updateAbiOutputs(parsedMetadata.output.abi, abiMemberMetas),
       // 7- Itterate over the updated ABI outputs
       finalAbi = itterate(updatedAbi, methodMetas)
 
@@ -42,6 +38,7 @@ export default function compile() {
       description,
       version,
       moduleType,
+      deploymentArgs,
       abi: finalAbi,
     }
   })
