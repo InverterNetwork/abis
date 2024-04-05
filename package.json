@@ -63,7 +63,7 @@
   "scripts": {
     "prep:configs": "bun tools/prep/configs/index.ts && prettier --write ./deployments > /dev/null 2>&1",
     "compile": "bun tools/compile/index.ts && prettier --write ./src/data.ts",
-    "watch": "tsc -w -p ./tsconfig.json",
+    "watch": "tsc -w -p ./tsconfig.dev.json",
     "build": "bun clean && tsc -p ./tsconfig.json && tsc -p ./tsconfig.cjs.json",
     "clean": "rm -rf dist tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
     "postinstall": "husky",

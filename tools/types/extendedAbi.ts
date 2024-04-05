@@ -27,7 +27,9 @@ export type ExtendedAbi = (
   | AbiConstructor
   | AbiError
   | ExtendedAbiEvent
+  | AbiEvent
   | AbiFallback
   | ExtendedAbiFunction
+  | AbiFunction
   | AbiReceive
 )[]

@@ -17,8 +17,7 @@ export type AbiMemberConfig = {
 
 export type AbiMemberConfigs = Record<string, AbiMemberConfig>
 
-export type Config =
-  | {
-      deploymentArgs: DeploymentArgs
-    }
-  | AbiMemberConfigs
+export type Config = {
+  deploymentArgs: DeploymentArgs
+  abiMembers: AbiMemberConfigs
+}

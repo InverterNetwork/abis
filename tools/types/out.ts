@@ -3,9 +3,11 @@ import { Abi } from 'abitype'
 type LinkReferences = Record<string, unknown>
 export type MethodIdentifiers = Record<
   string,
-  | { notice: string }
-  | { returns: Record<string, string> }
-  | { params: Record<string, string> }
+  {
+    notice?: string
+    returns?: Record<string, string>
+    params?: Record<string, string>
+  }
 >
 type ExportedSymbols = Record<string, number[]>
 

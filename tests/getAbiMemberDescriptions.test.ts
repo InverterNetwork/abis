@@ -4,6 +4,7 @@ import getParsedRawMetadata from '../tools/utils/getParsedRawMetadata'
 import writeLog from '../tools/utils/writeLog'
 import path from 'path'
 import readJson from '../tools/utils/readJson'
+import getParsedConfig from '../tools/utils/getParsedConfig'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files
@@ -14,9 +15,9 @@ describe('Member Desc Objs', () => {
     readJson(
       inPath,
       (itemPath: string) => {
-        // console.log('itemPath:', itemPath)
         const parsed = getParsedRawMetadata(itemPath)
-        const res = getAbiMemberDescriptions(parsed.output)
+        const config = getParsedConfig(itemPath)
+        const res = getAbiMemberDescriptions(parsed.output, config.abiMembers)
         const id = itemPath.split('/v1.0')[0].split('/').pop()
         writeLog(res, id)
       },

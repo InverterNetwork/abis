@@ -1,24 +1,25 @@
-import { ParsedRawMetadata } from '../types'
+import {
+  AbiMemberConfigs,
+  AbiMemberDescriptions,
+  ParsedRawMetadata,
+} from '../types'
 import { getEntries } from '.'
 
-export default function (output: ParsedRawMetadata['output']) {
-  const accumulated = {} as Record<
-    string,
-    {
-      name: 'selfDescription' | string
-      description: string
-    }[]
-  >
+export default function (
+  output: ParsedRawMetadata['output'],
+  abiMemberConfigs: AbiMemberConfigs
+) {
+  const acc = {} as AbiMemberDescriptions
 
   // Get method and event descriptions
   for (const field of ['methods', 'events'] as const) {
     for (const [key, value] of getEntries(output.userdoc[field] || [])) {
       const name = String(key).split('(')[0]
       let description = ''
-      if ('notice' in value) description = toSingleSpace(value.notice)
+      if ('notice' in value) description = toSingleSpace(value?.notice || '')
 
-      if (!accumulated[name]) accumulated[name] = []
-      accumulated[name].push({ name: 'selfDescription', description })
+      if (!acc[name]) acc[name] = []
+      acc[name].push({ name: 'selfDescription', description })
     }
   }
 
@@ -27,21 +28,28 @@ export default function (output: ParsedRawMetadata['output']) {
     for (const [key, value] of getEntries(output.devdoc[field] || [])) {
       const name = String(key).split('(')[0]
 
-      if (!accumulated[name]) accumulated[name] = []
+      if (!acc[name]) acc[name] = []
 
       for (const type of ['params', 'returns'] as const) {
-        if (type in value)
-          getEntries(value[type]).forEach(([key, value]) => {
-            accumulated[name].push({
+        if (type in value) {
+          getEntries(value[type]!).forEach(([key, value], index) => {
+            // if the type is returns, replace the key with the returnsNames
+            // this is to handle the case where the return value has been renamed
+            // in the config file by the maintainers
+            if (type === 'returns')
+              key = abiMemberConfigs[name].returnsNames[index]
+
+            acc[name].push({
               name: key,
               description: toSingleSpace(value),
             })
           })
+        }
       }
     }
   }
 
-  return accumulated
+  return acc
 }
 
 const toSingleSpace = (str: string) => str.replace(/\s+/g, ' ').trim()

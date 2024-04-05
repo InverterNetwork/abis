@@ -3,8 +3,10 @@ import path from 'path'
 import getMetas from '../../utils/getMetas'
 import readJson from '../../utils/readJson'
 import write from './write'
-import { Config } from '../../types'
+import { AbiMemberConfigs, Config, Tags } from '../../types'
 import getParsedRawMetadata from '../../utils/getParsedRawMetadata'
+import { getConfigPath } from '../../utils/getParsedConfig'
+import { Tag } from '../../../src/base'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files
@@ -16,34 +18,39 @@ export default function prep() {
     inPath,
     (itemPath: string) => {
       // 2- Get the path of the _config.json file
-      const configPath = itemPath.replace('.json', '_config.json')
+      const configPath = getConfigPath(itemPath)
 
       // 3- If the configPath file exists, skip the file
       if (fs.existsSync(configPath)) return
 
       // 4- Parse the raw metadata and get the event and method names
       const parsedRawMetadata = getParsedRawMetadata(itemPath),
-        eventNames = getMetas.eventNames(
-          parsedRawMetadata.output.userdoc.events
+        { abiMemberNames, returnsNames } = getMetas.combinedNames(
+          parsedRawMetadata.output
         ),
-        methodNames = getMetas.methodNames(
-          parsedRawMetadata.output.userdoc.methods
-        ),
-        returnsNames = getMetas.returnNames(parsedRawMetadata.output)
+        // 5- Get the parameter names
+        parameterNames = getMetas.parameterNames(parsedRawMetadata.output),
+        // 6- Create a function that returns an object with the default tags
+        getDefaultTags = (name: string) =>
+          parameterNames[name].reduce((acc, name) => {
+            acc[name] = '' as Tag
+            return acc
+          }, {} as Tags)
 
-      // 5- Create a new object with the event and method names + the config fields
+      // 7- Create a new object with the event and method names + the config fields
       const data: Config = {
         deploymentArgs: {
           configData: [],
           dependencyData: [],
         },
-        ...eventNames.concat(methodNames).reduce((acc, name: string) => {
+        abiMembers: abiMemberNames.reduce((acc, name: string) => {
+          const defaultTags = getDefaultTags(name)
           acc[name] = {
-            tags: {},
+            tags: defaultTags,
             returnsNames: returnsNames[name] || [],
           }
           return acc
-        }, {}),
+        }, {} as AbiMemberConfigs),
       }
 
       // 7- Write the data to the configPath file
