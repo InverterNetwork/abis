@@ -1,8 +1,8 @@
-import { ParsedRawMetadata } from '../../types'
-import { getEntries } from '../../utils'
+import { ParsedRawMetadata } from '../types'
+import { getEntries } from '.'
 
 const eventNames = (events: ParsedRawMetadata['output']['userdoc']['events']) =>
-  Object.keys(events).map((key) => key.split('(')[0])
+  Object.keys(events || []).map((key) => key.split('(')[0])
 
 const methodNames = (
   methods: ParsedRawMetadata['output']['userdoc']['methods']
@@ -12,8 +12,8 @@ const returnNames = (output: ParsedRawMetadata['output']) => {
   const acc = {} as Record<string, string[]>
   // Get the return and parameter descriptions
   for (const field of ['events', 'methods'] as const) {
-    for (const [key, value] of getEntries(output.devdoc[field])) {
-      const name = key.split('(')[0]
+    for (const [key, value] of getEntries(output.devdoc[field] || [])) {
+      const name = String(key).split('(')[0]
 
       if ('returns' in value) acc[name] = Object.keys(value['returns'])
     }
@@ -22,8 +22,16 @@ const returnNames = (output: ParsedRawMetadata['output']) => {
   return acc
 }
 
+const combinedNames = ({ output }: ParsedRawMetadata) => ({
+  abiMemberNames: eventNames(output.userdoc.events).concat(
+    methodNames(output.userdoc.methods)
+  ),
+  returnNames: returnNames(output),
+})
+
 export default {
   eventNames,
   methodNames,
   returnNames,
+  combinedNames,
 }

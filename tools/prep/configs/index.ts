@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import getMetas from './getMetas'
+import getMetas from '../../utils/getMetas'
 import readJson from '../../utils/readJson'
 import write from './write'
 import { Config } from '../../types'

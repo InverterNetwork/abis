@@ -12,8 +12,8 @@ export default function (output: ParsedRawMetadata['output']) {
 
   // Get method and event descriptions
   for (const field of ['methods', 'events'] as const) {
-    for (const [key, value] of getEntries(output.userdoc[field])) {
-      const name = key.split('(')[0]
+    for (const [key, value] of getEntries(output.userdoc[field] || [])) {
+      const name = String(key).split('(')[0]
       let description = ''
       if ('notice' in value) description = toSingleSpace(value.notice)
 
@@ -24,8 +24,8 @@ export default function (output: ParsedRawMetadata['output']) {
 
   // Get the return and parameter descriptions
   for (const field of ['events', 'methods'] as const) {
-    for (const [key, value] of getEntries(output.devdoc[field])) {
-      const name = key.split('(')[0]
+    for (const [key, value] of getEntries(output.devdoc[field] || [])) {
+      const name = String(key).split('(')[0]
 
       if (!accumulated[name]) accumulated[name] = []
 

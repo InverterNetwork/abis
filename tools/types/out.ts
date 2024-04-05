@@ -30,8 +30,8 @@ type DocBase = {
   version: number
 }
 
-type ParsedDevDoc = DocBase & { events: MethodIdentifiers }
-type ParsedUserDoc = DocBase & { events: MethodIdentifiers; notice?: string }
+type ParsedDevDoc = DocBase & { events?: MethodIdentifiers }
+type ParsedUserDoc = DocBase & { events?: MethodIdentifiers; notice?: string }
 
 type Settings = {
   remappings: string[]
