@@ -4,7 +4,7 @@ import updateAbiOutputNames from './updateAbiOutputNames'
 import readJson from '../utils/readJson'
 import getParsedRawMetadata from '../utils/getParsedRawMetadata'
 import { Compiled } from '../types'
-import constructAbiMeta from './constructAbiMeta'
+import constructAbiMeta from '../utils/constructAbiMeta'
 import extendAbi from './extendAbi'
 
 const dirname = import.meta.dirname,

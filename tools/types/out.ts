@@ -5,6 +5,7 @@ export type MethodIdentifiers = Record<
   string,
   {
     notice?: string
+    details?: string
     returns?: Record<string, string>
     params?: Record<string, string>
   }

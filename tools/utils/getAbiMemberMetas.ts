@@ -4,7 +4,7 @@ import {
   AbiMeta,
   ParsedRawMetadata,
 } from '../types'
-import getAbiMemberDescriptions from '../utils/getAbiMemberDescriptions'
+import getAbiMemberDescriptions from './getAbiMemberDescriptions'
 
 export default function (
   output: ParsedRawMetadata['output'],

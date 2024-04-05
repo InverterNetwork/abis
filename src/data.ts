@@ -26,10 +26,14 @@ export const ERC20 = {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
+            tag: 'decimals',
           },
         ],
         name: 'Approval',
         type: 'event',
+        outputs: [],
+        description:
+          'Emitted when the allowance of a `spender` for an `owner` is set by a call to {approve}. `amount` is the new allowance.',
       },
       {
         anonymous: false,
@@ -55,6 +59,9 @@ export const ERC20 = {
         ],
         name: 'Transfer',
         type: 'event',
+        outputs: [],
+        description:
+          'Emitted when `amount` tokens are moved from one account (`from`) to another (`to`). Note that `amount` may be zero.',
       },
       {
         inputs: [
@@ -191,9 +198,8 @@ export const ERC20 = {
         outputs: [
           {
             internalType: 'uint256',
-            name: 'totalSupply',
+            name: '_0',
             type: 'uint256',
-            tag: 'decimals',
             description: 'totalSupply The total amount of tokens.',
           },
         ],
@@ -2419,6 +2425,9 @@ export const RoleAuthorizer = {
         ],
         name: 'RoleAdminChanged',
         type: 'event',
+        outputs: [],
+        description:
+          "Emitted when `newAdminRole` is set as ``role``'s admin role, replacing `previousAdminRole` `DEFAULT_ADMIN_ROLE` is the starting admin for all roles, despite {RoleAdminChanged} not being emitted signaling this.",
       },
       {
         anonymous: false,
@@ -2444,6 +2453,9 @@ export const RoleAuthorizer = {
         ],
         name: 'RoleGranted',
         type: 'event',
+        outputs: [],
+        description:
+          'Emitted when `account` is granted `role`. `sender` is the account that originated the contract call, an admin role bearer except when using {AccessControl-_setupRole}.',
       },
       {
         anonymous: false,
@@ -2469,6 +2481,9 @@ export const RoleAuthorizer = {
         ],
         name: 'RoleRevoked',
         type: 'event',
+        outputs: [],
+        description:
+          'Emitted when `account` is revoked `role`. `sender` is the account that originated the contract call: - if using `revokeRole`, it is the admin role bearer - if using `renounceRole`, it is the role bearer (i.e. `account`)',
       },
       {
         inputs: [

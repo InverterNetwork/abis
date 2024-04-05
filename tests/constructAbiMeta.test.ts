@@ -3,7 +3,7 @@ import getParsedRawMetadata from '../tools/utils/getParsedRawMetadata'
 import writeLog from '../tools/utils/writeLog'
 import path from 'path'
 import readJson from '../tools/utils/readJson'
-import constructAbiMeta from '../tools/compile/constructAbiMeta'
+import constructAbiMeta from '../tools/utils/constructAbiMeta'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files

@@ -13,10 +13,14 @@ export default function (
 
   // Get method and event descriptions
   for (const field of ['methods', 'events'] as const) {
-    for (const [key, value] of getEntries(output.userdoc[field] || [])) {
+    for (const [key, value] of getEntries(
+      output.userdoc[field] || output.devdoc[field] || []
+    )) {
       const name = String(key).split('(')[0]
       let description = ''
       if ('notice' in value) description = toSingleSpace(value?.notice || '')
+      else if ('details' in value)
+        description = toSingleSpace(value?.details || '')
 
       if (!acc[name]) acc[name] = []
       acc[name].push({ name: 'selfDescription', description })

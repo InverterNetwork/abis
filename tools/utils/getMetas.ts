@@ -2,12 +2,15 @@ import { ParsedRawMetadata } from '../types'
 import { getEntries } from '.'
 import { AbiEventParameter, AbiParameter } from 'abitype'
 
-const eventNames = (events: ParsedRawMetadata['output']['userdoc']['events']) =>
-  Object.keys(events || []).map((key) => key.split('(')[0])
+const eventNames = (output: ParsedRawMetadata['output']) =>
+  Object.keys(output.userdoc.events || output.devdoc.events || []).map(
+    (key) => key.split('(')[0]
+  )
 
-const methodNames = (
-  methods: ParsedRawMetadata['output']['userdoc']['methods']
-) => Object.keys(methods).map((key) => key.split('(')[0])
+const methodNames = (output: ParsedRawMetadata['output']) =>
+  Object.keys(output.userdoc.methods || output.devdoc.methods || []).map(
+    (key) => key.split('(')[0]
+  )
 
 const returnNames = (output: ParsedRawMetadata['output']) => {
   const acc = {} as Record<string, string[]>
@@ -24,9 +27,7 @@ const returnNames = (output: ParsedRawMetadata['output']) => {
 }
 
 const combinedNames = (output: ParsedRawMetadata['output']) => ({
-  abiMemberNames: eventNames(output.userdoc.events).concat(
-    methodNames(output.userdoc.methods)
-  ),
+  abiMemberNames: eventNames(output).concat(methodNames(output)),
   returnsNames: returnNames(output),
 })
 

@@ -1,7 +1,7 @@
 import { DeploymentArgs, ParsedRawMetadata } from '../types'
 import { AbiMeta } from '../types/meta'
-import getParsedConfig from '../utils/getParsedConfig'
-import getModuleDetails from '../utils/getModuleDetails'
+import getParsedConfig from './getParsedConfig'
+import getModuleDetails from './getModuleDetails'
 import getAbiMemberMetas from './getAbiMemberMetas'
 
 export default function (
