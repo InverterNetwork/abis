@@ -57,13 +57,14 @@ const parameterNames = (abi: Abi) => {
     if ('name' in entry) {
       // First, check if the entry has a name that is in the list of abiMemberNames
       if (combinedData.abiMemberNames.includes(entry.name)) {
-        let nameArr: string[]
-
-        if ('outputs' in entry) nameArr = getFlatParameterNames(entry.outputs)
+        let nameArr: string[] = []
 
         nameArr = getFlatParameterNames(entry.inputs)
           .concat(combinedData.returnNames[entry.name])
           .filter((name): name is string => !!name && name !== '')
+
+        if ('outputs' in entry)
+          nameArr = nameArr.concat(getFlatParameterNames(entry.outputs))
 
         acc[entry.name] = nameArr
       }

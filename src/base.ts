@@ -5,6 +5,9 @@ export type ModuleType =
   | 'fundingManager'
   | 'orchestrator'
   | 'external'
+  | 'factories'
+  | 'base'
+  | 'utils'
 
 export type Tuple = { type: 'tuple' | 'tuple[]' }
 
