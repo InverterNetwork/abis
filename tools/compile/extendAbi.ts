@@ -13,9 +13,11 @@ export default function (
   return abi.map((item) => {
     if ('name' in item && !!abiMemberMetas[item.name]) {
       const name = item.name
+      const description =
+        abiMemberMetas[name]?.descriptions?.['selfDescription']
       return {
         ...item,
-        description: abiMemberMetas[name].descriptions['selfDescription'],
+        ...(description && { description }),
         inputs: item.inputs.map((input) => extend(input, abiMemberMetas[name])),
         ...('outputs' in item && {
           outputs: item.outputs.map((output) =>

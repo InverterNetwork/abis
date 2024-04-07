@@ -14,7 +14,7 @@ export type ModuleMeta = {
 export type AbiMemberMeta = {
   descriptions: Descriptions
   tags: Tags
-  returnsNames?: string[]
+  returnNames?: string[]
 }
 
 export type AbiMemberMetas = Record<string, AbiMemberMeta>

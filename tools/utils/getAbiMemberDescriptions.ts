@@ -37,11 +37,11 @@ export default function (
       for (const type of ['params', 'returns'] as const) {
         if (type in value) {
           getEntries(value[type]!).forEach(([key, value], index) => {
-            // if the type is returns, replace the key with the returnsNames
+            // if the type is returns, replace the key with the returnNames
             // this is to handle the case where the return value has been renamed
             // in the config file by the maintainers
             if (type === 'returns')
-              key = abiMemberConfigs[name].returnsNames[index]
+              key = abiMemberConfigs[name].returnNames[index]
 
             acc[name].push({
               name: key,

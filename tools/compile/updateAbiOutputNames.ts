@@ -4,12 +4,12 @@ import { AbiMemberMetas } from '../types'
 export default function (abi: Abi, abiMemberMetas: AbiMemberMetas) {
   // 1- Itterate over the member metas
   for (const member in abiMemberMetas) {
-    // 2- Get the member metas -> returnsNames field
-    const { returnsNames } = abiMemberMetas[member]
-    // 3- Check if the returnsNames is defined
-    if (!!returnsNames) {
+    // 2- Get the member metas -> returnNames field
+    const { returnNames } = abiMemberMetas[member]
+    // 3- Check if the returnNames is defined
+    if (!!returnNames) {
       // 4- Map the { name with index }
-      const nameWithIndexArr = returnsNames.map(
+      const nameWithIndexArr = returnNames.map(
           (name, index) => ({ index, name }) as const
         ),
         // 5- Find the index of the member in the ABI

@@ -12,7 +12,7 @@ export type DeploymentArgs = {
 
 export type AbiMemberConfig = {
   tags: Record<string, Tag>
-  returnsNames: string[]
+  returnNames: string[]
 }
 
 export type AbiMemberConfigs = Record<string, AbiMemberConfig>

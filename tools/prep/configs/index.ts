@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import getMetas from '../../utils/getMetas'
-import readJson from '../../utils/readJson'
+import readPath from '../../utils/readPath'
 import write from './write'
 import { AbiMemberConfigs, Config, Tags } from '../../types'
 import getParsedRawMetadata from '../../utils/getParsedRawMetadata'
@@ -10,12 +10,12 @@ import { Tag } from '../../../src/base'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files
-  inPath = path.join(dirname, '../../../deployments/build')
+  startPath = path.join(dirname, '../../../deployments/build')
 
 export default function prep() {
   // 1- Read the directory recursively
-  readJson(
-    inPath,
+  readPath(
+    { startPath, extName: 'json', exclude: '_config' },
     (itemPath: string) => {
       // 2- Get the path of the _config.json file
       const configPath = getConfigPath(itemPath)
@@ -25,11 +25,11 @@ export default function prep() {
 
       // 4- Parse the raw metadata and get the event and method names
       const parsedRawMetadata = getParsedRawMetadata(itemPath),
-        { abiMemberNames, returnsNames } = getMetas.combinedNames(
-          parsedRawMetadata.output
+        { abiMemberNames, returnNames } = getMetas.combinedNames(
+          parsedRawMetadata.output.abi
         ),
         // 5- Get the parameter names
-        parameterNames = getMetas.parameterNames(parsedRawMetadata.output),
+        parameterNames = getMetas.parameterNames(parsedRawMetadata.output.abi),
         // 6- Create a function that returns an object with the default tags
         getDefaultTags = (name: string) =>
           parameterNames[name].reduce((acc, name) => {
@@ -47,7 +47,7 @@ export default function prep() {
           const defaultTags = getDefaultTags(name)
           acc[name] = {
             tags: defaultTags,
-            returnsNames: returnsNames[name] || [],
+            returnNames: returnNames[name] || [],
           }
           return acc
         }, {} as AbiMemberConfigs),
@@ -55,8 +55,7 @@ export default function prep() {
 
       // 7- Write the data to the configPath file
       write(data, configPath)
-    },
-    '_config'
+    }
   )
 }
 

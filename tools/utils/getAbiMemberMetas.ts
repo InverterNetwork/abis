@@ -18,10 +18,11 @@ export default function (
   for (const key in abiMembers) {
     if (!acc[key]) acc[key] = {} as any
 
-    // 2- Set tags and returnsNames
+    // 2- Set tags and returnNames
     acc[key].tags = abiMembers[key].tags
-    acc[key].returnsNames = abiMembers[key].returnsNames
+    acc[key].returnNames = abiMembers[key].returnNames
     // 3- Set descriptions
+    if (!desciptions[key]) continue
     acc[key].descriptions = desciptions[key].reduce(
       (acc, { name, description }) => {
         acc[name] = description

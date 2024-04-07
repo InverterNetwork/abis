@@ -1,48 +1,69 @@
-import { ParsedRawMetadata } from '../types'
-import { getEntries } from '.'
-import { AbiEventParameter, AbiParameter } from 'abitype'
+import { Abi, AbiEventParameter, AbiParameter } from 'abitype'
 
-const eventNames = (output: ParsedRawMetadata['output']) =>
-  Object.keys(output.userdoc.events || output.devdoc.events || []).map(
-    (key) => key.split('(')[0]
-  )
+const eventNames = (abi: Abi): string[] =>
+  abi
+    .map((entry) => {
+      if ('type' in entry && entry.type === 'event') {
+        return entry.name
+      }
+    })
+    .filter((name): name is string => !!name)
 
-const methodNames = (output: ParsedRawMetadata['output']) =>
-  Object.keys(output.userdoc.methods || output.devdoc.methods || []).map(
-    (key) => key.split('(')[0]
-  )
+const methodNames = (abi: Abi) =>
+  abi
+    .map((entry) => {
+      if ('type' in entry && entry.type === 'function') {
+        return entry.name
+      }
+    })
+    .filter((name): name is string => !!name)
 
-const returnNames = (output: ParsedRawMetadata['output']) => {
-  const acc = {} as Record<string, string[]>
-  // Get the return and parameter descriptions
-  for (const field of ['events', 'methods'] as const) {
-    for (const [key, value] of getEntries(output.devdoc[field] || [])) {
-      const name = String(key).split('(')[0]
+const abiMemberNames = (abi: Abi) => eventNames(abi).concat(methodNames(abi))
 
-      if (!!value.returns) acc[name] = Object.keys(value['returns'])
+const returnNames = (abi: Abi) => {
+  // 0- Initialize the accumulator fro returnNames memberName, returnName Array
+  const acc = {} as Record<string, string[]>,
+    // 1- get the abiMemberNames
+    memberNames = abiMemberNames(abi),
+    // 2- Filter out the abi entries that are not in the abiMemberNames
+    memberEntries = abi.filter((entry) => {
+      if ('name' in entry) {
+        return memberNames.includes(entry.name)
+      }
+    })
+  // 3- Iterate over the filtered entries
+  for (const entry of memberEntries) {
+    if ('outputs' in entry) {
+      // 4- If the entry has outputs, map over the outputs and get the name or the index
+      acc[entry.name] = entry.outputs.map(
+        (output, index) => output.name || `_${index}`
+      )
     }
   }
 
   return acc
 }
 
-const combinedNames = (output: ParsedRawMetadata['output']) => ({
-  abiMemberNames: eventNames(output).concat(methodNames(output)),
-  returnsNames: returnNames(output),
+const combinedNames = (abi: Abi) => ({
+  abiMemberNames: eventNames(abi).concat(methodNames(abi)),
+  returnNames: returnNames(abi),
 })
 
-const parameterNames = (output: ParsedRawMetadata['output']) => {
-  const abi = output.abi,
-    combinedData = combinedNames(output),
+const parameterNames = (abi: Abi) => {
+  const combinedData = combinedNames(abi),
     acc = {} as Record<string, string[]>
 
   for (const entry of abi) {
     if ('name' in entry) {
       // First, check if the entry has a name that is in the list of abiMemberNames
       if (combinedData.abiMemberNames.includes(entry.name)) {
-        const nameArr = getFlatParameterNames(entry.inputs)
-          .concat(combinedData.returnsNames[entry.name])
-          .filter((name): name is string => !!name)
+        let nameArr: string[]
+
+        if ('outputs' in entry) nameArr = getFlatParameterNames(entry.outputs)
+
+        nameArr = getFlatParameterNames(entry.inputs)
+          .concat(combinedData.returnNames[entry.name])
+          .filter((name): name is string => !!name && name !== '')
 
         acc[entry.name] = nameArr
       }
