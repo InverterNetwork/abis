@@ -84,15 +84,11 @@ export default {
 
 const getFlatParameterNames = (
   parameters: readonly (AbiParameter | AbiEventParameter)[]
-) =>
+): string[] =>
   parameters
-    .flatMap((input) => {
-      if (['tuple', 'tuple[]'].includes(input.type) && 'components' in input) {
-        return input.components
-          .map((component) => component.name)
-          .concat(input.name)
-      }
-
-      return input.name
+    .flatMap((param) => {
+      if (['tuple', 'tuple[]'].includes(param.type) && 'components' in param)
+        return [...getFlatParameterNames(param.components), param.name]
+      else if ('name' in param) return param.name
     })
     .filter((name): name is string => !!name)
