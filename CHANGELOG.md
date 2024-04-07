@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/InverterNetwork/abis/compare/v0.0.5...v0.0.6) (2024-04-07)
+
+
+### Features
+
+* config with defaults and compile to extendedAbi ([4e91b88](https://github.com/InverterNetwork/abis/commit/4e91b88ea2f18fbb72c2d23a85bf9ccec2479569))
+
+
+### Bug Fixes
+
+* concat at output params ([350e016](https://github.com/InverterNetwork/abis/commit/350e016f31442d87d9694467a2f4f2b3203ba84f))
+* optional events at user and dev docs ([e59df06](https://github.com/InverterNetwork/abis/commit/e59df069dc102b01ae1f0add8ffacfc916d659dc))
+* recursinve at get flat params ([974ad17](https://github.com/InverterNetwork/abis/commit/974ad174277799244530a576fc784fb4d5d89eef))
+
 ### [0.0.5](https://github.com/InverterNetwork/abis/compare/v0.0.4...v0.0.5) (2024-03-19)
 
 ### [0.0.4](https://github.com/InverterNetwork/abis/compare/v0.0.3...v0.0.4) (2024-03-13)
