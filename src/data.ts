@@ -363,8 +363,9 @@ export const ERC20 = {
         outputs: [
           {
             internalType: 'uint256',
-            name: 'decimals',
+            name: 'amount',
             type: 'uint256',
+            tag: 'decimals',
             description:
               'allowance The current allowance amout approved by the owner for the spender',
           },
