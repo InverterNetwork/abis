@@ -1,10 +1,8 @@
-export type FindIndex<T, Name, Index extends any[] = []> = T extends readonly [
-  infer First,
-  ...infer Rest,
-]
-  ? First extends { name: infer N }
-    ? N extends Name
-      ? Index['length']
-      : FindIndex<Rest, Name, [...Index, any]>
-    : never
-  : never
+import { ModuleKeys, ModuleVersionKey, ModuleVersion, data } from '.'
+
+export function getModuleVersion<
+  K extends ModuleKeys = ModuleKeys,
+  V extends ModuleVersionKey = ModuleVersionKey,
+>(module: K, version: V): ModuleVersion<K, V> {
+  return data[module][version]
+}

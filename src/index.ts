@@ -1,6 +1,6 @@
 import * as data from './data'
 export * from './base'
-export * from './flat'
+export * from './utils'
 export { data }
 
 type BaseData = typeof data
@@ -14,10 +14,3 @@ export type ModuleVersion<
   K extends ModuleKeys = ModuleKeys,
   V extends ModuleVersionKey = ModuleVersionKey,
 > = BaseData[K][V]
-
-export function getModuleVersion<
-  K extends ModuleKeys = ModuleKeys,
-  V extends ModuleVersionKey = ModuleVersionKey,
->(module: K, version: V): ModuleVersion<K, V> {
-  return data[module][version]
-}

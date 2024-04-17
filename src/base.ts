@@ -14,7 +14,6 @@ export type UserFacingModuleType =
   | 'paymentProcessor'
   | 'authorizer'
   | 'fundingManager'
-
-export type Tuple = { type: 'tuple' | 'tuple[]' }
+  | 'orchestrator'
 
 export type Tag = 'any' | 'decimals'

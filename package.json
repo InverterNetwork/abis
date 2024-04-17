@@ -65,7 +65,7 @@
     "clean:configs": "bun tools/clean/configs.ts",
     "compile": "bun tools/compile/index.ts && prettier --write ./src/data.ts",
     "watch": "tsc -w -p ./tsconfig.dev.json",
-    "build": "bun clean && tsc -p ./tsconfig.json && tsc -p ./tsconfig.cjs.json",
+    "build": "bun clean && tsc -p ./tsconfig.json",
     "clean": "rm -rf dist tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
     "postinstall": "husky",
     "prepack": "pinst --disable",
