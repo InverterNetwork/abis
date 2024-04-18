@@ -1,6 +1,7 @@
 import * as data from './data'
 export * from './base'
 export * from './utils'
+export * from './extendedAbi'
 export { data }
 
 type BaseData = typeof data

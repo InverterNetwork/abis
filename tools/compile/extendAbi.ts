@@ -1,10 +1,6 @@
-import {
-  AbiMemberMeta,
-  AbiMemberMetas,
-  ExtendedAbi,
-  ExtendedAbiParameter,
-} from '../types'
+import { AbiMemberMeta, AbiMemberMetas } from '../types'
 import { Abi, AbiParameter } from 'abitype'
+import { ExtendedAbiParameter, ExtendedAbi } from '../../src'
 
 export default function (
   abi: Abi,
@@ -18,7 +14,9 @@ export default function (
       return {
         ...item,
         ...(description && { description }),
+        // Map over the inputs to extend them
         inputs: item.inputs.map((input) => extend(input, abiMemberMetas[name])),
+        // Check if the item has outputs, if so map over them to extend them
         ...('outputs' in item && {
           outputs: item.outputs.map((output) =>
             extend(output, abiMemberMetas[name])
@@ -40,40 +38,6 @@ function extend(
   // 0- Check if the parameter has a name else return the parameter unchanged
   if (!parameter.name) return parameter
 
-  // 1- Check if the parameter is a tuple or tuple[]
-  if (
-    (parameter.type === 'tuple[]' || parameter.type === 'tuple') &&
-    'components' in parameter
-  ) {
-    const { name, components } = parameter
-
-    const tag = tags?.[name],
-      description = descriptions?.[name]
-
-    return {
-      ...parameter,
-      ...(!!tag && { tag }),
-      ...(!!description && { description }),
-      components: components.map((component) => {
-        const { name, type } = component
-
-        if (type === 'tuple[]' || type === 'tuple')
-          return extend(component, abiMemberMeta)
-
-        if (!name) return component
-
-        const tag = tags?.[name],
-          description = descriptions?.[name]
-
-        return {
-          ...component,
-          ...(!!tag && { tag }),
-          ...(!!description && { description }),
-        }
-      }),
-    } as ExtendedAbiParameter
-  }
-
   const name = parameter.name
 
   const tag = tags?.[name],
@@ -83,5 +47,12 @@ function extend(
     ...parameter,
     ...(!!tag && { tag }),
     ...(!!description && { description }),
+    // 1- Check if the parameter has components
+    ...('components' in parameter && {
+      components: parameter.components.map((component) => {
+        const extendedComp = extend(component, abiMemberMeta)
+        return extendedComp
+      }),
+    }),
   } as ExtendedAbiParameter
 }
