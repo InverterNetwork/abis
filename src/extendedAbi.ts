@@ -4,36 +4,25 @@ import {
   AbiEvent,
   AbiFallback,
   AbiFunction,
-  AbiInternalType,
   AbiReceive,
-  AbiType,
+  AbiParameter,
 } from 'abitype'
 import { Tag } from './base'
 
-export type ExtendedAbiParameter =
-  | {
-      type: AbiType
-      name?: string | undefined
-      internalType?: AbiInternalType | undefined
-      description?: string
-      tag?: Tag
-    }
-  | {
-      type: 'tuple' | `tuple[${string}]`
-      name?: string | undefined
-      internalType?: AbiInternalType | undefined
-      components: readonly ExtendedAbiParameter[]
-      description?: string
-      tag?: Tag
-    }
+export type ExtendedAbiParameter = AbiParameter & {
+  description?: string
+  tag?: Tag
+}
 
 export type ExtendedAbiFunction = Omit<AbiFunction, 'inputs' | 'outputs'> & {
   inputs: readonly ExtendedAbiParameter[]
   outputs: readonly ExtendedAbiParameter[]
+  description?: string
 }
 
 export type ExtendedAbiEvent = Omit<AbiEvent, 'inputs'> & {
   inputs: readonly ExtendedAbiParameter[]
+  description?: string
 }
 
 export type ExtendedAbi = (
