@@ -1,6 +1,6 @@
 {
   "name": "@inverter-network/abis",
-  "version": "0.0.7-alpha.2",
+  "version": "0.0.7-alpha.3",
   "author": "InverterNetwork <github@InverterNetwork>",
   "repository": {
     "type": "git",
@@ -77,7 +77,8 @@
     "prettier:fix": "prettier --write ./src/.",
     "release": "standard-version -a",
     "release:alpha": "standard-version -a --prerelease alpha --skip.changelog",
-    "release:beta": "standard-version -a --prerelease beta --skip.changelog"
+    "release:beta": "standard-version -a --prerelease beta --skip.changelog",
+    "release:pub": "git push --follow-tags origin main"
   },
   "types": "./dist/index.d.ts"
 }
