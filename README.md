@@ -45,6 +45,18 @@ or
 npm install @inverter-network/abis
 ```
 
+## Developing
+
+### Requirements
+
+The following packages need to be installed globally for the husky hooks to work: `prettier`
+
+### Install Dependencies
+
+```bash
+bun install
+```
+
 ## Updating the ABIs
 
 1. Update the deployments submodules in the `deployments` directory.
