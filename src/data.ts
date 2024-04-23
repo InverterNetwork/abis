@@ -6534,7 +6534,7 @@ export const RoleAuthorizer = {
       configData: [
         {
           name: 'initialOwner',
-          type: 'adress',
+          type: 'address',
           description: 'The initial owner of the workflow',
         },
         {
