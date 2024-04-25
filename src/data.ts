@@ -3947,7 +3947,7 @@ export const MetadataManager = {
         },
         {
           name: 'twitterHandle',
-          type: 'address',
+          type: 'string',
           description: 'The twitter handle of the manager',
         },
         {
