@@ -17,6 +17,7 @@ type ExtendedAbiParameterBase = {
   description?: string
   /** Representation used by Solidity compiler */
   internalType?: AbiInternalType
+  tags?: readonly Tag[]
 }
 
 // Tuple and Tuple array types, AbiParamters with these types have a components field
@@ -31,7 +32,6 @@ export type NonTupleType = Exclude<
 // AbiParameter without components field + description, tags fields
 export type NonTupleExtendedAbiParameter = ExtendedAbiParameterBase & {
   type: NonTupleType
-  tags?: readonly Tag[]
 }
 
 // AbiParameter with components field, components field is an array of FormattedAbiParameters
