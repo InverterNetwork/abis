@@ -28,10 +28,10 @@ export type NonTupleType = Exclude<
   SolidityTuple | SolidityArrayWithTuple
 >
 
-// AbiParameter without components field + description, tag and jsType fields
+// AbiParameter without components field + description, tags fields
 export type NonTupleExtendedAbiParameter = ExtendedAbiParameterBase & {
   type: NonTupleType
-  tag?: Tag
+  tags?: readonly Tag[]
 }
 
 // AbiParameter with components field, components field is an array of FormattedAbiParameters

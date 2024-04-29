@@ -33,7 +33,7 @@ export default function prep() {
         // 6- Create a function that returns an object with the default tags
         getDefaultTags = (name: string) =>
           parameterNames[name].reduce((acc, name) => {
-            acc[name] = '' as Tag
+            acc[name] = ['' as Tag] as Tag[]
             return acc
           }, {} as Tags)
 
