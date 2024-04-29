@@ -1452,6 +1452,7 @@ export const RebasingFundingManager = {
           description:
             'The address of the token that will be deposited to the funding manager',
           type: 'address',
+          tags: 'decimals',
         },
       ],
       dependencyData: [],
@@ -2434,6 +2435,7 @@ export const BancorVirtualSupplyBondingCurveFundingManager = {
           type: 'address',
           description:
             'The address of the token that will be deposited to the funding manager',
+          tags: 'decimals',
         },
       ],
       dependencyData: [],
