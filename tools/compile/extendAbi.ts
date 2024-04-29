@@ -26,7 +26,7 @@ export default function (
     }
 
     return item
-  })
+  }) as any
 }
 
 function extend(
