@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/InverterNetwork/abis/compare/v0.0.7-alpha.3...v0.0.7) (2024-04-29)
+
+
+### Features
+
+* extended abi, events, func, params ([44f666c](https://github.com/InverterNetwork/abis/commit/44f666c16e669f7008c1e6130e8ffb68696d24b6))
+* string tag to tags array ([c8ef1b9](https://github.com/InverterNetwork/abis/commit/c8ef1b9ffb49901bc09d6a9eb6751d3233802d30))
+
 ### [0.0.6](https://github.com/InverterNetwork/abis/compare/v0.0.5...v0.0.6) (2024-04-07)
 
 

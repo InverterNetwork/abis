@@ -1,6 +1,6 @@
 {
   "name": "@inverter-network/abis",
-  "version": "0.0.7-alpha.3",
+  "version": "0.0.7",
   "author": "InverterNetwork <github@InverterNetwork>",
   "repository": {
     "type": "git",
