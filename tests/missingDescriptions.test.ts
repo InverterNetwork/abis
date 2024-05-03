@@ -37,7 +37,7 @@ describe('#Log Missing Descriptons', () => {
             // 1. itterate over the parameter names and check if the descriptions are missing
             return paramNames.map((paramName) => {
               // 2. Initialize the missing descriptions object
-              const acc = {}
+              const acc = {} as any
               // 3. Initialize the member name object
               if (!acc[memberName]) acc[memberName] = {}
               // 4. if descriptions are emoty for the member name return no descriptions data string
@@ -78,7 +78,7 @@ describe('#Log Missing Descriptons', () => {
 
     // convert the map to an object
     const obj = [...acc.entries()].reduce((acc, [key, value]) => {
-      acc[key] = value
+      ;(acc as any)[key] = value
       return acc
     }, {})
 
