@@ -26,26 +26,31 @@ export default function (
     }
 
     return item
-  })
+  }) as any
 }
 
 function extend(
   parameter: AbiParameter,
   abiMemberMeta: AbiMemberMeta
 ): AbiParameter | ExtendedAbiParameter {
-  const { descriptions, tags } = abiMemberMeta
+  const { descriptions, tags: sotTags } = abiMemberMeta
 
   // 0- Check if the parameter has a name else return the parameter unchanged
   if (!parameter.name) return parameter
 
   const name = parameter.name
 
-  const tag = tags?.[name],
+  const tags = sotTags?.[name],
     description = descriptions?.[name]
 
   return {
     ...parameter,
-    ...(!!tag && { tag }),
+    ...(!!tags &&
+      tags.every(
+        (i) =>
+          // @ts-expect-error - empty array check
+          i !== ''
+      ) && { tags }),
     ...(!!description && { description }),
     // 1- Check if the parameter has components
     ...('components' in parameter && {
