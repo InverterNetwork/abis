@@ -1,8 +1,8 @@
-export const TransactionForwarder = {
-  'v1.0': {
+export const data = [
+  {
     name: 'TransactionForwarder',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'external',
     deploymentArgs: { configData: [], dependencyData: [] },
     abi: [
@@ -277,12 +277,10 @@ export const TransactionForwarder = {
       },
     ],
   },
-} as const
-export const ERC20 = {
-  'v1.0': {
+  {
     name: 'ERC20',
     description: 'Interface of the ERC-20 standard as defined in the ERC.',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'external',
     deploymentArgs: { configData: [], dependencyData: [] },
     abi: [
@@ -562,12 +560,10 @@ export const ERC20 = {
       },
     ],
   },
-} as const
-export const OrchestratorFactory = {
-  'v1.0': {
+  {
     name: 'OrchestratorFactory',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'factories',
     deploymentArgs: { configData: [], dependencyData: [] },
     abi: [
@@ -842,12 +838,10 @@ export const OrchestratorFactory = {
       },
     ],
   },
-} as const
-export const ModuleFactory = {
-  'v1.0': {
+  {
     name: 'ModuleFactory',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'factories',
     deploymentArgs: { configData: [], dependencyData: [] },
     abi: [
@@ -1180,12 +1174,10 @@ export const ModuleFactory = {
       },
     ],
   },
-} as const
-export const InverterBeacon = {
-  'v1.0': {
+  {
     name: 'InverterBeacon',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'factories',
     deploymentArgs: { configData: [], dependencyData: [] },
     abi: [
@@ -1438,12 +1430,10 @@ export const InverterBeacon = {
       },
     ],
   },
-} as const
-export const RecurringPaymentManager = {
-  'v1.0': {
+  {
     name: 'RecurringPaymentManager',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'logicModule',
     deploymentArgs: {
       configData: [
@@ -2233,12 +2223,10 @@ export const RecurringPaymentManager = {
       },
     ],
   },
-} as const
-export const BountyManager = {
-  'v1.0': {
+  {
     name: 'BountyManager',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'logicModule',
     deploymentArgs: { configData: [], dependencyData: [] },
     abi: [
@@ -3329,12 +3317,10 @@ export const BountyManager = {
       },
     ],
   },
-} as const
-export const Module = {
-  'v1.0': {
+  {
     name: 'Module',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'base',
     deploymentArgs: { configData: [], dependencyData: [] },
     abi: [
@@ -3605,12 +3591,10 @@ export const Module = {
       },
     ],
   },
-} as const
-export const RebasingFundingManager = {
-  'v1.0': {
+  {
     name: 'RebasingFundingManager',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'fundingManager',
     deploymentArgs: {
       configData: [
@@ -4522,13 +4506,11 @@ export const RebasingFundingManager = {
       },
     ],
   },
-} as const
-export const BancorVirtualSupplyBondingCurveFundingManager = {
-  'v1.0': {
+  {
     name: 'BancorVirtualSupplyBondingCurveFundingManager',
     description:
       "This contract enables the issuance and redeeming of tokens on a bonding curve, using a virtual supply for both the token and the collateral as input. The contract makes use of the Aragon's Bancor Formula contract to calculate the issuance and redeeming rates.",
-    version: 'v1.0',
+    version: '1',
     moduleType: 'fundingManager',
     deploymentArgs: {
       configData: [
@@ -6095,12 +6077,10 @@ export const BancorVirtualSupplyBondingCurveFundingManager = {
       },
     ],
   },
-} as const
-export const SimplePaymentProcessor = {
-  'v1.0': {
+  {
     name: 'SimplePaymentProcessor',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'paymentProcessor',
     deploymentArgs: { configData: [], dependencyData: [] },
     abi: [
@@ -6519,12 +6499,10 @@ export const SimplePaymentProcessor = {
       },
     ],
   },
-} as const
-export const StreamingPaymentProcessor = {
-  'v1.0': {
+  {
     name: 'StreamingPaymentProcessor',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'paymentProcessor',
     deploymentArgs: { configData: [], dependencyData: [] },
     abi: [
@@ -7485,12 +7463,10 @@ export const StreamingPaymentProcessor = {
       },
     ],
   },
-} as const
-export const MetadataManager = {
-  'v1.0': {
+  {
     name: 'MetadataManager',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'utils',
     deploymentArgs: {
       configData: [
@@ -8065,12 +8041,10 @@ export const MetadataManager = {
       },
     ],
   },
-} as const
-export const SingleVoteGovernor = {
-  'v1.0': {
+  {
     name: 'SingleVoteGovernor',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'utils',
     deploymentArgs: {
       configData: [
@@ -8696,12 +8670,10 @@ export const SingleVoteGovernor = {
       },
     ],
   },
-} as const
-export const RoleAuthorizer = {
-  'v1.0': {
+  {
     name: 'RoleAuthorizer',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'authorizer',
     deploymentArgs: {
       configData: [
@@ -9385,12 +9357,10 @@ export const RoleAuthorizer = {
       },
     ],
   },
-} as const
-export const TokenGatedRoleAuthorizer = {
-  'v1.0': {
+  {
     name: 'TokenGatedRoleAuthorizer',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'authorizer',
     deploymentArgs: {
       configData: [
@@ -10328,12 +10298,10 @@ export const TokenGatedRoleAuthorizer = {
       },
     ],
   },
-} as const
-export const Orchestrator = {
-  'v1.0': {
+  {
     name: 'Orchestrator',
     description: '',
-    version: 'v1.0',
+    version: '1',
     moduleType: 'orchestrator',
     deploymentArgs: { configData: [], dependencyData: [] },
     abi: [
@@ -10851,4 +10819,4 @@ export const Orchestrator = {
       },
     ],
   },
-} as const
+] as const
