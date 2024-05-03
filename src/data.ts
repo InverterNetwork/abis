@@ -1,3 +1,848 @@
+export const TransactionForwarder = {
+  'v1.0': {
+    name: 'TransactionForwarder',
+    description: '',
+    version: 'v1.0',
+    moduleType: 'external',
+    deploymentArgs: { configData: [], dependencyData: [] },
+    abi: [
+      {
+        inputs: [{ internalType: 'string', name: 'name', type: 'string' }],
+        stateMutability: 'nonpayable',
+        type: 'constructor',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'AddressInsufficientBalance',
+        type: 'error',
+      },
+      {
+        inputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'target', type: 'address' },
+              { internalType: 'bool', name: 'allowFailure', type: 'bool' },
+              { internalType: 'bytes', name: 'callData', type: 'bytes' },
+            ],
+            internalType: 'struct ITransactionForwarder.SingleCall',
+            name: 'call',
+            type: 'tuple',
+          },
+        ],
+        name: 'CallFailed',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'uint48', name: 'deadline', type: 'uint48' }],
+        name: 'ERC2771ForwarderExpiredRequest',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'signer', type: 'address' },
+          { internalType: 'address', name: 'from', type: 'address' },
+        ],
+        name: 'ERC2771ForwarderInvalidSigner',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'uint256', name: 'requestedValue', type: 'uint256' },
+          { internalType: 'uint256', name: 'msgValue', type: 'uint256' },
+        ],
+        name: 'ERC2771ForwarderMismatchedValue',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'target', type: 'address' },
+          { internalType: 'address', name: 'forwarder', type: 'address' },
+        ],
+        name: 'ERC2771UntrustfulTarget',
+        type: 'error',
+      },
+      { inputs: [], name: 'FailedInnerCall', type: 'error' },
+      {
+        inputs: [
+          { internalType: 'address', name: 'account', type: 'address' },
+          { internalType: 'uint256', name: 'currentNonce', type: 'uint256' },
+        ],
+        name: 'InvalidAccountNonce',
+        type: 'error',
+      },
+      { inputs: [], name: 'InvalidShortString', type: 'error' },
+      {
+        inputs: [{ internalType: 'string', name: 'str', type: 'string' }],
+        name: 'StringTooLong',
+        type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [],
+        name: 'EIP712DomainChanged',
+        type: 'event',
+        outputs: [],
+        description:
+          'MAY be emitted to signal that the domain could have changed.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'signer',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'nonce',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'bool',
+            name: 'success',
+            type: 'bool',
+          },
+        ],
+        name: 'ExecutedForwardRequest',
+        type: 'event',
+        outputs: [],
+        description:
+          'Emitted when a `ForwardRequest` is executed. NOTE: An unsuccessful forward request could be due to an invalid signature, an expired deadline, or simply a revert in the requested call. The contract guarantees that the relayer is not able to force the requested call to run out of gas.',
+      },
+      {
+        inputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'from', type: 'address' },
+              { internalType: 'address', name: 'to', type: 'address' },
+              { internalType: 'uint256', name: 'value', type: 'uint256' },
+              { internalType: 'uint256', name: 'gas', type: 'uint256' },
+              { internalType: 'uint48', name: 'deadline', type: 'uint48' },
+              { internalType: 'bytes', name: 'data', type: 'bytes' },
+              { internalType: 'bytes', name: 'signature', type: 'bytes' },
+            ],
+            internalType: 'struct ERC2771Forwarder.ForwardRequestData',
+            name: 'req',
+            type: 'tuple',
+            description: 'The ForwardRequest you want to get the digest from',
+          },
+        ],
+        name: 'createDigest',
+        outputs: [
+          {
+            internalType: 'bytes32',
+            name: 'digest',
+            type: 'bytes32',
+            description:
+              'The digest needed to create a signature for the request',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Creates a digest for the given ForwardRequestData',
+      },
+      {
+        inputs: [],
+        name: 'eip712Domain',
+        outputs: [
+          { internalType: 'bytes1', name: 'fields', type: 'bytes1' },
+          { internalType: 'string', name: 'name', type: 'string' },
+          { internalType: 'string', name: 'version', type: 'string' },
+          { internalType: 'uint256', name: 'chainId', type: 'uint256' },
+          {
+            internalType: 'address',
+            name: 'verifyingContract',
+            type: 'address',
+          },
+          { internalType: 'bytes32', name: 'salt', type: 'bytes32' },
+          { internalType: 'uint256[]', name: 'extensions', type: 'uint256[]' },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'from', type: 'address' },
+              { internalType: 'address', name: 'to', type: 'address' },
+              { internalType: 'uint256', name: 'value', type: 'uint256' },
+              { internalType: 'uint256', name: 'gas', type: 'uint256' },
+              { internalType: 'uint48', name: 'deadline', type: 'uint48' },
+              { internalType: 'bytes', name: 'data', type: 'bytes' },
+              { internalType: 'bytes', name: 'signature', type: 'bytes' },
+            ],
+            internalType: 'struct ERC2771Forwarder.ForwardRequestData',
+            name: 'request',
+            type: 'tuple',
+          },
+        ],
+        name: 'execute',
+        outputs: [],
+        stateMutability: 'payable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'from', type: 'address' },
+              { internalType: 'address', name: 'to', type: 'address' },
+              { internalType: 'uint256', name: 'value', type: 'uint256' },
+              { internalType: 'uint256', name: 'gas', type: 'uint256' },
+              { internalType: 'uint48', name: 'deadline', type: 'uint48' },
+              { internalType: 'bytes', name: 'data', type: 'bytes' },
+              { internalType: 'bytes', name: 'signature', type: 'bytes' },
+            ],
+            internalType: 'struct ERC2771Forwarder.ForwardRequestData[]',
+            name: 'requests',
+            type: 'tuple[]',
+          },
+          {
+            internalType: 'address payable',
+            name: 'refundReceiver',
+            type: 'address',
+          },
+        ],
+        name: 'executeBatch',
+        outputs: [],
+        stateMutability: 'payable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'target', type: 'address' },
+              { internalType: 'bool', name: 'allowFailure', type: 'bool' },
+              { internalType: 'bytes', name: 'callData', type: 'bytes' },
+            ],
+            internalType: 'struct ITransactionForwarder.SingleCall[]',
+            name: 'calls',
+            type: 'tuple[]',
+            description:
+              'Array of call structs that should be executed in the multicall',
+          },
+        ],
+        name: 'executeMulticall',
+        outputs: [
+          {
+            components: [
+              { internalType: 'bool', name: 'success', type: 'bool' },
+              { internalType: 'bytes', name: 'returnData', type: 'bytes' },
+            ],
+            internalType: 'struct ITransactionForwarder.Result[]',
+            name: 'results',
+            type: 'tuple[]',
+            description: 'The return data of the calls that were executed',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Enables the execution of multiple calls in a single transaction',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'owner', type: 'address' }],
+        name: 'nonces',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'from', type: 'address' },
+              { internalType: 'address', name: 'to', type: 'address' },
+              { internalType: 'uint256', name: 'value', type: 'uint256' },
+              { internalType: 'uint256', name: 'gas', type: 'uint256' },
+              { internalType: 'uint48', name: 'deadline', type: 'uint48' },
+              { internalType: 'bytes', name: 'data', type: 'bytes' },
+              { internalType: 'bytes', name: 'signature', type: 'bytes' },
+            ],
+            internalType: 'struct ERC2771Forwarder.ForwardRequestData',
+            name: 'request',
+            type: 'tuple',
+          },
+        ],
+        name: 'verify',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+    ],
+  },
+} as const
+export const ERC20 = {
+  'v1.0': {
+    name: 'ERC20',
+    description: 'Interface of the ERC-20 standard as defined in the ERC.',
+    version: 'v1.0',
+    moduleType: 'external',
+    deploymentArgs: { configData: [], dependencyData: [] },
+    abi: [
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'owner',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'spender',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'Approval',
+        type: 'event',
+        outputs: [],
+        description:
+          'Emitted when the allowance of a `spender` for an `owner` is set by a call to {approve}. `amount` is the new allowance.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'from',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'Transfer',
+        type: 'event',
+        outputs: [],
+        description:
+          'Emitted when `amount` tokens are moved from one account (`from`) to another (`to`). Note that `amount` may be zero.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'owner',
+            type: 'address',
+            description: 'The owner of the tokens',
+          },
+          {
+            internalType: 'address',
+            name: 'spender',
+            type: 'address',
+            description: 'The spender of the token allowance',
+          },
+        ],
+        name: 'allowance',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description:
+              'allowance The current allowance amout approved by the owner for the spender',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Returns the remaining number of tokens that `spender` will be allowed to spend on behalf of `owner` through {transferFrom}. This is zero by default.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'spender',
+            type: 'address',
+            description: 'The spender of the token allowance',
+          },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description:
+              'The amount that may be spent on behalf of the `spender`',
+          },
+        ],
+        name: 'approve',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description:
+              'success A boolean value indicating whether the operation succeeded.',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          "Sets a `amount` amount of tokens as the allowance of `spender` over the caller's tokens.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'account',
+            type: 'address',
+            description: 'The account whose balance is to be checked',
+          },
+        ],
+        name: 'balanceOf',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description:
+              'balance Returns the amount of tokens owned by the account.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the amount of tokens owned by `account`.',
+      },
+      {
+        inputs: [],
+        name: 'decimals',
+        outputs: [
+          {
+            internalType: 'uint8',
+            name: '_0',
+            type: 'uint8',
+            description: 'decimals The decimals of the token.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the decimals of the token.',
+      },
+      {
+        inputs: [],
+        name: 'name',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: 'name The name of the token.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the name of the token.',
+      },
+      {
+        inputs: [],
+        name: 'symbol',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: 'symbol The symbol of the token.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the symbol of the token.',
+      },
+      {
+        inputs: [],
+        name: 'totalSupply',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'totalSupply The total amount of tokens.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the amount of tokens in existence.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+            description: 'The target of the transfer',
+          },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'The amount of tokens to be transferred',
+          },
+        ],
+        name: 'transfer',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description:
+              'success Returns a boolean value indicating whether the operation succeeded.',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          "Transfers a `amount` amount of tokens from the caller's account to `to`.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'from',
+            type: 'address',
+            description: 'The source of the transfer',
+          },
+          {
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+            description: 'The target of the transfer',
+          },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'The amount of tokens to be transferred',
+          },
+        ],
+        name: 'transferFrom',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description:
+              'success Returns a boolean value indicating whether the operation succeeded.',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          "Moves a `amount` amount of tokens from `from` to `to` using the allowance mechanism. `amount` is then deducted from the caller's allowance.",
+      },
+    ],
+  },
+} as const
+export const OrchestratorFactory = {
+  'v1.0': {
+    name: 'OrchestratorFactory',
+    description: '',
+    version: 'v1.0',
+    moduleType: 'factories',
+    deploymentArgs: { configData: [], dependencyData: [] },
+    abi: [
+      {
+        inputs: [
+          { internalType: 'address', name: 'target_', type: 'address' },
+          { internalType: 'address', name: 'moduleFactory_', type: 'address' },
+          {
+            internalType: 'address',
+            name: '_trustedForwarder',
+            type: 'address',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'constructor',
+      },
+      { inputs: [], name: 'ERC1167FailedCreateClone', type: 'error' },
+      { inputs: [], name: 'OrchestratorFactory__InvalidId', type: 'error' },
+      {
+        inputs: [],
+        name: 'OrchestratorFactory__ModuleDataLengthMismatch',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'OrchestratorFactory__OrchestratorOwnerIsInvalid',
+        type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'orchestratorId',
+            type: 'uint256',
+            description: 'The id of the orchestrator.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'orchestratorAddress',
+            type: 'address',
+            description: 'The address of the orchestrator.',
+          },
+        ],
+        name: 'OrchestratorCreated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a new orchestrator is created.',
+      },
+      {
+        inputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'owner', type: 'address' },
+              {
+                internalType: 'contract IERC20',
+                name: 'token',
+                type: 'address',
+              },
+            ],
+            internalType: 'struct IOrchestratorFactory.OrchestratorConfig',
+            name: 'orchestratorConfig',
+            type: 'tuple',
+            description: "The orchestrator's config data.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+              { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory.ModuleConfig',
+            name: 'fundingManagerConfig',
+            type: 'tuple',
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+              { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory.ModuleConfig',
+            name: 'authorizerConfig',
+            type: 'tuple',
+            description:
+              "The config data for the orchestrator's {IAuthorizer} instance.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+              { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory.ModuleConfig',
+            name: 'paymentProcessorConfig',
+            type: 'tuple',
+            description:
+              "The config data for the orchestrator's {IPaymentProcessor} instance.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+              { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory.ModuleConfig[]',
+            name: 'moduleConfigs',
+            type: 'tuple[]',
+            description:
+              "Variable length set of optional module's config data.",
+          },
+        ],
+        name: 'createOrchestrator',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: '_0',
+            type: 'address',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          "Creates a new orchestrator with caller being the orchestrator's owner.",
+      },
+      {
+        inputs: [{ internalType: 'bytes', name: 'data', type: 'bytes' }],
+        name: 'decoder',
+        outputs: [{ internalType: 'bool', name: 'requirement', type: 'bool' }],
+        stateMutability: 'pure',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'id',
+            type: 'uint256',
+            description: "The requested orchestrator's id.",
+          },
+        ],
+        name: 'getOrchestratorByID',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Returns the {IOrchestrator} address that corresponds to the given id.',
+      },
+      {
+        inputs: [],
+        name: 'getOrchestratorIDCounter',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the counter of the current orchestrator id',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'forwarder', type: 'address' },
+        ],
+        name: 'isTrustedForwarder',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'moduleFactory',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the {IModuleFactory} implementation address.',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
+        ],
+        name: 'supportsInterface',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'target',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Returns the {IOrchestrator} target implementation address.',
+      },
+      {
+        inputs: [],
+        name: 'trustedForwarder',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+    ],
+  },
+} as const
 export const ModuleFactory = {
   'v1.0': {
     name: 'ModuleFactory',
@@ -594,38 +1439,204 @@ export const InverterBeacon = {
     ],
   },
 } as const
-export const OrchestratorFactory = {
+export const RecurringPaymentManager = {
   'v1.0': {
-    name: 'OrchestratorFactory',
+    name: 'RecurringPaymentManager',
     description: '',
     version: 'v1.0',
-    moduleType: 'factories',
-    deploymentArgs: { configData: [], dependencyData: [] },
+    moduleType: 'logicModule',
+    deploymentArgs: {
+      configData: [
+        {
+          name: 'epochLength',
+          type: 'uint256',
+          description:
+            'The length of an epoch in seconds. This will be the common denominator for all payments, as these are specified in epochs (i.e. if an epoch is 1 week, vestings can be done for 1 week, 2 week, 3 week, etc.). Epoch needs to be greater than 1 week and smaller than 52 weeks',
+        },
+      ],
+      dependencyData: [],
+    },
     abi: [
       {
+        inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
+        name: 'AddressEmptyCode',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'AddressInsufficientBalance',
+        type: 'error',
+      },
+      { inputs: [], name: 'FailedInnerCall', type: 'error' },
+      { inputs: [], name: 'InvalidInitialization', type: 'error' },
+      {
+        inputs: [],
+        name: 'Library__LinkedIdList__IdNotConsecutive',
+        type: 'error',
+      },
+      { inputs: [], name: 'Library__LinkedIdList__InvalidId', type: 'error' },
+      {
+        inputs: [],
+        name: 'Library__LinkedIdList__InvalidNewId',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Library__LinkedIdList__InvalidPosition',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
+        name: 'Module_OrchestratorCallbackFailed',
+        type: 'error',
+      },
+      {
         inputs: [
-          { internalType: 'address', name: 'target_', type: 'address' },
-          { internalType: 'address', name: 'moduleFactory_', type: 'address' },
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'caller', type: 'address' },
+        ],
+        name: 'Module__CallerNotAuthorized',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__CannotCallInit2Again', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClient__ArrayLengthMismatch',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClient__CallerNotAuthorized',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClient__InvalidAmount',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClient__InvalidDueTo',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClient__InvalidRecipient',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClient__TokenTransferFailed',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
+      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__NoDependencyOrMalformedDependencyData',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__RecurringPaymentManager__InvalidEpochLength',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__RecurringPaymentManager__InvalidRecurringPaymentId',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__RecurringPaymentManager__InvalidStartEpoch',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__RecurringPaymentManager__StartIdNotBeforeEndId',
+        type: 'error',
+      },
+      { inputs: [], name: 'NotInitializing', type: 'error' },
+      {
+        inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
+        name: 'SafeERC20FailedOperation',
+        type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
           {
-            internalType: 'address',
-            name: '_trustedForwarder',
-            type: 'address',
+            indexed: false,
+            internalType: 'uint64',
+            name: 'version',
+            type: 'uint64',
           },
         ],
-        stateMutability: 'nonpayable',
-        type: 'constructor',
-      },
-      { inputs: [], name: 'ERC1167FailedCreateClone', type: 'error' },
-      { inputs: [], name: 'OrchestratorFactory__InvalidId', type: 'error' },
-      {
-        inputs: [],
-        name: 'OrchestratorFactory__ModuleDataLengthMismatch',
-        type: 'error',
+        name: 'Initialized',
+        type: 'event',
+        outputs: [],
       },
       {
-        inputs: [],
-        name: 'OrchestratorFactory__OrchestratorOwnerIsInvalid',
-        type: 'error',
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'parentOrchestrator',
+            type: 'address',
+            description:
+              'The address of the orchestrator the module is linked to.',
+          },
+          {
+            indexed: true,
+            internalType: 'string',
+            name: 'moduleTitle',
+            type: 'string',
+            description: 'The title of the module.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'majorVersion',
+            type: 'uint256',
+            description: 'The major version of the module.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'minorVersion',
+            type: 'uint256',
+            description: 'The minor version of the module.',
+          },
+        ],
+        name: 'ModuleInitialized',
+        type: 'event',
+        outputs: [],
+        description: 'Module has been initialized.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that will receive the payment.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: 'The amount of tokens the payment consists of.',
+          },
+        ],
+        name: 'PaymentOrderAdded',
+        type: 'event',
+        outputs: [],
+        description: 'Added a payment order.',
       },
       {
         anonymous: false,
@@ -633,170 +1644,154 @@ export const OrchestratorFactory = {
           {
             indexed: true,
             internalType: 'uint256',
-            name: 'orchestratorId',
+            name: 'recurringPaymentId',
             type: 'uint256',
-            description: 'The id of the orchestrator.',
+            description: 'The id of the RecurringPayment.',
           },
           {
-            indexed: true,
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description:
+              'The amount of tokens that should be sent to the recipient address.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'startEpoch',
+            type: 'uint256',
+            description: 'The epoch in which the payment starts.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'lastTriggeredEpoch',
+            type: 'uint256',
+            description: 'The epoch in which the payment was last triggered.',
+          },
+          {
+            indexed: false,
             internalType: 'address',
-            name: 'orchestratorAddress',
+            name: 'recipient',
             type: 'address',
-            description: 'The address of the orchestrator.',
+            description: 'The recipient address that should receive tokens.',
           },
         ],
-        name: 'OrchestratorCreated',
+        name: 'RecurringPaymentAdded',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when a new orchestrator is created.',
+        description: 'Event emitted when a new milestone added.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'recurringPaymentId',
+            type: 'uint256',
+            description: 'The id of the RecurringPayment.',
+          },
+        ],
+        name: 'RecurringPaymentRemoved',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a new milestone added.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'currentEpoch',
+            type: 'uint256',
+            description: 'The current epoch.',
+          },
+        ],
+        name: 'RecurringPaymentsTriggered',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a new milestone added.',
       },
       {
         inputs: [
           {
-            components: [
-              { internalType: 'address', name: 'owner', type: 'address' },
-              {
-                internalType: 'contract IERC20',
-                name: 'token',
-                type: 'address',
-              },
-            ],
-            internalType: 'struct IOrchestratorFactory.OrchestratorConfig',
-            name: 'orchestratorConfig',
-            type: 'tuple',
-            description: "The orchestrator's config data.",
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: ': amount of tokens send to the recipient address',
           },
           {
-            components: [
-              {
-                components: [
-                  {
-                    internalType: 'uint256',
-                    name: 'majorVersion',
-                    type: 'uint256',
-                  },
-                  {
-                    internalType: 'uint256',
-                    name: 'minorVersion',
-                    type: 'uint256',
-                  },
-                  { internalType: 'string', name: 'url', type: 'string' },
-                  { internalType: 'string', name: 'title', type: 'string' },
-                ],
-                internalType: 'struct IModule.Metadata',
-                name: 'metadata',
-                type: 'tuple',
-              },
-              { internalType: 'bytes', name: 'configData', type: 'bytes' },
-              { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
-            ],
-            internalType: 'struct IOrchestratorFactory.ModuleConfig',
-            name: 'fundingManagerConfig',
-            type: 'tuple',
-          },
-          {
-            components: [
-              {
-                components: [
-                  {
-                    internalType: 'uint256',
-                    name: 'majorVersion',
-                    type: 'uint256',
-                  },
-                  {
-                    internalType: 'uint256',
-                    name: 'minorVersion',
-                    type: 'uint256',
-                  },
-                  { internalType: 'string', name: 'url', type: 'string' },
-                  { internalType: 'string', name: 'title', type: 'string' },
-                ],
-                internalType: 'struct IModule.Metadata',
-                name: 'metadata',
-                type: 'tuple',
-              },
-              { internalType: 'bytes', name: 'configData', type: 'bytes' },
-              { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
-            ],
-            internalType: 'struct IOrchestratorFactory.ModuleConfig',
-            name: 'authorizerConfig',
-            type: 'tuple',
+            internalType: 'uint256',
+            name: 'startEpoch',
+            type: 'uint256',
             description:
-              "The config data for the orchestrator's {IAuthorizer} instance.",
+              ': epoch in which the payment starts. Use getEpochFromTimestamp() or getCurrentEpoch() to get the appropriate epoch',
           },
           {
-            components: [
-              {
-                components: [
-                  {
-                    internalType: 'uint256',
-                    name: 'majorVersion',
-                    type: 'uint256',
-                  },
-                  {
-                    internalType: 'uint256',
-                    name: 'minorVersion',
-                    type: 'uint256',
-                  },
-                  { internalType: 'string', name: 'url', type: 'string' },
-                  { internalType: 'string', name: 'title', type: 'string' },
-                ],
-                internalType: 'struct IModule.Metadata',
-                name: 'metadata',
-                type: 'tuple',
-              },
-              { internalType: 'bytes', name: 'configData', type: 'bytes' },
-              { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
-            ],
-            internalType: 'struct IOrchestratorFactory.ModuleConfig',
-            name: 'paymentProcessorConfig',
-            type: 'tuple',
-            description:
-              "The config data for the orchestrator's {IPaymentProcessor} instance.",
-          },
-          {
-            components: [
-              {
-                components: [
-                  {
-                    internalType: 'uint256',
-                    name: 'majorVersion',
-                    type: 'uint256',
-                  },
-                  {
-                    internalType: 'uint256',
-                    name: 'minorVersion',
-                    type: 'uint256',
-                  },
-                  { internalType: 'string', name: 'url', type: 'string' },
-                  { internalType: 'string', name: 'title', type: 'string' },
-                ],
-                internalType: 'struct IModule.Metadata',
-                name: 'metadata',
-                type: 'tuple',
-              },
-              { internalType: 'bytes', name: 'configData', type: 'bytes' },
-              { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
-            ],
-            internalType: 'struct IOrchestratorFactory.ModuleConfig[]',
-            name: 'moduleConfigs',
-            type: 'tuple[]',
-            description:
-              "Variable length set of optional module's config data.",
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: ': recipient address that should receive tokens',
           },
         ],
-        name: 'createOrchestrator',
+        name: 'addRecurringPayment',
         outputs: [
           {
-            internalType: 'contract IOrchestrator',
-            name: '_0',
-            type: 'address',
+            internalType: 'uint256',
+            name: 'id',
+            type: 'uint256',
+            description: ': id of the newly created recurring payment',
           },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Adds a recurring payment to the manager',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: 'amount of tokens that have been paid out',
+          },
+        ],
+        name: 'amountPaid',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
         description:
-          "Creates a new orchestrator with caller being the orchestrator's owner.",
+          'Notifies the PaymentClient, that tokens have been paid out accordingly',
+      },
+      {
+        inputs: [],
+        name: 'collectPaymentOrders',
+        outputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'recipient', type: 'address' },
+              { internalType: 'uint256', name: 'amount', type: 'uint256' },
+              { internalType: 'uint256', name: 'createdAt', type: 'uint256' },
+              { internalType: 'uint256', name: 'dueTo', type: 'uint256' },
+            ],
+            internalType: 'struct IERC20PaymentClient.PaymentOrder[]',
+            name: '_0',
+            type: 'tuple[]',
+            description: 'list of payment orders',
+          },
+          {
+            internalType: 'uint256',
+            name: '_1',
+            type: 'uint256',
+            description: 'total amount of token to pay',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Collects outstanding payment orders.',
       },
       {
         inputs: [{ internalType: 'bytes', name: 'data', type: 'bytes' }],
@@ -806,45 +1801,342 @@ export const OrchestratorFactory = {
         type: 'function',
       },
       {
+        inputs: [],
+        name: 'getCurrentEpoch',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'epoch',
+            type: 'uint256',
+            description:
+              ': epoch in which current timestamp (block.timestamp) belongs to',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Calculates the current epoch',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'timestamp',
+            type: 'uint256',
+            description: ': a timestamp in a uint format',
+          },
+        ],
+        name: 'getEpochFromTimestamp',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'epoch',
+            type: 'uint256',
+            description: ': epoch in which timestamp belongs to',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Calculates the epoch from a given uint timestamp',
+      },
+      {
+        inputs: [],
+        name: 'getEpochLength',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: 'Length of an epoch in a uint timestamp',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the length of an epoch',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'xEpochsInTheFuture',
+            type: 'uint256',
+            description: ': how many epochs from the current epoch',
+          },
+        ],
+        name: 'getFutureEpoch',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'futureEpoch',
+            type: 'uint256',
+            description: ': epoch in the future',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Calculates a future epoch x epochs from now',
+      },
+      {
         inputs: [
           {
             internalType: 'uint256',
             name: 'id',
             type: 'uint256',
-            description: "The requested orchestrator's id.",
+            description: 'The id of the RecurringPayment to return.',
           },
         ],
-        name: 'getOrchestratorByID',
-        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        name: 'getPreviousPaymentId',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: 'The id of previous RecurringPayment.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
-        description:
-          'Returns the {IOrchestrator} address that corresponds to the given id.',
-      },
-      {
-        inputs: [],
-        name: 'getOrchestratorIDCounter',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the counter of the current orchestrator id',
+        description: 'Returns the id of previous RecurringPayment.',
       },
       {
         inputs: [
-          { internalType: 'address', name: 'forwarder', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'id',
+            type: 'uint256',
+            description: 'The id of the RecurringPayment to return.',
+          },
         ],
-        name: 'isTrustedForwarder',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        name: 'getRecurringPaymentInformation',
+        outputs: [
+          {
+            components: [
+              { internalType: 'uint256', name: 'amount', type: 'uint256' },
+              { internalType: 'uint256', name: 'startEpoch', type: 'uint256' },
+              {
+                internalType: 'uint256',
+                name: 'lastTriggeredEpoch',
+                type: 'uint256',
+              },
+              { internalType: 'address', name: 'recipient', type: 'address' },
+            ],
+            internalType: 'struct IRecurringPaymentManager.RecurringPayment',
+            name: '_0',
+            type: 'tuple',
+            description: 'RecurringPayment with id `id`.',
+          },
+        ],
         stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the RecurringPayment instance with id `id`.',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'addr', type: 'address' },
+        ],
+        name: 'grantModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
         type: 'function',
       },
       {
         inputs: [],
-        name: 'moduleFactory',
-        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        name: 'identifier',
+        outputs: [
+          {
+            internalType: 'bytes32',
+            name: '_0',
+            type: 'bytes32',
+            description: "The module's identifier.",
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the {IModuleFactory} implementation address.',
+        description: "Returns the module's identifier.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'orchestrator_',
+            type: 'address',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
+            internalType: 'struct IModule.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: "The module's metadata.",
+          },
+          {
+            internalType: 'bytes',
+            name: 'configData',
+            type: 'bytes',
+            description:
+              'Variable config data for specific module implementations.',
+          },
+        ],
+        name: 'init',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: "The module's initializer function.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'orchestrator_',
+            type: 'address',
+          },
+          { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
+        ],
+        name: 'init2',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'uint256', name: 'id', type: 'uint256' }],
+        name: 'isExistingRecurringPaymentId',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description:
+              'True if RecurringPayment with id `id` exists, false otherwise.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns whether RecurringPayment with id `id` exists.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'forwarder',
+            type: 'address',
+            description: 'The contract address to be verified.',
+          },
+        ],
+        name: 'isTrustedForwarder',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'bool Is the given address the trusted forwarder',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Checks if the provided address is the trusted forwarder',
+      },
+      {
+        inputs: [],
+        name: 'listRecurringPaymentIds',
+        outputs: [
+          {
+            internalType: 'uint256[]',
+            name: '_0',
+            type: 'uint256[]',
+            description: 'List of RecurringPayment ids.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns total list of RecurringPayment ids.',
+      },
+      {
+        inputs: [],
+        name: 'orchestrator',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: '_0',
+            type: 'address',
+            description: "The module's orchestrator.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          "Returns the module's {IOrchestrator} orchestrator instance.",
+      },
+      {
+        inputs: [],
+        name: 'outstandingTokenAmount',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the total outstanding token payment amount.',
+      },
+      {
+        inputs: [],
+        name: 'paymentOrders',
+        outputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'recipient', type: 'address' },
+              { internalType: 'uint256', name: 'amount', type: 'uint256' },
+              { internalType: 'uint256', name: 'createdAt', type: 'uint256' },
+              { internalType: 'uint256', name: 'dueTo', type: 'uint256' },
+            ],
+            internalType: 'struct IERC20PaymentClient.PaymentOrder[]',
+            name: '_0',
+            type: 'tuple[]',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the list of outstanding payment orders.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'prevId',
+            type: 'uint256',
+            description:
+              ': id of the previous recurring payment in the payment list',
+          },
+          {
+            internalType: 'uint256',
+            name: 'id',
+            type: 'uint256',
+            description: ': id of the recurring payment that is to be removed',
+          },
+        ],
+        name: 'removeRecurringPayment',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Removes a recurring Payment',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'addr', type: 'address' },
+        ],
+        name: 'revokeModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
       },
       {
         inputs: [
@@ -857,394 +2149,443 @@ export const OrchestratorFactory = {
       },
       {
         inputs: [],
-        name: 'target',
-        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Returns the {IOrchestrator} target implementation address.',
-      },
-      {
-        inputs: [],
-        name: 'trustedForwarder',
-        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-    ],
-  },
-} as const
-export const ERC20 = {
-  'v1.0': {
-    name: 'ERC20',
-    description: 'Interface of the ERC-20 standard as defined in the ERC.',
-    version: 'v1.0',
-    moduleType: 'external',
-    deploymentArgs: { configData: [], dependencyData: [] },
-    abi: [
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'owner',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'spender',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tag: 'decimals',
-          },
-        ],
-        name: 'Approval',
-        type: 'event',
-        outputs: [],
-        description:
-          'Emitted when the allowance of a `spender` for an `owner` is set by a call to {approve}. `amount` is the new allowance.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'from',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'to',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tag: 'decimals',
-          },
-        ],
-        name: 'Transfer',
-        type: 'event',
-        outputs: [],
-        description:
-          'Emitted when `amount` tokens are moved from one account (`from`) to another (`to`). Note that `amount` may be zero.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'owner',
-            type: 'address',
-            description: 'The owner of the tokens',
-          },
-          {
-            internalType: 'address',
-            name: 'spender',
-            type: 'address',
-            description: 'The spender of the token allowance',
-          },
-        ],
-        name: 'allowance',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tag: 'decimals',
-            description:
-              'allowance The current allowance amout approved by the owner for the spender',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Returns the remaining number of tokens that `spender` will be allowed to spend on behalf of `owner` through {transferFrom}. This is zero by default.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'spender',
-            type: 'address',
-            description: 'The spender of the token allowance',
-          },
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tag: 'decimals',
-            description:
-              'The amount that may be spent on behalf of the `spender`',
-          },
-        ],
-        name: 'approve',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description:
-              'success A boolean value indicating whether the operation succeeded.',
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          "Sets a `amount` amount of tokens as the allowance of `spender` over the caller's tokens.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'account',
-            type: 'address',
-            description: 'The account whose balance is to be checked',
-          },
-        ],
-        name: 'balanceOf',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tag: 'decimals',
-            description:
-              'balance Returns the amount of tokens owned by the account.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the amount of tokens owned by `account`.',
-      },
-      {
-        inputs: [],
-        name: 'decimals',
-        outputs: [
-          {
-            internalType: 'uint8',
-            name: '_0',
-            type: 'uint8',
-            description: 'decimals The decimals of the token.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the decimals of the token.',
-      },
-      {
-        inputs: [],
-        name: 'name',
+        name: 'title',
         outputs: [
           {
             internalType: 'string',
             name: '_0',
             type: 'string',
-            description: 'name The name of the token.',
+            description: "The module's title.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the name of the token.',
+        description: "Returns the module's title.",
       },
       {
         inputs: [],
-        name: 'symbol',
+        name: 'trigger',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Triggers the start of the due payments for all recurring payment orders',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'startId',
+            type: 'uint256',
+            description:
+              ': id of start position of the recurring payments that should be triggered',
+          },
+          {
+            internalType: 'uint256',
+            name: 'endId',
+            type: 'uint256',
+            description:
+              ': id of end position of the recurring payments that should be triggered',
+          },
+        ],
+        name: 'triggerFor',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'See trigger() but enables you to determine which ids you want to trigger payment ordes for',
+      },
+      {
+        inputs: [],
+        name: 'url',
         outputs: [
           {
             internalType: 'string',
             name: '_0',
             type: 'string',
-            description: 'symbol The symbol of the token.',
+            description: "The module's URL.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the symbol of the token.',
+        description: "Returns the module's URL.",
       },
       {
         inputs: [],
-        name: 'totalSupply',
+        name: 'version',
         outputs: [
           {
             internalType: 'uint256',
-            name: 'amount',
+            name: '_0',
             type: 'uint256',
-            tag: 'decimals',
-            description: 'totalSupply The total amount of tokens.',
+            description: "The module's major version.",
+          },
+          {
+            internalType: 'uint256',
+            name: '_1',
+            type: 'uint256',
+            description: "The module's minor version.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the amount of tokens in existence.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'to',
-            type: 'address',
-            description: 'The target of the transfer',
-          },
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tag: 'decimals',
-            description: 'The amount of tokens to be transferred',
-          },
-        ],
-        name: 'transfer',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description:
-              'success Returns a boolean value indicating whether the operation succeeded.',
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          "Transfers a `amount` amount of tokens from the caller's account to `to`.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'from',
-            type: 'address',
-            description: 'The source of the transfer',
-          },
-          {
-            internalType: 'address',
-            name: 'to',
-            type: 'address',
-            description: 'The target of the transfer',
-          },
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tag: 'decimals',
-            description: 'The amount of tokens to be transferred',
-          },
-        ],
-        name: 'transferFrom',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description:
-              'success Returns a boolean value indicating whether the operation succeeded.',
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          "Moves a `amount` amount of tokens from `from` to `to` using the allowance mechanism. `amount` is then deducted from the caller's allowance.",
+        description: "Returns the module's version.",
       },
     ],
   },
 } as const
-export const TransactionForwarder = {
+export const BountyManager = {
   'v1.0': {
-    name: 'TransactionForwarder',
+    name: 'BountyManager',
     description: '',
     version: 'v1.0',
-    moduleType: 'external',
+    moduleType: 'logicModule',
     deploymentArgs: { configData: [], dependencyData: [] },
     abi: [
       {
-        inputs: [{ internalType: 'string', name: 'name', type: 'string' }],
-        stateMutability: 'nonpayable',
-        type: 'constructor',
+        inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
+        name: 'AddressEmptyCode',
+        type: 'error',
       },
       {
         inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
         name: 'AddressInsufficientBalance',
         type: 'error',
       },
-      {
-        inputs: [
-          {
-            components: [
-              { internalType: 'address', name: 'target', type: 'address' },
-              { internalType: 'bool', name: 'allowFailure', type: 'bool' },
-              { internalType: 'bytes', name: 'callData', type: 'bytes' },
-            ],
-            internalType: 'struct ITransactionForwarder.SingleCall',
-            name: 'call',
-            type: 'tuple',
-          },
-        ],
-        name: 'CallFailed',
-        type: 'error',
-      },
-      {
-        inputs: [{ internalType: 'uint48', name: 'deadline', type: 'uint48' }],
-        name: 'ERC2771ForwarderExpiredRequest',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'signer', type: 'address' },
-          { internalType: 'address', name: 'from', type: 'address' },
-        ],
-        name: 'ERC2771ForwarderInvalidSigner',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'uint256', name: 'requestedValue', type: 'uint256' },
-          { internalType: 'uint256', name: 'msgValue', type: 'uint256' },
-        ],
-        name: 'ERC2771ForwarderMismatchedValue',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'target', type: 'address' },
-          { internalType: 'address', name: 'forwarder', type: 'address' },
-        ],
-        name: 'ERC2771UntrustfulTarget',
-        type: 'error',
-      },
       { inputs: [], name: 'FailedInnerCall', type: 'error' },
+      { inputs: [], name: 'InvalidInitialization', type: 'error' },
       {
-        inputs: [
-          { internalType: 'address', name: 'account', type: 'address' },
-          { internalType: 'uint256', name: 'currentNonce', type: 'uint256' },
-        ],
-        name: 'InvalidAccountNonce',
+        inputs: [],
+        name: 'Library__LinkedIdList__InvalidNewId',
         type: 'error',
       },
-      { inputs: [], name: 'InvalidShortString', type: 'error' },
       {
-        inputs: [{ internalType: 'string', name: 'str', type: 'string' }],
-        name: 'StringTooLong',
+        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
+        name: 'Module_OrchestratorCallbackFailed',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__BountyManager__AlreadyClaimed',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__BountyManager__BountyLocked',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__BountyManager__ClaimExceedsGivenPayoutAmounts',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__BountyManager__ContributorsChanged',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__BountyManager__InvalidBountyId',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__BountyManager__InvalidClaimId',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__BountyManager__InvalidContributorAddress',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__BountyManager__InvalidContributorAmount',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__BountyManager__InvalidContributorsLength',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__BountyManager__InvalidPayoutAmounts',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__BountyManager__OnlyClaimContributor',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'caller', type: 'address' },
+        ],
+        name: 'Module__CallerNotAuthorized',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__CannotCallInit2Again', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClient__ArrayLengthMismatch',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClient__CallerNotAuthorized',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClient__InvalidAmount',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClient__InvalidDueTo',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClient__InvalidRecipient',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClient__TokenTransferFailed',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
+      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__NoDependencyOrMalformedDependencyData',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      { inputs: [], name: 'NotInitializing', type: 'error' },
+      {
+        inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
+        name: 'SafeERC20FailedOperation',
         type: 'error',
       },
       {
         anonymous: false,
-        inputs: [],
-        name: 'EIP712DomainChanged',
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'bountyId',
+            type: 'uint256',
+            description: 'The id of the newly added Bounty.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'minimumPayoutAmount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description:
+              'The minimum amount of tokens the Bounty will pay out upon being claimed',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'maximumPayoutAmount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description:
+              'The maximum amount of tokens the Bounty will pay out upon being claimed',
+          },
+          {
+            indexed: false,
+            internalType: 'bytes',
+            name: 'details',
+            type: 'bytes',
+            tags: ['any'],
+            description: "The Bounty's details.",
+          },
+        ],
+        name: 'BountyAdded',
         type: 'event',
         outputs: [],
-        description:
-          'MAY be emitted to signal that the domain could have changed.',
+        description: 'Event emitted when a new Bounty is added.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'bountyId',
+            type: 'uint256',
+            description: 'The id of the locked Bounty.',
+          },
+        ],
+        name: 'BountyLocked',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a Bounty gets locked.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'bountyId',
+            type: 'uint256',
+            description: 'The id of the updated Bounty.',
+          },
+          {
+            indexed: true,
+            internalType: 'bytes',
+            name: 'details',
+            type: 'bytes',
+            tags: ['any'],
+            description: "The Bounty's details.",
+          },
+        ],
+        name: 'BountyUpdated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a Bounty got updated.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'claimId',
+            type: 'uint256',
+            description: 'The id of the newly added Claim.',
+          },
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'bountyId',
+            type: 'uint256',
+            description: 'The id of the Bounty that got claimed.',
+          },
+          {
+            components: [
+              { internalType: 'address', name: 'addr', type: 'address' },
+              {
+                internalType: 'uint256',
+                name: 'claimAmount',
+                type: 'uint256',
+                tags: ['decimals'],
+              },
+            ],
+            indexed: true,
+            internalType: 'struct IBountyManager.Contributor[]',
+            name: 'contributors',
+            type: 'tuple[]',
+            description: 'The contributor information for the Claim.',
+          },
+          {
+            indexed: false,
+            internalType: 'bytes',
+            name: 'details',
+            type: 'bytes',
+            tags: ['any'],
+            description: "The Claim's details.",
+          },
+        ],
+        name: 'ClaimAdded',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a new Claim is added.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'claimId',
+            type: 'uint256',
+            description: 'The id of the Claim that got updated.',
+          },
+          {
+            components: [
+              { internalType: 'address', name: 'addr', type: 'address' },
+              {
+                internalType: 'uint256',
+                name: 'claimAmount',
+                type: 'uint256',
+                tags: ['decimals'],
+              },
+            ],
+            indexed: true,
+            internalType: 'struct IBountyManager.Contributor[]',
+            name: 'contributors',
+            type: 'tuple[]',
+            description: 'The contributor information for the Claim.',
+          },
+        ],
+        name: 'ClaimContributorsUpdated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when Claim Contributors got updated.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'claimId',
+            type: 'uint256',
+            description: 'The id of the Claim that got updated.',
+          },
+          {
+            indexed: false,
+            internalType: 'bytes',
+            name: 'details',
+            type: 'bytes',
+            tags: ['any'],
+            description: "The Claim's details.",
+          },
+        ],
+        name: 'ClaimDetailsUpdated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when Claim Details got updated.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'claimId',
+            type: 'uint256',
+            description: 'The id of the Claim that got verified.',
+          },
+        ],
+        name: 'ClaimVerified',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a Claim is verified.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint64',
+            name: 'version',
+            type: 'uint64',
+          },
+        ],
+        name: 'Initialized',
+        type: 'event',
+        outputs: [],
       },
       {
         anonymous: false,
@@ -1252,189 +2593,1015 @@ export const TransactionForwarder = {
           {
             indexed: true,
             internalType: 'address',
-            name: 'signer',
+            name: 'parentOrchestrator',
             type: 'address',
+            description:
+              'The address of the orchestrator the module is linked to.',
+          },
+          {
+            indexed: true,
+            internalType: 'string',
+            name: 'moduleTitle',
+            type: 'string',
+            description: 'The title of the module.',
           },
           {
             indexed: false,
             internalType: 'uint256',
-            name: 'nonce',
+            name: 'majorVersion',
             type: 'uint256',
+            description: 'The major version of the module.',
           },
           {
             indexed: false,
-            internalType: 'bool',
-            name: 'success',
-            type: 'bool',
+            internalType: 'uint256',
+            name: 'minorVersion',
+            type: 'uint256',
+            description: 'The minor version of the module.',
           },
         ],
-        name: 'ExecutedForwardRequest',
+        name: 'ModuleInitialized',
         type: 'event',
         outputs: [],
-        description:
-          'Emitted when a `ForwardRequest` is executed. NOTE: An unsuccessful forward request could be due to an invalid signature, an expired deadline, or simply a revert in the requested call. The contract guarantees that the relayer is not able to force the requested call to run out of gas.',
+        description: 'Module has been initialized.',
       },
       {
+        anonymous: false,
         inputs: [
           {
-            components: [
-              { internalType: 'address', name: 'from', type: 'address' },
-              { internalType: 'address', name: 'to', type: 'address' },
-              { internalType: 'uint256', name: 'value', type: 'uint256' },
-              { internalType: 'uint256', name: 'gas', type: 'uint256' },
-              { internalType: 'uint48', name: 'deadline', type: 'uint48' },
-              { internalType: 'bytes', name: 'data', type: 'bytes' },
-              { internalType: 'bytes', name: 'signature', type: 'bytes' },
-            ],
-            internalType: 'struct ERC2771Forwarder.ForwardRequestData',
-            name: 'req',
-            type: 'tuple',
-            description: 'The ForwardRequest you want to get the digest from',
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that will receive the payment.',
           },
-        ],
-        name: 'createDigest',
-        outputs: [
           {
-            internalType: 'bytes32',
-            name: 'digest',
-            type: 'bytes32',
-            description:
-              'The digest needed to create a signature for the request',
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'The amount of tokens the payment consists of.',
           },
         ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Creates a digest for the given ForwardRequestData',
+        name: 'PaymentOrderAdded',
+        type: 'event',
+        outputs: [],
+        description: 'Added a payment order.',
       },
       {
         inputs: [],
-        name: 'eip712Domain',
-        outputs: [
-          { internalType: 'bytes1', name: 'fields', type: 'bytes1' },
-          { internalType: 'string', name: 'name', type: 'string' },
-          { internalType: 'string', name: 'version', type: 'string' },
-          { internalType: 'uint256', name: 'chainId', type: 'uint256' },
-          {
-            internalType: 'address',
-            name: 'verifyingContract',
-            type: 'address',
-          },
-          { internalType: 'bytes32', name: 'salt', type: 'bytes32' },
-          { internalType: 'uint256[]', name: 'extensions', type: 'uint256[]' },
-        ],
+        name: 'BOUNTY_ISSUER_ROLE',
+        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'CLAIMANT_ROLE',
+        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'VERIFIER_ROLE',
+        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
         stateMutability: 'view',
         type: 'function',
       },
       {
         inputs: [
           {
-            components: [
-              { internalType: 'address', name: 'from', type: 'address' },
-              { internalType: 'address', name: 'to', type: 'address' },
-              { internalType: 'uint256', name: 'value', type: 'uint256' },
-              { internalType: 'uint256', name: 'gas', type: 'uint256' },
-              { internalType: 'uint48', name: 'deadline', type: 'uint48' },
-              { internalType: 'bytes', name: 'data', type: 'bytes' },
-              { internalType: 'bytes', name: 'signature', type: 'bytes' },
-            ],
-            internalType: 'struct ERC2771Forwarder.ForwardRequestData',
-            name: 'request',
-            type: 'tuple',
-          },
-        ],
-        name: 'execute',
-        outputs: [],
-        stateMutability: 'payable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          {
-            components: [
-              { internalType: 'address', name: 'from', type: 'address' },
-              { internalType: 'address', name: 'to', type: 'address' },
-              { internalType: 'uint256', name: 'value', type: 'uint256' },
-              { internalType: 'uint256', name: 'gas', type: 'uint256' },
-              { internalType: 'uint48', name: 'deadline', type: 'uint48' },
-              { internalType: 'bytes', name: 'data', type: 'bytes' },
-              { internalType: 'bytes', name: 'signature', type: 'bytes' },
-            ],
-            internalType: 'struct ERC2771Forwarder.ForwardRequestData[]',
-            name: 'requests',
-            type: 'tuple[]',
-          },
-          {
-            internalType: 'address payable',
-            name: 'refundReceiver',
-            type: 'address',
-          },
-        ],
-        name: 'executeBatch',
-        outputs: [],
-        stateMutability: 'payable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          {
-            components: [
-              { internalType: 'address', name: 'target', type: 'address' },
-              { internalType: 'bool', name: 'allowFailure', type: 'bool' },
-              { internalType: 'bytes', name: 'callData', type: 'bytes' },
-            ],
-            internalType: 'struct ITransactionForwarder.SingleCall[]',
-            name: 'calls',
-            type: 'tuple[]',
+            internalType: 'uint256',
+            name: 'minimumPayoutAmount',
+            type: 'uint256',
+            tags: ['decimals'],
             description:
-              'Array of call structs that should be executed in the multicall',
+              'The minimum amount of tokens the Bounty will pay out upon being claimed',
+          },
+          {
+            internalType: 'uint256',
+            name: 'maximumPayoutAmount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description:
+              'The maximum amount of tokens the Bounty will pay out upon being claimed',
+          },
+          {
+            internalType: 'bytes',
+            name: 'details',
+            type: 'bytes',
+            tags: ['any'],
+            description: "The Bounty's details.",
           },
         ],
-        name: 'executeMulticall',
+        name: 'addBounty',
         outputs: [
           {
-            components: [
-              { internalType: 'bool', name: 'success', type: 'bool' },
-              { internalType: 'bytes', name: 'returnData', type: 'bytes' },
-            ],
-            internalType: 'struct ITransactionForwarder.Result[]',
-            name: 'results',
-            type: 'tuple[]',
-            description: 'The return data of the calls that were executed',
+            internalType: 'uint256',
+            name: 'id',
+            type: 'uint256',
+            description: "The newly added Bounty's id.",
           },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
-        description:
-          'Enables the execution of multiple calls in a single transaction',
+        description: 'Adds a new Bounty.',
       },
       {
-        inputs: [{ internalType: 'address', name: 'owner', type: 'address' }],
-        name: 'nonces',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
+        inputs: [
+          { internalType: 'uint256', name: 'bountyId', type: 'uint256' },
+          {
+            components: [
+              { internalType: 'address', name: 'addr', type: 'address' },
+              {
+                internalType: 'uint256',
+                name: 'claimAmount',
+                type: 'uint256',
+                tags: ['decimals'],
+              },
+            ],
+            internalType: 'struct IBountyManager.Contributor[]',
+            name: 'contributors',
+            type: 'tuple[]',
+            description: 'The contributor information for the Claim',
+          },
+          {
+            internalType: 'bytes',
+            name: 'details',
+            type: 'bytes',
+            tags: ['any'],
+            description: "The Claim's details.",
+          },
+        ],
+        name: 'addClaim',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'id',
+            type: 'uint256',
+            description: "The newly added Claim's id.",
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Adds a new Claim.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'amount of tokens that have been paid out',
+          },
+        ],
+        name: 'amountPaid',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Notifies the PaymentClient, that tokens have been paid out accordingly',
+      },
+      {
+        inputs: [],
+        name: 'collectPaymentOrders',
+        outputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'recipient', type: 'address' },
+              {
+                internalType: 'uint256',
+                name: 'amount',
+                type: 'uint256',
+                tags: ['decimals'],
+              },
+              { internalType: 'uint256', name: 'createdAt', type: 'uint256' },
+              { internalType: 'uint256', name: 'dueTo', type: 'uint256' },
+            ],
+            internalType: 'struct IERC20PaymentClient.PaymentOrder[]',
+            name: '_0',
+            type: 'tuple[]',
+            description: 'list of payment orders',
+          },
+          {
+            internalType: 'uint256',
+            name: '_1',
+            type: 'uint256',
+            description: 'total amount of token to pay',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Collects outstanding payment orders.',
+      },
+      {
+        inputs: [{ internalType: 'bytes', name: 'data', type: 'bytes' }],
+        name: 'decoder',
+        outputs: [{ internalType: 'bool', name: 'requirement', type: 'bool' }],
+        stateMutability: 'pure',
         type: 'function',
       },
       {
         inputs: [
           {
-            components: [
-              { internalType: 'address', name: 'from', type: 'address' },
-              { internalType: 'address', name: 'to', type: 'address' },
-              { internalType: 'uint256', name: 'value', type: 'uint256' },
-              { internalType: 'uint256', name: 'gas', type: 'uint256' },
-              { internalType: 'uint48', name: 'deadline', type: 'uint48' },
-              { internalType: 'bytes', name: 'data', type: 'bytes' },
-              { internalType: 'bytes', name: 'signature', type: 'bytes' },
-            ],
-            internalType: 'struct ERC2771Forwarder.ForwardRequestData',
-            name: 'request',
-            type: 'tuple',
+            internalType: 'uint256',
+            name: 'bountyId',
+            type: 'uint256',
+            description: 'The id of the Bounty to return.',
           },
         ],
-        name: 'verify',
+        name: 'getBountyInformation',
+        outputs: [
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'minimumPayoutAmount',
+                type: 'uint256',
+                tags: ['decimals'],
+              },
+              {
+                internalType: 'uint256',
+                name: 'maximumPayoutAmount',
+                type: 'uint256',
+                tags: ['decimals'],
+              },
+              {
+                internalType: 'bytes',
+                name: 'details',
+                type: 'bytes',
+                tags: ['any'],
+              },
+              { internalType: 'bool', name: 'locked', type: 'bool' },
+            ],
+            internalType: 'struct IBountyManager.Bounty',
+            name: '_0',
+            type: 'tuple',
+            description: 'Bounty with id `id`.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the Bounty instance with id `id`.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'claimId',
+            type: 'uint256',
+            description: 'The id of the Claim to return.',
+          },
+        ],
+        name: 'getClaimInformation',
+        outputs: [
+          {
+            components: [
+              { internalType: 'uint256', name: 'bountyId', type: 'uint256' },
+              {
+                components: [
+                  { internalType: 'address', name: 'addr', type: 'address' },
+                  {
+                    internalType: 'uint256',
+                    name: 'claimAmount',
+                    type: 'uint256',
+                    tags: ['decimals'],
+                  },
+                ],
+                internalType: 'struct IBountyManager.Contributor[]',
+                name: 'contributors',
+                type: 'tuple[]',
+              },
+              {
+                internalType: 'bytes',
+                name: 'details',
+                type: 'bytes',
+                tags: ['any'],
+              },
+              { internalType: 'bool', name: 'claimed', type: 'bool' },
+            ],
+            internalType: 'struct IBountyManager.Claim',
+            name: '_0',
+            type: 'tuple',
+            description: 'Claim with id `id`.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the Claim instance with id `id`.',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'addr', type: 'address' },
+        ],
+        name: 'grantModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'identifier',
+        outputs: [
+          {
+            internalType: 'bytes32',
+            name: '_0',
+            type: 'bytes32',
+            description: "The module's identifier.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's identifier.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'orchestrator_',
+            type: 'address',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
+            internalType: 'struct IModule.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: "The module's metadata.",
+          },
+          { internalType: 'bytes', name: '', type: 'bytes' },
+        ],
+        name: 'init',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: "The module's initializer function.",
+      },
+      {
+        inputs: [
+          { internalType: 'contract IOrchestrator', name: '', type: 'address' },
+          { internalType: 'bytes', name: '', type: 'bytes' },
+        ],
+        name: 'init2',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'bountyId',
+            type: 'uint256',
+            description: 'The id of the Bounty to test.',
+          },
+        ],
+        name: 'isExistingBountyId',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'True if Claim with id `id` exists, false otherwise.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns whether Bounty with id `id` exists.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'claimId',
+            type: 'uint256',
+            description: 'The id of the Bounty to test.',
+          },
+        ],
+        name: 'isExistingClaimId',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'True if Claim with id `id` exists, false otherwise.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns whether Claim with id `id` exists.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'forwarder',
+            type: 'address',
+            description: 'The contract address to be verified.',
+          },
+        ],
+        name: 'isTrustedForwarder',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'bool Is the given address the trusted forwarder',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Checks if the provided address is the trusted forwarder',
+      },
+      {
+        inputs: [],
+        name: 'listBountyIds',
+        outputs: [
+          {
+            internalType: 'uint256[]',
+            name: '_0',
+            type: 'uint256[]',
+            description: 'List of Bounty ids.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns total list of Bounty ids.',
+      },
+      {
+        inputs: [],
+        name: 'listClaimIds',
+        outputs: [
+          {
+            internalType: 'uint256[]',
+            name: '_0',
+            type: 'uint256[]',
+            description: 'List of Claim ids.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns total list of Claim ids.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'contributorAddrs',
+            type: 'address',
+            description: 'claim ids are filtered by the contributor address',
+          },
+        ],
+        name: 'listClaimIdsForContributorAddress',
+        outputs: [
+          {
+            internalType: 'uint256[]',
+            name: '_0',
+            type: 'uint256[]',
+            description: 'List of Claim ids.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Returns a list of Claim ids in which contributor Address is used.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'bountyId',
+            type: 'uint256',
+            description: 'The id of the Bounty that will be locked.',
+          },
+        ],
+        name: 'lockBounty',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Locks the Bounty so it cant be claimed.',
+      },
+      {
+        inputs: [],
+        name: 'orchestrator',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: '_0',
+            type: 'address',
+            description: "The module's orchestrator.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          "Returns the module's {IOrchestrator} orchestrator instance.",
+      },
+      {
+        inputs: [],
+        name: 'outstandingTokenAmount',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the total outstanding token payment amount.',
+      },
+      {
+        inputs: [],
+        name: 'paymentOrders',
+        outputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'recipient', type: 'address' },
+              {
+                internalType: 'uint256',
+                name: 'amount',
+                type: 'uint256',
+                tags: ['decimals'],
+              },
+              { internalType: 'uint256', name: 'createdAt', type: 'uint256' },
+              { internalType: 'uint256', name: 'dueTo', type: 'uint256' },
+            ],
+            internalType: 'struct IERC20PaymentClient.PaymentOrder[]',
+            name: '_0',
+            type: 'tuple[]',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the list of outstanding payment orders.',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'addr', type: 'address' },
+        ],
+        name: 'revokeModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
+        ],
+        name: 'supportsInterface',
         outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
         stateMutability: 'view',
         type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'title',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: "The module's title.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's title.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'bountyId',
+            type: 'uint256',
+            description: 'The id of the Bounty that will be updated.',
+          },
+          {
+            internalType: 'bytes',
+            name: 'details',
+            type: 'bytes',
+            tags: ['any'],
+            description: "The Bounty's details.",
+          },
+        ],
+        name: 'updateBounty',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: "Updates a Bounty's informations.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'claimId',
+            type: 'uint256',
+            description: 'The id of the Claim that will be updated.',
+          },
+          {
+            components: [
+              { internalType: 'address', name: 'addr', type: 'address' },
+              {
+                internalType: 'uint256',
+                name: 'claimAmount',
+                type: 'uint256',
+                tags: ['decimals'],
+              },
+            ],
+            internalType: 'struct IBountyManager.Contributor[]',
+            name: 'contributors',
+            type: 'tuple[]',
+            description: 'The contributor information for the Claim.',
+          },
+        ],
+        name: 'updateClaimContributors',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: "Updates a Claim's contributor informations.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'claimId',
+            type: 'uint256',
+            description: 'The id of the Claim that will be updated.',
+          },
+          {
+            internalType: 'bytes',
+            name: 'details',
+            type: 'bytes',
+            tags: ['any'],
+            description: "The Claim's details.",
+          },
+        ],
+        name: 'updateClaimDetails',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Updates a Claim Details.',
+      },
+      {
+        inputs: [],
+        name: 'url',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: "The module's URL.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's URL.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'claimId',
+            type: 'uint256',
+            description: 'The id of the Claim that wants to claim the Bounty.',
+          },
+          {
+            components: [
+              { internalType: 'address', name: 'addr', type: 'address' },
+              {
+                internalType: 'uint256',
+                name: 'claimAmount',
+                type: 'uint256',
+                tags: ['decimals'],
+              },
+            ],
+            internalType: 'struct IBountyManager.Contributor[]',
+            name: 'contributors',
+            type: 'tuple[]',
+            description: 'The contributor information for the Claim.',
+          },
+        ],
+        name: 'verifyClaim',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Completes a Bounty by verifying a claim.',
+      },
+      {
+        inputs: [],
+        name: 'version',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: "The module's major version.",
+          },
+          {
+            internalType: 'uint256',
+            name: '_1',
+            type: 'uint256',
+            description: "The module's minor version.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's version.",
+      },
+    ],
+  },
+} as const
+export const Module = {
+  'v1.0': {
+    name: 'Module',
+    description: '',
+    version: 'v1.0',
+    moduleType: 'base',
+    deploymentArgs: { configData: [], dependencyData: [] },
+    abi: [
+      { inputs: [], name: 'InvalidInitialization', type: 'error' },
+      {
+        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
+        name: 'Module_OrchestratorCallbackFailed',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'caller', type: 'address' },
+        ],
+        name: 'Module__CallerNotAuthorized',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__CannotCallInit2Again', type: 'error' },
+      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
+      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__NoDependencyOrMalformedDependencyData',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      { inputs: [], name: 'NotInitializing', type: 'error' },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint64',
+            name: 'version',
+            type: 'uint64',
+          },
+        ],
+        name: 'Initialized',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'parentOrchestrator',
+            type: 'address',
+            description:
+              'The address of the orchestrator the module is linked to.',
+          },
+          {
+            indexed: true,
+            internalType: 'string',
+            name: 'moduleTitle',
+            type: 'string',
+            description: 'The title of the module.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'majorVersion',
+            type: 'uint256',
+            description: 'The major version of the module.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'minorVersion',
+            type: 'uint256',
+            description: 'The minor version of the module.',
+          },
+        ],
+        name: 'ModuleInitialized',
+        type: 'event',
+        outputs: [],
+        description: 'Module has been initialized.',
+      },
+      {
+        inputs: [{ internalType: 'bytes', name: 'data', type: 'bytes' }],
+        name: 'decoder',
+        outputs: [{ internalType: 'bool', name: 'requirement', type: 'bool' }],
+        stateMutability: 'pure',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'addr', type: 'address' },
+        ],
+        name: 'grantModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'identifier',
+        outputs: [
+          {
+            internalType: 'bytes32',
+            name: '_0',
+            type: 'bytes32',
+            description: "The module's identifier.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's identifier.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'orchestrator_',
+            type: 'address',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
+            internalType: 'struct IModule.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: "The module's metadata.",
+          },
+          { internalType: 'bytes', name: '', type: 'bytes' },
+        ],
+        name: 'init',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: "The module's initializer function.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'orchestrator_',
+            type: 'address',
+          },
+          { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
+        ],
+        name: 'init2',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'forwarder',
+            type: 'address',
+            description: 'The contract address to be verified.',
+          },
+        ],
+        name: 'isTrustedForwarder',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'bool Is the given address the trusted forwarder',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Checks if the provided address is the trusted forwarder',
+      },
+      {
+        inputs: [],
+        name: 'orchestrator',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: '_0',
+            type: 'address',
+            description: "The module's orchestrator.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          "Returns the module's {IOrchestrator} orchestrator instance.",
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'addr', type: 'address' },
+        ],
+        name: 'revokeModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
+        ],
+        name: 'supportsInterface',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'title',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: "The module's title.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's title.",
+      },
+      {
+        inputs: [],
+        name: 'url',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: "The module's URL.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's URL.",
+      },
+      {
+        inputs: [],
+        name: 'version',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: "The module's major version.",
+          },
+          {
+            internalType: 'uint256',
+            name: '_1',
+            type: 'uint256',
+            description: "The module's minor version.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's version.",
       },
     ],
   },
@@ -1536,7 +3703,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'value',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         name: 'Approval',
@@ -1565,7 +3732,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: '_amount',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
             description: 'The amount of tokens deposited.',
           },
         ],
@@ -1669,7 +3836,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'value',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         name: 'Transfer',
@@ -1691,7 +3858,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: '_amount',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
             description: 'The amount of underlying tokens transfered.',
           },
         ],
@@ -1723,7 +3890,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: '_amount',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
             description: 'The amount of underlying tokens withdrawn.',
           },
         ],
@@ -1782,7 +3949,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         stateMutability: 'view',
@@ -1795,7 +3962,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'tokens',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         name: 'approve',
@@ -1811,7 +3978,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         stateMutability: 'view',
@@ -1843,7 +4010,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'tokens',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
             description: 'The amount of tokens to decrease allowance by.',
           },
         ],
@@ -1867,7 +4034,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         name: 'deposit',
@@ -1882,7 +4049,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         name: 'depositFor',
@@ -1927,7 +4094,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'tokens',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
             description: 'The amount of tokens to increase allowance by.',
           },
         ],
@@ -2075,7 +4242,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'value',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
           { internalType: 'uint256', name: 'deadline', type: 'uint256' },
           { internalType: 'uint8', name: 'v', type: 'uint8' },
@@ -2122,7 +4289,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         stateMutability: 'view',
@@ -2137,7 +4304,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         stateMutability: 'view',
@@ -2192,7 +4359,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         stateMutability: 'view',
@@ -2205,7 +4372,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'tokens',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         name: 'transfer',
@@ -2265,7 +4432,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'tokens',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         name: 'transferFrom',
@@ -2280,7 +4447,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         name: 'transferOrchestratorToken',
@@ -2330,7 +4497,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         name: 'withdraw',
@@ -2345,7 +4512,7 @@ export const RebasingFundingManager = {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            tag: 'decimals',
+            tags: ['decimals'],
           },
         ],
         name: 'withdrawTo',
@@ -3929,6 +6096,1396 @@ export const BancorVirtualSupplyBondingCurveFundingManager = {
     ],
   },
 } as const
+export const SimplePaymentProcessor = {
+  'v1.0': {
+    name: 'SimplePaymentProcessor',
+    description: '',
+    version: 'v1.0',
+    moduleType: 'paymentProcessor',
+    deploymentArgs: { configData: [], dependencyData: [] },
+    abi: [
+      {
+        inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
+        name: 'AddressEmptyCode',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'AddressInsufficientBalance',
+        type: 'error',
+      },
+      { inputs: [], name: 'FailedInnerCall', type: 'error' },
+      { inputs: [], name: 'InvalidInitialization', type: 'error' },
+      {
+        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
+        name: 'Module_OrchestratorCallbackFailed',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'caller', type: 'address' },
+        ],
+        name: 'Module__CallerNotAuthorized',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__CannotCallInit2Again', type: 'error' },
+      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
+      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__NoDependencyOrMalformedDependencyData',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__PaymentManager__CannotCallOnOtherClientsOrders',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__PaymentManager__OnlyCallableByModule',
+        type: 'error',
+      },
+      { inputs: [], name: 'NotInitializing', type: 'error' },
+      {
+        inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
+        name: 'SafeERC20FailedOperation',
+        type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint64',
+            name: 'version',
+            type: 'uint64',
+          },
+        ],
+        name: 'Initialized',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'parentOrchestrator',
+            type: 'address',
+            description:
+              'The address of the orchestrator the module is linked to.',
+          },
+          {
+            indexed: true,
+            internalType: 'string',
+            name: 'moduleTitle',
+            type: 'string',
+            description: 'The title of the module.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'majorVersion',
+            type: 'uint256',
+            description: 'The major version of the module.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'minorVersion',
+            type: 'uint256',
+            description: 'The minor version of the module.',
+          },
+        ],
+        name: 'ModuleInitialized',
+        type: 'event',
+        outputs: [],
+        description: 'Module has been initialized.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'paymentClient',
+            type: 'address',
+            description: 'The payment client that originated the order.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that will receive the payment.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'The amount of tokens the payment consists of.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'createdAt',
+            type: 'uint256',
+            description: 'Timestamp at which the order was created.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'dueTo',
+            type: 'uint256',
+            description:
+              'Timestamp at which the full amount should be payed out/claimable.',
+          },
+        ],
+        name: 'PaymentOrderProcessed',
+        type: 'event',
+        outputs: [],
+        description: 'Emitted when a payment gets processed for execution.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that will receive the payment.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'The amount of tokens the payment consists of.',
+          },
+        ],
+        name: 'TokensReleased',
+        type: 'event',
+        outputs: [],
+        description:
+          'Emitted when an amount of ERC20 tokens gets sent out of the contract.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IERC20PaymentClient',
+            name: 'client',
+            type: 'address',
+            description:
+              'The {IERC20PaymentClient} instance to process its to payments.',
+          },
+        ],
+        name: 'cancelRunningPayments',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Cancels all unfinished payments from an {IERC20PaymentClient} instance.',
+      },
+      {
+        inputs: [{ internalType: 'bytes', name: 'data', type: 'bytes' }],
+        name: 'decoder',
+        outputs: [{ internalType: 'bool', name: 'requirement', type: 'bool' }],
+        stateMutability: 'pure',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'addr', type: 'address' },
+        ],
+        name: 'grantModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'identifier',
+        outputs: [
+          {
+            internalType: 'bytes32',
+            name: '_0',
+            type: 'bytes32',
+            description: "The module's identifier.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's identifier.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'orchestrator_',
+            type: 'address',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
+            internalType: 'struct IModule.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: "The module's metadata.",
+          },
+          { internalType: 'bytes', name: '', type: 'bytes' },
+        ],
+        name: 'init',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: "The module's initializer function.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'orchestrator_',
+            type: 'address',
+          },
+          { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
+        ],
+        name: 'init2',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'forwarder',
+            type: 'address',
+            description: 'The contract address to be verified.',
+          },
+        ],
+        name: 'isTrustedForwarder',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'bool Is the given address the trusted forwarder',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Checks if the provided address is the trusted forwarder',
+      },
+      {
+        inputs: [],
+        name: 'orchestrator',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: '_0',
+            type: 'address',
+            description: "The module's orchestrator.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          "Returns the module's {IOrchestrator} orchestrator instance.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IERC20PaymentClient',
+            name: 'client',
+            type: 'address',
+            description:
+              'The {IERC20PaymentClient} instance to process its to payments.',
+          },
+        ],
+        name: 'processPayments',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Processes all payments from an {IERC20PaymentClient} instance.',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'addr', type: 'address' },
+        ],
+        name: 'revokeModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
+        ],
+        name: 'supportsInterface',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'title',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: "The module's title.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's title.",
+      },
+      {
+        inputs: [],
+        name: 'token',
+        outputs: [
+          { internalType: 'contract IERC20', name: '_0', type: 'address' },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Returns the IERC20 token the payment processor can process.',
+      },
+      {
+        inputs: [],
+        name: 'url',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: "The module's URL.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's URL.",
+      },
+      {
+        inputs: [],
+        name: 'version',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: "The module's major version.",
+          },
+          {
+            internalType: 'uint256',
+            name: '_1',
+            type: 'uint256',
+            description: "The module's minor version.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's version.",
+      },
+    ],
+  },
+} as const
+export const StreamingPaymentProcessor = {
+  'v1.0': {
+    name: 'StreamingPaymentProcessor',
+    description: '',
+    version: 'v1.0',
+    moduleType: 'paymentProcessor',
+    deploymentArgs: { configData: [], dependencyData: [] },
+    abi: [
+      { inputs: [], name: 'InvalidInitialization', type: 'error' },
+      {
+        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
+        name: 'Module_OrchestratorCallbackFailed',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'caller', type: 'address' },
+        ],
+        name: 'Module__CallerNotAuthorized',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__CannotCallInit2Again', type: 'error' },
+      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
+      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__NoDependencyOrMalformedDependencyData',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__PaymentManager__CannotCallOnOtherClientsOrders',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__PaymentManager__OnlyCallableByModule',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'paymentClient', type: 'address' },
+          { internalType: 'address', name: 'paymentReceiver', type: 'address' },
+          { internalType: 'uint256', name: 'walletId', type: 'uint256' },
+        ],
+        name: 'Module__PaymentProcessor__InactiveWallet',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__PaymentProcessor__InsufficientTokenBalanceInClient',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'paymentClient', type: 'address' },
+          { internalType: 'address', name: 'paymentReceiver', type: 'address' },
+        ],
+        name: 'Module__PaymentProcessor__InvalidPaymentReceiver',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'paymentClient', type: 'address' },
+          { internalType: 'address', name: 'paymentReceiver', type: 'address' },
+          { internalType: 'uint256', name: 'walletId', type: 'uint256' },
+        ],
+        name: 'Module__PaymentProcessor__InvalidWallet',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'paymentClient', type: 'address' },
+          { internalType: 'address', name: 'paymentReceiver', type: 'address' },
+        ],
+        name: 'Module__PaymentProcessor__NothingToClaim',
+        type: 'error',
+      },
+      { inputs: [], name: 'NotInitializing', type: 'error' },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint64',
+            name: 'version',
+            type: 'uint64',
+          },
+        ],
+        name: 'Initialized',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that will receive the payment.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: 'The amount of tokens the payment consists of.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'start',
+            type: 'uint256',
+            description: 'Timestamp at which the vesting starts.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'dueTo',
+            type: 'uint256',
+            description:
+              'Timestamp at which the full amount should be claimable.',
+          },
+        ],
+        name: 'InvalidStreamingOrderDiscarded',
+        type: 'event',
+        outputs: [],
+        description: 'Emitted when a running vesting schedule gets updated.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'parentOrchestrator',
+            type: 'address',
+            description:
+              'The address of the orchestrator the module is linked to.',
+          },
+          {
+            indexed: true,
+            internalType: 'string',
+            name: 'moduleTitle',
+            type: 'string',
+            description: 'The title of the module.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'majorVersion',
+            type: 'uint256',
+            description: 'The major version of the module.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'minorVersion',
+            type: 'uint256',
+            description: 'The minor version of the module.',
+          },
+        ],
+        name: 'ModuleInitialized',
+        type: 'event',
+        outputs: [],
+        description: 'Module has been initialized.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'paymentClient',
+            type: 'address',
+            description: 'The payment client that originated the order.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that will receive the payment.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: 'The amount of tokens the payment consists of.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'createdAt',
+            type: 'uint256',
+            description: 'Timestamp at which the order was created.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'dueTo',
+            type: 'uint256',
+            description:
+              'Timestamp at which the full amount should be payed out/claimable.',
+          },
+        ],
+        name: 'PaymentOrderProcessed',
+        type: 'event',
+        outputs: [],
+        description: 'Emitted when a payment gets processed for execution.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'paymentClient',
+            type: 'address',
+            description: 'The payment client that originated the order.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that will receive the payment.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: 'The amount of tokens the payment consists of.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'createdAt',
+            type: 'uint256',
+            description: 'Timestamp at which the order was created.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'dueTo',
+            type: 'uint256',
+            description:
+              'Timestamp at which the full amount should be payed out/claimable.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'walletId',
+            type: 'uint256',
+            description: 'ID of the payment order that was processed',
+          },
+        ],
+        name: 'PaymentOrderProcessed',
+        type: 'event',
+        description: 'Emitted when a payment gets processed for execution.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'paymentClient',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that will receive the payment.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: 'The amount of tokens the payment consists of.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'start',
+            type: 'uint256',
+            description: 'Timestamp at which the vesting starts.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'dueTo',
+            type: 'uint256',
+            description:
+              'Timestamp at which the full amount should be claimable.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'walletId',
+            type: 'uint256',
+            description: 'ID of the payment order that was added',
+          },
+        ],
+        name: 'StreamingPaymentAdded',
+        type: 'event',
+        outputs: [],
+        description: 'Emitted when a payment gets processed for execution.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'paymentClient',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that will stop receiving payment.',
+          },
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'walletId',
+            type: 'uint256',
+            description: 'ID of the payment order removed',
+          },
+        ],
+        name: 'StreamingPaymentRemoved',
+        type: 'event',
+        outputs: [],
+        description: 'Emitted when the vesting to an address is removed.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that will receive the payment.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: 'The amount of tokens the payment consists of.',
+          },
+        ],
+        name: 'TokensReleased',
+        type: 'event',
+        outputs: [],
+        description:
+          'Emitted when an amount of ERC20 tokens gets sent out of the contract.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IERC20PaymentClient',
+            name: 'client',
+            type: 'address',
+            description:
+              'The {IERC20PaymentClient} instance to process its to payments.',
+          },
+        ],
+        name: 'cancelRunningPayments',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Cancels all unfinished payments from an {IERC20PaymentClient} instance.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client',
+            type: 'address',
+            description:
+              'The IERC20PaymentClient instance address that processes all claims from _msgSender',
+          },
+        ],
+        name: 'claimAll',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'claim everything that the paymentClient owes to the _msgSender till the current timestamp',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client',
+            type: 'address',
+            description:
+              'The {IERC20PaymentClient} instance address that processes the walletId claim from _msgSender',
+          },
+          {
+            internalType: 'uint256',
+            name: 'walletId',
+            type: 'uint256',
+            description:
+              'The ID of the payment order for which claim is being made',
+          },
+          {
+            internalType: 'bool',
+            name: 'retryForUnclaimableAmounts',
+            type: 'bool',
+            description:
+              'boolean which determines if the function will try to pay the unclaimable amounts from earlier along with the vested salary from the payment order with id = walletId',
+          },
+        ],
+        name: 'claimForSpecificWalletId',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'claim the salary uptil block.timestamp from the client for a payment order with id = walletId by _msgSender',
+      },
+      {
+        inputs: [{ internalType: 'bytes', name: 'data', type: 'bytes' }],
+        name: 'decoder',
+        outputs: [{ internalType: 'bool', name: 'requirement', type: 'bool' }],
+        stateMutability: 'pure',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client',
+            type: 'address',
+            description: 'address of the payment client',
+          },
+          {
+            internalType: 'address',
+            name: 'paymentReceiver',
+            type: 'address',
+            description: "PaymentReceiver's address.",
+          },
+          {
+            internalType: 'uint256',
+            name: 'walletId',
+            type: 'uint256',
+            description: 'Id of the wallet for which dueTo is fetched',
+          },
+        ],
+        name: 'dueToForSpecificWalletId',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Getter for the vesting dueTo timestamp of a particular payment order with id = walletId associated with a particular paymentReceiver',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'addr', type: 'address' },
+        ],
+        name: 'grantModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'identifier',
+        outputs: [
+          {
+            internalType: 'bytes32',
+            name: '_0',
+            type: 'bytes32',
+            description: "The module's identifier.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's identifier.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'orchestrator_',
+            type: 'address',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
+            internalType: 'struct IModule.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: "The module's metadata.",
+          },
+          { internalType: 'bytes', name: '', type: 'bytes' },
+        ],
+        name: 'init',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: "The module's initializer function.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: 'orchestrator_',
+            type: 'address',
+          },
+          { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
+        ],
+        name: 'init2',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client',
+            type: 'address',
+            description: 'Address of the payment client',
+          },
+          {
+            internalType: 'address',
+            name: 'paymentReceiver',
+            type: 'address',
+            description: 'Address of the paymentReceiver',
+          },
+        ],
+        name: 'isActivePaymentReceiver',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'tells whether a paymentReceiver has any pending payments for a particular client',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'forwarder',
+            type: 'address',
+            description: 'The contract address to be verified.',
+          },
+        ],
+        name: 'isTrustedForwarder',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'bool Is the given address the trusted forwarder',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Checks if the provided address is the trusted forwarder',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: '', type: 'address' },
+          { internalType: 'address', name: '', type: 'address' },
+        ],
+        name: 'numVestingWallets',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'provides a unique id for new payment orders added for a specific client & paymentReceiver combo',
+      },
+      {
+        inputs: [],
+        name: 'orchestrator',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator',
+            name: '_0',
+            type: 'address',
+            description: "The module's orchestrator.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          "Returns the module's {IOrchestrator} orchestrator instance.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IERC20PaymentClient',
+            name: 'client',
+            type: 'address',
+            description:
+              'The {IERC20PaymentClient} instance to process its to payments.',
+          },
+        ],
+        name: 'processPayments',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Processes all payments from an {IERC20PaymentClient} instance.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client',
+            type: 'address',
+            description: 'address of the payment client',
+          },
+          {
+            internalType: 'address',
+            name: 'paymentReceiver',
+            type: 'address',
+            description: "PaymentReceiver's address.",
+          },
+          {
+            internalType: 'uint256',
+            name: 'walletId',
+            type: 'uint256',
+            description:
+              'Id of the wallet for which the releasable amount is fetched',
+          },
+        ],
+        name: 'releasableForSpecificWalletId',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Getter for the amount of releasable tokens for a particular payment order with id = walletId associated with a particular paymentReceiver.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client',
+            type: 'address',
+            description: 'address of the payment client',
+          },
+          {
+            internalType: 'address',
+            name: 'paymentReceiver',
+            type: 'address',
+            description: "PaymentReceiver's address.",
+          },
+          {
+            internalType: 'uint256',
+            name: 'walletId',
+            type: 'uint256',
+            description: 'Id of the wallet for which released is fetched',
+          },
+        ],
+        name: 'releasedForSpecificWalletId',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Getter for the amount of tokens already released for a particular payment order with id = walletId associated with a particular paymentReceiver',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client',
+            type: 'address',
+            description:
+              'The {IERC20PaymentClient} instance address from which we will remove the payments',
+          },
+          {
+            internalType: 'address',
+            name: 'paymentReceiver',
+            type: 'address',
+            description: "PaymentReceiver's address.",
+          },
+        ],
+        name: 'removeAllPaymentReceiverPayments',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Deletes all payments related to a paymentReceiver & leaves unvested tokens in the ERC20PaymentClient.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client',
+            type: 'address',
+            description:
+              'The {IERC20PaymentClient} instance address from which we will remove the payment',
+          },
+          {
+            internalType: 'address',
+            name: 'paymentReceiver',
+            type: 'address',
+            description:
+              'address of the paymentReceiver whose payment order is to be removed',
+          },
+          {
+            internalType: 'uint256',
+            name: 'walletId',
+            type: 'uint256',
+            description:
+              "The ID of the paymentReceiver's payment order which is to be removed",
+          },
+          {
+            internalType: 'bool',
+            name: 'retryForUnclaimableAmounts',
+            type: 'bool',
+            description:
+              'boolean that determines whether the function would try to return the unclaimableAmounts along with the vested amounts from the payment order with id = walletId to the paymentReceiver',
+          },
+        ],
+        name: 'removePaymentForSpecificWalletId',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Deletes a specific payment with id = walletId for a paymentReceiver & leaves unvested tokens in the ERC20PaymentClient.',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'addr', type: 'address' },
+        ],
+        name: 'revokeModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client',
+            type: 'address',
+            description: 'address of the payment client',
+          },
+          {
+            internalType: 'address',
+            name: 'paymentReceiver',
+            type: 'address',
+            description: "PaymentReceiver's address.",
+          },
+          {
+            internalType: 'uint256',
+            name: 'walletId',
+            type: 'uint256',
+            description: 'Id of the wallet for which start is fetched',
+          },
+        ],
+        name: 'startForSpecificWalletId',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Getter for the start timestamp of a particular payment order with id = walletId associated with a particular paymentReceiver',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
+        ],
+        name: 'supportsInterface',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'title',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: "The module's title.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's title.",
+      },
+      {
+        inputs: [],
+        name: 'token',
+        outputs: [
+          { internalType: 'contract IERC20', name: '_0', type: 'address' },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Returns the IERC20 token the payment processor can process.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client',
+            type: 'address',
+            description: 'address of the payment client',
+          },
+          {
+            internalType: 'address',
+            name: 'paymentReceiver',
+            type: 'address',
+            description: "PaymentReceiver's address.",
+          },
+        ],
+        name: 'unclaimable',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Getter for the amount of tokens that could not be claimed.',
+      },
+      {
+        inputs: [],
+        name: 'url',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: "The module's URL.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's URL.",
+      },
+      {
+        inputs: [],
+        name: 'version',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: "The module's major version.",
+          },
+          {
+            internalType: 'uint256',
+            name: '_1',
+            type: 'uint256',
+            description: "The module's minor version.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's version.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client',
+            type: 'address',
+            description: 'address of the payment client',
+          },
+          {
+            internalType: 'address',
+            name: 'paymentReceiver',
+            type: 'address',
+            description: "PaymentReceiver's address.",
+          },
+          {
+            internalType: 'uint256',
+            name: 'timestamp',
+            type: 'uint256',
+            description: 'the time upto which we want the vested amount',
+          },
+          {
+            internalType: 'uint256',
+            name: 'walletId',
+            type: 'uint256',
+            description:
+              'Id of the wallet for which the vested amount is fetched',
+          },
+        ],
+        name: 'vestedAmountForSpecificWalletId',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Calculates the amount of tokens that has already vested for a particular payment order with id = walletId associated with a particular paymentReceiver.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client',
+            type: 'address',
+            description: 'Address of the payment client',
+          },
+          {
+            internalType: 'address',
+            name: 'paymentReceiver',
+            type: 'address',
+            description: 'Address of the paymentReceiver',
+          },
+        ],
+        name: 'viewAllPaymentOrders',
+        outputs: [
+          {
+            components: [
+              { internalType: 'uint256', name: '_salary', type: 'uint256' },
+              { internalType: 'uint256', name: '_released', type: 'uint256' },
+              { internalType: 'uint256', name: '_start', type: 'uint256' },
+              { internalType: 'uint256', name: '_dueTo', type: 'uint256' },
+              {
+                internalType: 'uint256',
+                name: '_vestingWalletID',
+                type: 'uint256',
+              },
+            ],
+            internalType: 'struct IStreamingPaymentProcessor.VestingWallet[]',
+            name: '_0',
+            type: 'tuple[]',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'see all active payment orders for a paymentClient associated with a particular paymentReceiver',
+      },
+    ],
+  },
+} as const
 export const MetadataManager = {
   'v1.0': {
     name: 'MetadataManager',
@@ -5136,1396 +8693,6 @@ export const SingleVoteGovernor = {
         outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
         stateMutability: 'view',
         type: 'function',
-      },
-    ],
-  },
-} as const
-export const StreamingPaymentProcessor = {
-  'v1.0': {
-    name: 'StreamingPaymentProcessor',
-    description: '',
-    version: 'v1.0',
-    moduleType: 'paymentProcessor',
-    deploymentArgs: { configData: [], dependencyData: [] },
-    abi: [
-      { inputs: [], name: 'InvalidInitialization', type: 'error' },
-      {
-        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
-        name: 'Module_OrchestratorCallbackFailed',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'caller', type: 'address' },
-        ],
-        name: 'Module__CallerNotAuthorized',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__CannotCallInit2Again', type: 'error' },
-      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
-      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__NoDependencyOrMalformedDependencyData',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__PaymentManager__CannotCallOnOtherClientsOrders',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__PaymentManager__OnlyCallableByModule',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'paymentClient', type: 'address' },
-          { internalType: 'address', name: 'paymentReceiver', type: 'address' },
-          { internalType: 'uint256', name: 'walletId', type: 'uint256' },
-        ],
-        name: 'Module__PaymentProcessor__InactiveWallet',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__PaymentProcessor__InsufficientTokenBalanceInClient',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'paymentClient', type: 'address' },
-          { internalType: 'address', name: 'paymentReceiver', type: 'address' },
-        ],
-        name: 'Module__PaymentProcessor__InvalidPaymentReceiver',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'paymentClient', type: 'address' },
-          { internalType: 'address', name: 'paymentReceiver', type: 'address' },
-          { internalType: 'uint256', name: 'walletId', type: 'uint256' },
-        ],
-        name: 'Module__PaymentProcessor__InvalidWallet',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'paymentClient', type: 'address' },
-          { internalType: 'address', name: 'paymentReceiver', type: 'address' },
-        ],
-        name: 'Module__PaymentProcessor__NothingToClaim',
-        type: 'error',
-      },
-      { inputs: [], name: 'NotInitializing', type: 'error' },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'uint64',
-            name: 'version',
-            type: 'uint64',
-          },
-        ],
-        name: 'Initialized',
-        type: 'event',
-        outputs: [],
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'recipient',
-            type: 'address',
-            description: 'The address that will receive the payment.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            description: 'The amount of tokens the payment consists of.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'start',
-            type: 'uint256',
-            description: 'Timestamp at which the vesting starts.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'dueTo',
-            type: 'uint256',
-            description:
-              'Timestamp at which the full amount should be claimable.',
-          },
-        ],
-        name: 'InvalidStreamingOrderDiscarded',
-        type: 'event',
-        outputs: [],
-        description: 'Emitted when a running vesting schedule gets updated.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'parentOrchestrator',
-            type: 'address',
-            description:
-              'The address of the orchestrator the module is linked to.',
-          },
-          {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
-          },
-        ],
-        name: 'ModuleInitialized',
-        type: 'event',
-        outputs: [],
-        description: 'Module has been initialized.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'paymentClient',
-            type: 'address',
-            description: 'The payment client that originated the order.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'recipient',
-            type: 'address',
-            description: 'The address that will receive the payment.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            description: 'The amount of tokens the payment consists of.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'createdAt',
-            type: 'uint256',
-            description: 'Timestamp at which the order was created.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'dueTo',
-            type: 'uint256',
-            description:
-              'Timestamp at which the full amount should be payed out/claimable.',
-          },
-        ],
-        name: 'PaymentOrderProcessed',
-        type: 'event',
-        outputs: [],
-        description: 'Emitted when a payment gets processed for execution.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'paymentClient',
-            type: 'address',
-            description: 'The payment client that originated the order.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'recipient',
-            type: 'address',
-            description: 'The address that will receive the payment.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            description: 'The amount of tokens the payment consists of.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'createdAt',
-            type: 'uint256',
-            description: 'Timestamp at which the order was created.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'dueTo',
-            type: 'uint256',
-            description:
-              'Timestamp at which the full amount should be payed out/claimable.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'walletId',
-            type: 'uint256',
-            description: 'ID of the payment order that was processed',
-          },
-        ],
-        name: 'PaymentOrderProcessed',
-        type: 'event',
-        description: 'Emitted when a payment gets processed for execution.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'paymentClient',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'recipient',
-            type: 'address',
-            description: 'The address that will receive the payment.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            description: 'The amount of tokens the payment consists of.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'start',
-            type: 'uint256',
-            description: 'Timestamp at which the vesting starts.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'dueTo',
-            type: 'uint256',
-            description:
-              'Timestamp at which the full amount should be claimable.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'walletId',
-            type: 'uint256',
-            description: 'ID of the payment order that was added',
-          },
-        ],
-        name: 'StreamingPaymentAdded',
-        type: 'event',
-        outputs: [],
-        description: 'Emitted when a payment gets processed for execution.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'paymentClient',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'recipient',
-            type: 'address',
-            description: 'The address that will stop receiving payment.',
-          },
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'walletId',
-            type: 'uint256',
-            description: 'ID of the payment order removed',
-          },
-        ],
-        name: 'StreamingPaymentRemoved',
-        type: 'event',
-        outputs: [],
-        description: 'Emitted when the vesting to an address is removed.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'recipient',
-            type: 'address',
-            description: 'The address that will receive the payment.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'token',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            description: 'The amount of tokens the payment consists of.',
-          },
-        ],
-        name: 'TokensReleased',
-        type: 'event',
-        outputs: [],
-        description:
-          'Emitted when an amount of ERC20 tokens gets sent out of the contract.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IERC20PaymentClient',
-            name: 'client',
-            type: 'address',
-            description:
-              'The {IERC20PaymentClient} instance to process its to payments.',
-          },
-        ],
-        name: 'cancelRunningPayments',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Cancels all unfinished payments from an {IERC20PaymentClient} instance.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description:
-              'The IERC20PaymentClient instance address that processes all claims from _msgSender',
-          },
-        ],
-        name: 'claimAll',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'claim everything that the paymentClient owes to the _msgSender till the current timestamp',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description:
-              'The {IERC20PaymentClient} instance address that processes the walletId claim from _msgSender',
-          },
-          {
-            internalType: 'uint256',
-            name: 'walletId',
-            type: 'uint256',
-            description:
-              'The ID of the payment order for which claim is being made',
-          },
-          {
-            internalType: 'bool',
-            name: 'retryForUnclaimableAmounts',
-            type: 'bool',
-            description:
-              'boolean which determines if the function will try to pay the unclaimable amounts from earlier along with the vested salary from the payment order with id = walletId',
-          },
-        ],
-        name: 'claimForSpecificWalletId',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'claim the salary uptil block.timestamp from the client for a payment order with id = walletId by _msgSender',
-      },
-      {
-        inputs: [{ internalType: 'bytes', name: 'data', type: 'bytes' }],
-        name: 'decoder',
-        outputs: [{ internalType: 'bool', name: 'requirement', type: 'bool' }],
-        stateMutability: 'pure',
-        type: 'function',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description: 'address of the payment client',
-          },
-          {
-            internalType: 'address',
-            name: 'paymentReceiver',
-            type: 'address',
-            description: "PaymentReceiver's address.",
-          },
-          {
-            internalType: 'uint256',
-            name: 'walletId',
-            type: 'uint256',
-            description: 'Id of the wallet for which dueTo is fetched',
-          },
-        ],
-        name: 'dueToForSpecificWalletId',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Getter for the vesting dueTo timestamp of a particular payment order with id = walletId associated with a particular paymentReceiver',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'addr', type: 'address' },
-        ],
-        name: 'grantModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'identifier',
-        outputs: [
-          {
-            internalType: 'bytes32',
-            name: '_0',
-            type: 'bytes32',
-            description: "The module's identifier.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's identifier.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IOrchestrator',
-            name: 'orchestrator_',
-            type: 'address',
-          },
-          {
-            components: [
-              {
-                internalType: 'uint256',
-                name: 'majorVersion',
-                type: 'uint256',
-              },
-              {
-                internalType: 'uint256',
-                name: 'minorVersion',
-                type: 'uint256',
-              },
-              { internalType: 'string', name: 'url', type: 'string' },
-              { internalType: 'string', name: 'title', type: 'string' },
-            ],
-            internalType: 'struct IModule.Metadata',
-            name: 'metadata',
-            type: 'tuple',
-            description: "The module's metadata.",
-          },
-          { internalType: 'bytes', name: '', type: 'bytes' },
-        ],
-        name: 'init',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: "The module's initializer function.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IOrchestrator',
-            name: 'orchestrator_',
-            type: 'address',
-          },
-          { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
-        ],
-        name: 'init2',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description: 'Address of the payment client',
-          },
-          {
-            internalType: 'address',
-            name: 'paymentReceiver',
-            type: 'address',
-            description: 'Address of the paymentReceiver',
-          },
-        ],
-        name: 'isActivePaymentReceiver',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'tells whether a paymentReceiver has any pending payments for a particular client',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'forwarder',
-            type: 'address',
-            description: 'The contract address to be verified.',
-          },
-        ],
-        name: 'isTrustedForwarder',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: '', type: 'address' },
-          { internalType: 'address', name: '', type: 'address' },
-        ],
-        name: 'numVestingWallets',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'provides a unique id for new payment orders added for a specific client & paymentReceiver combo',
-      },
-      {
-        inputs: [],
-        name: 'orchestrator',
-        outputs: [
-          {
-            internalType: 'contract IOrchestrator',
-            name: '_0',
-            type: 'address',
-            description: "The module's orchestrator.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          "Returns the module's {IOrchestrator} orchestrator instance.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IERC20PaymentClient',
-            name: 'client',
-            type: 'address',
-            description:
-              'The {IERC20PaymentClient} instance to process its to payments.',
-          },
-        ],
-        name: 'processPayments',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Processes all payments from an {IERC20PaymentClient} instance.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description: 'address of the payment client',
-          },
-          {
-            internalType: 'address',
-            name: 'paymentReceiver',
-            type: 'address',
-            description: "PaymentReceiver's address.",
-          },
-          {
-            internalType: 'uint256',
-            name: 'walletId',
-            type: 'uint256',
-            description:
-              'Id of the wallet for which the releasable amount is fetched',
-          },
-        ],
-        name: 'releasableForSpecificWalletId',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Getter for the amount of releasable tokens for a particular payment order with id = walletId associated with a particular paymentReceiver.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description: 'address of the payment client',
-          },
-          {
-            internalType: 'address',
-            name: 'paymentReceiver',
-            type: 'address',
-            description: "PaymentReceiver's address.",
-          },
-          {
-            internalType: 'uint256',
-            name: 'walletId',
-            type: 'uint256',
-            description: 'Id of the wallet for which released is fetched',
-          },
-        ],
-        name: 'releasedForSpecificWalletId',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Getter for the amount of tokens already released for a particular payment order with id = walletId associated with a particular paymentReceiver',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description:
-              'The {IERC20PaymentClient} instance address from which we will remove the payments',
-          },
-          {
-            internalType: 'address',
-            name: 'paymentReceiver',
-            type: 'address',
-            description: "PaymentReceiver's address.",
-          },
-        ],
-        name: 'removeAllPaymentReceiverPayments',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Deletes all payments related to a paymentReceiver & leaves unvested tokens in the ERC20PaymentClient.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description:
-              'The {IERC20PaymentClient} instance address from which we will remove the payment',
-          },
-          {
-            internalType: 'address',
-            name: 'paymentReceiver',
-            type: 'address',
-            description:
-              'address of the paymentReceiver whose payment order is to be removed',
-          },
-          {
-            internalType: 'uint256',
-            name: 'walletId',
-            type: 'uint256',
-            description:
-              "The ID of the paymentReceiver's payment order which is to be removed",
-          },
-          {
-            internalType: 'bool',
-            name: 'retryForUnclaimableAmounts',
-            type: 'bool',
-            description:
-              'boolean that determines whether the function would try to return the unclaimableAmounts along with the vested amounts from the payment order with id = walletId to the paymentReceiver',
-          },
-        ],
-        name: 'removePaymentForSpecificWalletId',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Deletes a specific payment with id = walletId for a paymentReceiver & leaves unvested tokens in the ERC20PaymentClient.',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'addr', type: 'address' },
-        ],
-        name: 'revokeModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description: 'address of the payment client',
-          },
-          {
-            internalType: 'address',
-            name: 'paymentReceiver',
-            type: 'address',
-            description: "PaymentReceiver's address.",
-          },
-          {
-            internalType: 'uint256',
-            name: 'walletId',
-            type: 'uint256',
-            description: 'Id of the wallet for which start is fetched',
-          },
-        ],
-        name: 'startForSpecificWalletId',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Getter for the start timestamp of a particular payment order with id = walletId associated with a particular paymentReceiver',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
-        ],
-        name: 'supportsInterface',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'title',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's title.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's title.",
-      },
-      {
-        inputs: [],
-        name: 'token',
-        outputs: [
-          { internalType: 'contract IERC20', name: '_0', type: 'address' },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Returns the IERC20 token the payment processor can process.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description: 'address of the payment client',
-          },
-          {
-            internalType: 'address',
-            name: 'paymentReceiver',
-            type: 'address',
-            description: "PaymentReceiver's address.",
-          },
-        ],
-        name: 'unclaimable',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Getter for the amount of tokens that could not be claimed.',
-      },
-      {
-        inputs: [],
-        name: 'url',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's URL.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's URL.",
-      },
-      {
-        inputs: [],
-        name: 'version',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            description: "The module's major version.",
-          },
-          {
-            internalType: 'uint256',
-            name: '_1',
-            type: 'uint256',
-            description: "The module's minor version.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's version.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description: 'address of the payment client',
-          },
-          {
-            internalType: 'address',
-            name: 'paymentReceiver',
-            type: 'address',
-            description: "PaymentReceiver's address.",
-          },
-          {
-            internalType: 'uint256',
-            name: 'timestamp',
-            type: 'uint256',
-            description: 'the time upto which we want the vested amount',
-          },
-          {
-            internalType: 'uint256',
-            name: 'walletId',
-            type: 'uint256',
-            description:
-              'Id of the wallet for which the vested amount is fetched',
-          },
-        ],
-        name: 'vestedAmountForSpecificWalletId',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Calculates the amount of tokens that has already vested for a particular payment order with id = walletId associated with a particular paymentReceiver.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description: 'Address of the payment client',
-          },
-          {
-            internalType: 'address',
-            name: 'paymentReceiver',
-            type: 'address',
-            description: 'Address of the paymentReceiver',
-          },
-        ],
-        name: 'viewAllPaymentOrders',
-        outputs: [
-          {
-            components: [
-              { internalType: 'uint256', name: '_salary', type: 'uint256' },
-              { internalType: 'uint256', name: '_released', type: 'uint256' },
-              { internalType: 'uint256', name: '_start', type: 'uint256' },
-              { internalType: 'uint256', name: '_dueTo', type: 'uint256' },
-              {
-                internalType: 'uint256',
-                name: '_vestingWalletID',
-                type: 'uint256',
-              },
-            ],
-            internalType: 'struct IStreamingPaymentProcessor.VestingWallet[]',
-            name: '_0',
-            type: 'tuple[]',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'see all active payment orders for a paymentClient associated with a particular paymentReceiver',
-      },
-    ],
-  },
-} as const
-export const SimplePaymentProcessor = {
-  'v1.0': {
-    name: 'SimplePaymentProcessor',
-    description: '',
-    version: 'v1.0',
-    moduleType: 'paymentProcessor',
-    deploymentArgs: { configData: [], dependencyData: [] },
-    abi: [
-      {
-        inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
-        name: 'AddressEmptyCode',
-        type: 'error',
-      },
-      {
-        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
-        name: 'AddressInsufficientBalance',
-        type: 'error',
-      },
-      { inputs: [], name: 'FailedInnerCall', type: 'error' },
-      { inputs: [], name: 'InvalidInitialization', type: 'error' },
-      {
-        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
-        name: 'Module_OrchestratorCallbackFailed',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'caller', type: 'address' },
-        ],
-        name: 'Module__CallerNotAuthorized',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__CannotCallInit2Again', type: 'error' },
-      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
-      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__NoDependencyOrMalformedDependencyData',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__PaymentManager__CannotCallOnOtherClientsOrders',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__PaymentManager__OnlyCallableByModule',
-        type: 'error',
-      },
-      { inputs: [], name: 'NotInitializing', type: 'error' },
-      {
-        inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
-        name: 'SafeERC20FailedOperation',
-        type: 'error',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'uint64',
-            name: 'version',
-            type: 'uint64',
-          },
-        ],
-        name: 'Initialized',
-        type: 'event',
-        outputs: [],
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'parentOrchestrator',
-            type: 'address',
-            description:
-              'The address of the orchestrator the module is linked to.',
-          },
-          {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
-          },
-        ],
-        name: 'ModuleInitialized',
-        type: 'event',
-        outputs: [],
-        description: 'Module has been initialized.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'paymentClient',
-            type: 'address',
-            description: 'The payment client that originated the order.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'recipient',
-            type: 'address',
-            description: 'The address that will receive the payment.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tag: 'decimals',
-            description: 'The amount of tokens the payment consists of.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'createdAt',
-            type: 'uint256',
-            description: 'Timestamp at which the order was created.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'dueTo',
-            type: 'uint256',
-            description:
-              'Timestamp at which the full amount should be payed out/claimable.',
-          },
-        ],
-        name: 'PaymentOrderProcessed',
-        type: 'event',
-        outputs: [],
-        description: 'Emitted when a payment gets processed for execution.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'recipient',
-            type: 'address',
-            description: 'The address that will receive the payment.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'token',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tag: 'decimals',
-            description: 'The amount of tokens the payment consists of.',
-          },
-        ],
-        name: 'TokensReleased',
-        type: 'event',
-        outputs: [],
-        description:
-          'Emitted when an amount of ERC20 tokens gets sent out of the contract.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IERC20PaymentClient',
-            name: 'client',
-            type: 'address',
-            description:
-              'The {IERC20PaymentClient} instance to process its to payments.',
-          },
-        ],
-        name: 'cancelRunningPayments',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Cancels all unfinished payments from an {IERC20PaymentClient} instance.',
-      },
-      {
-        inputs: [{ internalType: 'bytes', name: 'data', type: 'bytes' }],
-        name: 'decoder',
-        outputs: [{ internalType: 'bool', name: 'requirement', type: 'bool' }],
-        stateMutability: 'pure',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'addr', type: 'address' },
-        ],
-        name: 'grantModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'identifier',
-        outputs: [
-          {
-            internalType: 'bytes32',
-            name: '_0',
-            type: 'bytes32',
-            description: "The module's identifier.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's identifier.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IOrchestrator',
-            name: 'orchestrator_',
-            type: 'address',
-          },
-          {
-            components: [
-              {
-                internalType: 'uint256',
-                name: 'majorVersion',
-                type: 'uint256',
-              },
-              {
-                internalType: 'uint256',
-                name: 'minorVersion',
-                type: 'uint256',
-              },
-              { internalType: 'string', name: 'url', type: 'string' },
-              { internalType: 'string', name: 'title', type: 'string' },
-            ],
-            internalType: 'struct IModule.Metadata',
-            name: 'metadata',
-            type: 'tuple',
-            description: "The module's metadata.",
-          },
-          { internalType: 'bytes', name: '', type: 'bytes' },
-        ],
-        name: 'init',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: "The module's initializer function.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IOrchestrator',
-            name: 'orchestrator_',
-            type: 'address',
-          },
-          { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
-        ],
-        name: 'init2',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'forwarder',
-            type: 'address',
-            description: 'The contract address to be verified.',
-          },
-        ],
-        name: 'isTrustedForwarder',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
-      },
-      {
-        inputs: [],
-        name: 'orchestrator',
-        outputs: [
-          {
-            internalType: 'contract IOrchestrator',
-            name: '_0',
-            type: 'address',
-            description: "The module's orchestrator.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          "Returns the module's {IOrchestrator} orchestrator instance.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IERC20PaymentClient',
-            name: 'client',
-            type: 'address',
-            description:
-              'The {IERC20PaymentClient} instance to process its to payments.',
-          },
-        ],
-        name: 'processPayments',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Processes all payments from an {IERC20PaymentClient} instance.',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'addr', type: 'address' },
-        ],
-        name: 'revokeModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
-        ],
-        name: 'supportsInterface',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'title',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's title.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's title.",
-      },
-      {
-        inputs: [],
-        name: 'token',
-        outputs: [
-          { internalType: 'contract IERC20', name: '_0', type: 'address' },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Returns the IERC20 token the payment processor can process.',
-      },
-      {
-        inputs: [],
-        name: 'url',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's URL.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's URL.",
-      },
-      {
-        inputs: [],
-        name: 'version',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            description: "The module's major version.",
-          },
-          {
-            internalType: 'uint256',
-            name: '_1',
-            type: 'uint256',
-            description: "The module's minor version.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's version.",
       },
     ],
   },
@@ -8122,2173 +10289,6 @@ export const TokenGatedRoleAuthorizer = {
         stateMutability: 'nonpayable',
         type: 'function',
         description: 'Transfer the admin rights to a given role.',
-      },
-      {
-        inputs: [],
-        name: 'url',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's URL.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's URL.",
-      },
-      {
-        inputs: [],
-        name: 'version',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            description: "The module's major version.",
-          },
-          {
-            internalType: 'uint256',
-            name: '_1',
-            type: 'uint256',
-            description: "The module's minor version.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's version.",
-      },
-    ],
-  },
-} as const
-export const RecurringPaymentManager = {
-  'v1.0': {
-    name: 'RecurringPaymentManager',
-    description: '',
-    version: 'v1.0',
-    moduleType: 'logicModule',
-    deploymentArgs: {
-      configData: [
-        {
-          name: 'epochLength',
-          type: 'uint256',
-          description:
-            'The length of an epoch in seconds. This will be the common denominator for all payments, as these are specified in epochs (i.e. if an epoch is 1 week, vestings can be done for 1 week, 2 week, 3 week, etc.). Epoch needs to be greater than 1 week and smaller than 52 weeks',
-        },
-      ],
-      dependencyData: [],
-    },
-    abi: [
-      {
-        inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
-        name: 'AddressEmptyCode',
-        type: 'error',
-      },
-      {
-        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
-        name: 'AddressInsufficientBalance',
-        type: 'error',
-      },
-      { inputs: [], name: 'FailedInnerCall', type: 'error' },
-      { inputs: [], name: 'InvalidInitialization', type: 'error' },
-      {
-        inputs: [],
-        name: 'Library__LinkedIdList__IdNotConsecutive',
-        type: 'error',
-      },
-      { inputs: [], name: 'Library__LinkedIdList__InvalidId', type: 'error' },
-      {
-        inputs: [],
-        name: 'Library__LinkedIdList__InvalidNewId',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Library__LinkedIdList__InvalidPosition',
-        type: 'error',
-      },
-      {
-        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
-        name: 'Module_OrchestratorCallbackFailed',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'caller', type: 'address' },
-        ],
-        name: 'Module__CallerNotAuthorized',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__CannotCallInit2Again', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClient__ArrayLengthMismatch',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClient__CallerNotAuthorized',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClient__InvalidAmount',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClient__InvalidDueTo',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClient__InvalidRecipient',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClient__TokenTransferFailed',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
-      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__NoDependencyOrMalformedDependencyData',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__RecurringPaymentManager__InvalidEpochLength',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__RecurringPaymentManager__InvalidRecurringPaymentId',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__RecurringPaymentManager__InvalidStartEpoch',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__RecurringPaymentManager__StartIdNotBeforeEndId',
-        type: 'error',
-      },
-      { inputs: [], name: 'NotInitializing', type: 'error' },
-      {
-        inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
-        name: 'SafeERC20FailedOperation',
-        type: 'error',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'uint64',
-            name: 'version',
-            type: 'uint64',
-          },
-        ],
-        name: 'Initialized',
-        type: 'event',
-        outputs: [],
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'parentOrchestrator',
-            type: 'address',
-            description:
-              'The address of the orchestrator the module is linked to.',
-          },
-          {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
-          },
-        ],
-        name: 'ModuleInitialized',
-        type: 'event',
-        outputs: [],
-        description: 'Module has been initialized.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'recipient',
-            type: 'address',
-            description: 'The address that will receive the payment.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            description: 'The amount of tokens the payment consists of.',
-          },
-        ],
-        name: 'PaymentOrderAdded',
-        type: 'event',
-        outputs: [],
-        description: 'Added a payment order.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'recurringPaymentId',
-            type: 'uint256',
-            description: 'The id of the RecurringPayment.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            description:
-              'The amount of tokens that should be sent to the recipient address.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'startEpoch',
-            type: 'uint256',
-            description: 'The epoch in which the payment starts.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'lastTriggeredEpoch',
-            type: 'uint256',
-            description: 'The epoch in which the payment was last triggered.',
-          },
-          {
-            indexed: false,
-            internalType: 'address',
-            name: 'recipient',
-            type: 'address',
-            description: 'The recipient address that should receive tokens.',
-          },
-        ],
-        name: 'RecurringPaymentAdded',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a new milestone added.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'recurringPaymentId',
-            type: 'uint256',
-            description: 'The id of the RecurringPayment.',
-          },
-        ],
-        name: 'RecurringPaymentRemoved',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a new milestone added.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'currentEpoch',
-            type: 'uint256',
-            description: 'The current epoch.',
-          },
-        ],
-        name: 'RecurringPaymentsTriggered',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a new milestone added.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            description: ': amount of tokens send to the recipient address',
-          },
-          {
-            internalType: 'uint256',
-            name: 'startEpoch',
-            type: 'uint256',
-            description:
-              ': epoch in which the payment starts. Use getEpochFromTimestamp() or getCurrentEpoch() to get the appropriate epoch',
-          },
-          {
-            internalType: 'address',
-            name: 'recipient',
-            type: 'address',
-            description: ': recipient address that should receive tokens',
-          },
-        ],
-        name: 'addRecurringPayment',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: 'id',
-            type: 'uint256',
-            description: ': id of the newly created recurring payment',
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Adds a recurring payment to the manager',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            description: 'amount of tokens that have been paid out',
-          },
-        ],
-        name: 'amountPaid',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Notifies the PaymentClient, that tokens have been paid out accordingly',
-      },
-      {
-        inputs: [],
-        name: 'collectPaymentOrders',
-        outputs: [
-          {
-            components: [
-              { internalType: 'address', name: 'recipient', type: 'address' },
-              { internalType: 'uint256', name: 'amount', type: 'uint256' },
-              { internalType: 'uint256', name: 'createdAt', type: 'uint256' },
-              { internalType: 'uint256', name: 'dueTo', type: 'uint256' },
-            ],
-            internalType: 'struct IERC20PaymentClient.PaymentOrder[]',
-            name: '_0',
-            type: 'tuple[]',
-            description: 'list of payment orders',
-          },
-          {
-            internalType: 'uint256',
-            name: '_1',
-            type: 'uint256',
-            description: 'total amount of token to pay',
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Collects outstanding payment orders.',
-      },
-      {
-        inputs: [{ internalType: 'bytes', name: 'data', type: 'bytes' }],
-        name: 'decoder',
-        outputs: [{ internalType: 'bool', name: 'requirement', type: 'bool' }],
-        stateMutability: 'pure',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'getCurrentEpoch',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: 'epoch',
-            type: 'uint256',
-            description:
-              ': epoch in which current timestamp (block.timestamp) belongs to',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Calculates the current epoch',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'timestamp',
-            type: 'uint256',
-            description: ': a timestamp in a uint format',
-          },
-        ],
-        name: 'getEpochFromTimestamp',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: 'epoch',
-            type: 'uint256',
-            description: ': epoch in which timestamp belongs to',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Calculates the epoch from a given uint timestamp',
-      },
-      {
-        inputs: [],
-        name: 'getEpochLength',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            description: 'Length of an epoch in a uint timestamp',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the length of an epoch',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'xEpochsInTheFuture',
-            type: 'uint256',
-            description: ': how many epochs from the current epoch',
-          },
-        ],
-        name: 'getFutureEpoch',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: 'futureEpoch',
-            type: 'uint256',
-            description: ': epoch in the future',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Calculates a future epoch x epochs from now',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'id',
-            type: 'uint256',
-            description: 'The id of the RecurringPayment to return.',
-          },
-        ],
-        name: 'getPreviousPaymentId',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            description: 'The id of previous RecurringPayment.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the id of previous RecurringPayment.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'id',
-            type: 'uint256',
-            description: 'The id of the RecurringPayment to return.',
-          },
-        ],
-        name: 'getRecurringPaymentInformation',
-        outputs: [
-          {
-            components: [
-              { internalType: 'uint256', name: 'amount', type: 'uint256' },
-              { internalType: 'uint256', name: 'startEpoch', type: 'uint256' },
-              {
-                internalType: 'uint256',
-                name: 'lastTriggeredEpoch',
-                type: 'uint256',
-              },
-              { internalType: 'address', name: 'recipient', type: 'address' },
-            ],
-            internalType: 'struct IRecurringPaymentManager.RecurringPayment',
-            name: '_0',
-            type: 'tuple',
-            description: 'RecurringPayment with id `id`.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the RecurringPayment instance with id `id`.',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'addr', type: 'address' },
-        ],
-        name: 'grantModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'identifier',
-        outputs: [
-          {
-            internalType: 'bytes32',
-            name: '_0',
-            type: 'bytes32',
-            description: "The module's identifier.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's identifier.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IOrchestrator',
-            name: 'orchestrator_',
-            type: 'address',
-          },
-          {
-            components: [
-              {
-                internalType: 'uint256',
-                name: 'majorVersion',
-                type: 'uint256',
-              },
-              {
-                internalType: 'uint256',
-                name: 'minorVersion',
-                type: 'uint256',
-              },
-              { internalType: 'string', name: 'url', type: 'string' },
-              { internalType: 'string', name: 'title', type: 'string' },
-            ],
-            internalType: 'struct IModule.Metadata',
-            name: 'metadata',
-            type: 'tuple',
-            description: "The module's metadata.",
-          },
-          {
-            internalType: 'bytes',
-            name: 'configData',
-            type: 'bytes',
-            description:
-              'Variable config data for specific module implementations.',
-          },
-        ],
-        name: 'init',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: "The module's initializer function.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IOrchestrator',
-            name: 'orchestrator_',
-            type: 'address',
-          },
-          { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
-        ],
-        name: 'init2',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [{ internalType: 'uint256', name: 'id', type: 'uint256' }],
-        name: 'isExistingRecurringPaymentId',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description:
-              'True if RecurringPayment with id `id` exists, false otherwise.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns whether RecurringPayment with id `id` exists.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'forwarder',
-            type: 'address',
-            description: 'The contract address to be verified.',
-          },
-        ],
-        name: 'isTrustedForwarder',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
-      },
-      {
-        inputs: [],
-        name: 'listRecurringPaymentIds',
-        outputs: [
-          {
-            internalType: 'uint256[]',
-            name: '_0',
-            type: 'uint256[]',
-            description: 'List of RecurringPayment ids.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns total list of RecurringPayment ids.',
-      },
-      {
-        inputs: [],
-        name: 'orchestrator',
-        outputs: [
-          {
-            internalType: 'contract IOrchestrator',
-            name: '_0',
-            type: 'address',
-            description: "The module's orchestrator.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          "Returns the module's {IOrchestrator} orchestrator instance.",
-      },
-      {
-        inputs: [],
-        name: 'outstandingTokenAmount',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the total outstanding token payment amount.',
-      },
-      {
-        inputs: [],
-        name: 'paymentOrders',
-        outputs: [
-          {
-            components: [
-              { internalType: 'address', name: 'recipient', type: 'address' },
-              { internalType: 'uint256', name: 'amount', type: 'uint256' },
-              { internalType: 'uint256', name: 'createdAt', type: 'uint256' },
-              { internalType: 'uint256', name: 'dueTo', type: 'uint256' },
-            ],
-            internalType: 'struct IERC20PaymentClient.PaymentOrder[]',
-            name: '_0',
-            type: 'tuple[]',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the list of outstanding payment orders.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'prevId',
-            type: 'uint256',
-            description:
-              ': id of the previous recurring payment in the payment list',
-          },
-          {
-            internalType: 'uint256',
-            name: 'id',
-            type: 'uint256',
-            description: ': id of the recurring payment that is to be removed',
-          },
-        ],
-        name: 'removeRecurringPayment',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Removes a recurring Payment',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'addr', type: 'address' },
-        ],
-        name: 'revokeModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
-        ],
-        name: 'supportsInterface',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'title',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's title.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's title.",
-      },
-      {
-        inputs: [],
-        name: 'trigger',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Triggers the start of the due payments for all recurring payment orders',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'startId',
-            type: 'uint256',
-            description:
-              ': id of start position of the recurring payments that should be triggered',
-          },
-          {
-            internalType: 'uint256',
-            name: 'endId',
-            type: 'uint256',
-            description:
-              ': id of end position of the recurring payments that should be triggered',
-          },
-        ],
-        name: 'triggerFor',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'See trigger() but enables you to determine which ids you want to trigger payment ordes for',
-      },
-      {
-        inputs: [],
-        name: 'url',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's URL.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's URL.",
-      },
-      {
-        inputs: [],
-        name: 'version',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            description: "The module's major version.",
-          },
-          {
-            internalType: 'uint256',
-            name: '_1',
-            type: 'uint256',
-            description: "The module's minor version.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's version.",
-      },
-    ],
-  },
-} as const
-export const BountyManager = {
-  'v1.0': {
-    name: 'BountyManager',
-    description: '',
-    version: 'v1.0',
-    moduleType: 'logicModule',
-    deploymentArgs: { configData: [], dependencyData: [] },
-    abi: [
-      {
-        inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
-        name: 'AddressEmptyCode',
-        type: 'error',
-      },
-      {
-        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
-        name: 'AddressInsufficientBalance',
-        type: 'error',
-      },
-      { inputs: [], name: 'FailedInnerCall', type: 'error' },
-      { inputs: [], name: 'InvalidInitialization', type: 'error' },
-      {
-        inputs: [],
-        name: 'Library__LinkedIdList__InvalidNewId',
-        type: 'error',
-      },
-      {
-        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
-        name: 'Module_OrchestratorCallbackFailed',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__BountyManager__AlreadyClaimed',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__BountyManager__BountyLocked',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__BountyManager__ClaimExceedsGivenPayoutAmounts',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__BountyManager__ContributorsChanged',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__BountyManager__InvalidBountyId',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__BountyManager__InvalidClaimId',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__BountyManager__InvalidContributorAddress',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__BountyManager__InvalidContributorAmount',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__BountyManager__InvalidContributorsLength',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__BountyManager__InvalidPayoutAmounts',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__BountyManager__OnlyClaimContributor',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'caller', type: 'address' },
-        ],
-        name: 'Module__CallerNotAuthorized',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__CannotCallInit2Again', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClient__ArrayLengthMismatch',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClient__CallerNotAuthorized',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClient__InvalidAmount',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClient__InvalidDueTo',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClient__InvalidRecipient',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClient__TokenTransferFailed',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
-      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__NoDependencyOrMalformedDependencyData',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
-      { inputs: [], name: 'NotInitializing', type: 'error' },
-      {
-        inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
-        name: 'SafeERC20FailedOperation',
-        type: 'error',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'bountyId',
-            type: 'uint256',
-            description: 'The id of the newly added Bounty.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minimumPayoutAmount',
-            type: 'uint256',
-            tag: 'decimals',
-            description:
-              'The minimum amount of tokens the Bounty will pay out upon being claimed',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'maximumPayoutAmount',
-            type: 'uint256',
-            tag: 'decimals',
-            description:
-              'The maximum amount of tokens the Bounty will pay out upon being claimed',
-          },
-          {
-            indexed: false,
-            internalType: 'bytes',
-            name: 'details',
-            type: 'bytes',
-            tag: 'any',
-            description: "The Bounty's details.",
-          },
-        ],
-        name: 'BountyAdded',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a new Bounty is added.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'bountyId',
-            type: 'uint256',
-            description: 'The id of the locked Bounty.',
-          },
-        ],
-        name: 'BountyLocked',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a Bounty gets locked.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'bountyId',
-            type: 'uint256',
-            description: 'The id of the updated Bounty.',
-          },
-          {
-            indexed: true,
-            internalType: 'bytes',
-            name: 'details',
-            type: 'bytes',
-            tag: 'any',
-            description: "The Bounty's details.",
-          },
-        ],
-        name: 'BountyUpdated',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a Bounty got updated.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'claimId',
-            type: 'uint256',
-            description: 'The id of the newly added Claim.',
-          },
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'bountyId',
-            type: 'uint256',
-            description: 'The id of the Bounty that got claimed.',
-          },
-          {
-            components: [
-              { internalType: 'address', name: 'addr', type: 'address' },
-              {
-                internalType: 'uint256',
-                name: 'claimAmount',
-                type: 'uint256',
-                tag: 'decimals',
-              },
-            ],
-            indexed: true,
-            internalType: 'struct IBountyManager.Contributor[]',
-            name: 'contributors',
-            type: 'tuple[]',
-            description: 'The contributor information for the Claim.',
-          },
-          {
-            indexed: false,
-            internalType: 'bytes',
-            name: 'details',
-            type: 'bytes',
-            tag: 'any',
-            description: "The Claim's details.",
-          },
-        ],
-        name: 'ClaimAdded',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a new Claim is added.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'claimId',
-            type: 'uint256',
-            description: 'The id of the Claim that got updated.',
-          },
-          {
-            components: [
-              { internalType: 'address', name: 'addr', type: 'address' },
-              {
-                internalType: 'uint256',
-                name: 'claimAmount',
-                type: 'uint256',
-                tag: 'decimals',
-              },
-            ],
-            indexed: true,
-            internalType: 'struct IBountyManager.Contributor[]',
-            name: 'contributors',
-            type: 'tuple[]',
-            description: 'The contributor information for the Claim.',
-          },
-        ],
-        name: 'ClaimContributorsUpdated',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when Claim Contributors got updated.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'claimId',
-            type: 'uint256',
-            description: 'The id of the Claim that got updated.',
-          },
-          {
-            indexed: false,
-            internalType: 'bytes',
-            name: 'details',
-            type: 'bytes',
-            tag: 'any',
-            description: "The Claim's details.",
-          },
-        ],
-        name: 'ClaimDetailsUpdated',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when Claim Details got updated.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'claimId',
-            type: 'uint256',
-            description: 'The id of the Claim that got verified.',
-          },
-        ],
-        name: 'ClaimVerified',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a Claim is verified.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'uint64',
-            name: 'version',
-            type: 'uint64',
-          },
-        ],
-        name: 'Initialized',
-        type: 'event',
-        outputs: [],
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'parentOrchestrator',
-            type: 'address',
-            description:
-              'The address of the orchestrator the module is linked to.',
-          },
-          {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
-          },
-        ],
-        name: 'ModuleInitialized',
-        type: 'event',
-        outputs: [],
-        description: 'Module has been initialized.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'recipient',
-            type: 'address',
-            description: 'The address that will receive the payment.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tag: 'decimals',
-            description: 'The amount of tokens the payment consists of.',
-          },
-        ],
-        name: 'PaymentOrderAdded',
-        type: 'event',
-        outputs: [],
-        description: 'Added a payment order.',
-      },
-      {
-        inputs: [],
-        name: 'BOUNTY_ISSUER_ROLE',
-        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'CLAIMANT_ROLE',
-        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'VERIFIER_ROLE',
-        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'minimumPayoutAmount',
-            type: 'uint256',
-            tag: 'decimals',
-            description:
-              'The minimum amount of tokens the Bounty will pay out upon being claimed',
-          },
-          {
-            internalType: 'uint256',
-            name: 'maximumPayoutAmount',
-            type: 'uint256',
-            tag: 'decimals',
-            description:
-              'The maximum amount of tokens the Bounty will pay out upon being claimed',
-          },
-          {
-            internalType: 'bytes',
-            name: 'details',
-            type: 'bytes',
-            tag: 'any',
-            description: "The Bounty's details.",
-          },
-        ],
-        name: 'addBounty',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: 'id',
-            type: 'uint256',
-            description: "The newly added Bounty's id.",
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Adds a new Bounty.',
-      },
-      {
-        inputs: [
-          { internalType: 'uint256', name: 'bountyId', type: 'uint256' },
-          {
-            components: [
-              { internalType: 'address', name: 'addr', type: 'address' },
-              {
-                internalType: 'uint256',
-                name: 'claimAmount',
-                type: 'uint256',
-                tag: 'decimals',
-              },
-            ],
-            internalType: 'struct IBountyManager.Contributor[]',
-            name: 'contributors',
-            type: 'tuple[]',
-            description: 'The contributor information for the Claim',
-          },
-          {
-            internalType: 'bytes',
-            name: 'details',
-            type: 'bytes',
-            tag: 'any',
-            description: "The Claim's details.",
-          },
-        ],
-        name: 'addClaim',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: 'id',
-            type: 'uint256',
-            description: "The newly added Claim's id.",
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Adds a new Claim.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tag: 'decimals',
-            description: 'amount of tokens that have been paid out',
-          },
-        ],
-        name: 'amountPaid',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Notifies the PaymentClient, that tokens have been paid out accordingly',
-      },
-      {
-        inputs: [],
-        name: 'collectPaymentOrders',
-        outputs: [
-          {
-            components: [
-              { internalType: 'address', name: 'recipient', type: 'address' },
-              {
-                internalType: 'uint256',
-                name: 'amount',
-                type: 'uint256',
-                tag: 'decimals',
-              },
-              { internalType: 'uint256', name: 'createdAt', type: 'uint256' },
-              { internalType: 'uint256', name: 'dueTo', type: 'uint256' },
-            ],
-            internalType: 'struct IERC20PaymentClient.PaymentOrder[]',
-            name: '_0',
-            type: 'tuple[]',
-            description: 'list of payment orders',
-          },
-          {
-            internalType: 'uint256',
-            name: '_1',
-            type: 'uint256',
-            description: 'total amount of token to pay',
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Collects outstanding payment orders.',
-      },
-      {
-        inputs: [{ internalType: 'bytes', name: 'data', type: 'bytes' }],
-        name: 'decoder',
-        outputs: [{ internalType: 'bool', name: 'requirement', type: 'bool' }],
-        stateMutability: 'pure',
-        type: 'function',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'bountyId',
-            type: 'uint256',
-            description: 'The id of the Bounty to return.',
-          },
-        ],
-        name: 'getBountyInformation',
-        outputs: [
-          {
-            components: [
-              {
-                internalType: 'uint256',
-                name: 'minimumPayoutAmount',
-                type: 'uint256',
-                tag: 'decimals',
-              },
-              {
-                internalType: 'uint256',
-                name: 'maximumPayoutAmount',
-                type: 'uint256',
-                tag: 'decimals',
-              },
-              {
-                internalType: 'bytes',
-                name: 'details',
-                type: 'bytes',
-                tag: 'any',
-              },
-              { internalType: 'bool', name: 'locked', type: 'bool' },
-            ],
-            internalType: 'struct IBountyManager.Bounty',
-            name: '_0',
-            type: 'tuple',
-            description: 'Bounty with id `id`.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the Bounty instance with id `id`.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'claimId',
-            type: 'uint256',
-            description: 'The id of the Claim to return.',
-          },
-        ],
-        name: 'getClaimInformation',
-        outputs: [
-          {
-            components: [
-              { internalType: 'uint256', name: 'bountyId', type: 'uint256' },
-              {
-                components: [
-                  { internalType: 'address', name: 'addr', type: 'address' },
-                  {
-                    internalType: 'uint256',
-                    name: 'claimAmount',
-                    type: 'uint256',
-                    tag: 'decimals',
-                  },
-                ],
-                internalType: 'struct IBountyManager.Contributor[]',
-                name: 'contributors',
-                type: 'tuple[]',
-              },
-              {
-                internalType: 'bytes',
-                name: 'details',
-                type: 'bytes',
-                tag: 'any',
-              },
-              { internalType: 'bool', name: 'claimed', type: 'bool' },
-            ],
-            internalType: 'struct IBountyManager.Claim',
-            name: '_0',
-            type: 'tuple',
-            description: 'Claim with id `id`.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the Claim instance with id `id`.',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'addr', type: 'address' },
-        ],
-        name: 'grantModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'identifier',
-        outputs: [
-          {
-            internalType: 'bytes32',
-            name: '_0',
-            type: 'bytes32',
-            description: "The module's identifier.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's identifier.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IOrchestrator',
-            name: 'orchestrator_',
-            type: 'address',
-          },
-          {
-            components: [
-              {
-                internalType: 'uint256',
-                name: 'majorVersion',
-                type: 'uint256',
-              },
-              {
-                internalType: 'uint256',
-                name: 'minorVersion',
-                type: 'uint256',
-              },
-              { internalType: 'string', name: 'url', type: 'string' },
-              { internalType: 'string', name: 'title', type: 'string' },
-            ],
-            internalType: 'struct IModule.Metadata',
-            name: 'metadata',
-            type: 'tuple',
-            description: "The module's metadata.",
-          },
-          { internalType: 'bytes', name: '', type: 'bytes' },
-        ],
-        name: 'init',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: "The module's initializer function.",
-      },
-      {
-        inputs: [
-          { internalType: 'contract IOrchestrator', name: '', type: 'address' },
-          { internalType: 'bytes', name: '', type: 'bytes' },
-        ],
-        name: 'init2',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'bountyId',
-            type: 'uint256',
-            description: 'The id of the Bounty to test.',
-          },
-        ],
-        name: 'isExistingBountyId',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'True if Claim with id `id` exists, false otherwise.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns whether Bounty with id `id` exists.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'claimId',
-            type: 'uint256',
-            description: 'The id of the Bounty to test.',
-          },
-        ],
-        name: 'isExistingClaimId',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'True if Claim with id `id` exists, false otherwise.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns whether Claim with id `id` exists.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'forwarder',
-            type: 'address',
-            description: 'The contract address to be verified.',
-          },
-        ],
-        name: 'isTrustedForwarder',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
-      },
-      {
-        inputs: [],
-        name: 'listBountyIds',
-        outputs: [
-          {
-            internalType: 'uint256[]',
-            name: '_0',
-            type: 'uint256[]',
-            description: 'List of Bounty ids.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns total list of Bounty ids.',
-      },
-      {
-        inputs: [],
-        name: 'listClaimIds',
-        outputs: [
-          {
-            internalType: 'uint256[]',
-            name: '_0',
-            type: 'uint256[]',
-            description: 'List of Claim ids.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns total list of Claim ids.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'contributorAddrs',
-            type: 'address',
-            description: 'claim ids are filtered by the contributor address',
-          },
-        ],
-        name: 'listClaimIdsForContributorAddress',
-        outputs: [
-          {
-            internalType: 'uint256[]',
-            name: '_0',
-            type: 'uint256[]',
-            description: 'List of Claim ids.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Returns a list of Claim ids in which contributor Address is used.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'bountyId',
-            type: 'uint256',
-            description: 'The id of the Bounty that will be locked.',
-          },
-        ],
-        name: 'lockBounty',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Locks the Bounty so it cant be claimed.',
-      },
-      {
-        inputs: [],
-        name: 'orchestrator',
-        outputs: [
-          {
-            internalType: 'contract IOrchestrator',
-            name: '_0',
-            type: 'address',
-            description: "The module's orchestrator.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          "Returns the module's {IOrchestrator} orchestrator instance.",
-      },
-      {
-        inputs: [],
-        name: 'outstandingTokenAmount',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tag: 'decimals',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the total outstanding token payment amount.',
-      },
-      {
-        inputs: [],
-        name: 'paymentOrders',
-        outputs: [
-          {
-            components: [
-              { internalType: 'address', name: 'recipient', type: 'address' },
-              {
-                internalType: 'uint256',
-                name: 'amount',
-                type: 'uint256',
-                tag: 'decimals',
-              },
-              { internalType: 'uint256', name: 'createdAt', type: 'uint256' },
-              { internalType: 'uint256', name: 'dueTo', type: 'uint256' },
-            ],
-            internalType: 'struct IERC20PaymentClient.PaymentOrder[]',
-            name: '_0',
-            type: 'tuple[]',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the list of outstanding payment orders.',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'addr', type: 'address' },
-        ],
-        name: 'revokeModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
-        ],
-        name: 'supportsInterface',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'title',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's title.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's title.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'bountyId',
-            type: 'uint256',
-            description: 'The id of the Bounty that will be updated.',
-          },
-          {
-            internalType: 'bytes',
-            name: 'details',
-            type: 'bytes',
-            tag: 'any',
-            description: "The Bounty's details.",
-          },
-        ],
-        name: 'updateBounty',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: "Updates a Bounty's informations.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'claimId',
-            type: 'uint256',
-            description: 'The id of the Claim that will be updated.',
-          },
-          {
-            components: [
-              { internalType: 'address', name: 'addr', type: 'address' },
-              {
-                internalType: 'uint256',
-                name: 'claimAmount',
-                type: 'uint256',
-                tag: 'decimals',
-              },
-            ],
-            internalType: 'struct IBountyManager.Contributor[]',
-            name: 'contributors',
-            type: 'tuple[]',
-            description: 'The contributor information for the Claim.',
-          },
-        ],
-        name: 'updateClaimContributors',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: "Updates a Claim's contributor informations.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'claimId',
-            type: 'uint256',
-            description: 'The id of the Claim that will be updated.',
-          },
-          {
-            internalType: 'bytes',
-            name: 'details',
-            type: 'bytes',
-            tag: 'any',
-            description: "The Claim's details.",
-          },
-        ],
-        name: 'updateClaimDetails',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Updates a Claim Details.',
-      },
-      {
-        inputs: [],
-        name: 'url',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's URL.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's URL.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'claimId',
-            type: 'uint256',
-            description: 'The id of the Claim that wants to claim the Bounty.',
-          },
-          {
-            components: [
-              { internalType: 'address', name: 'addr', type: 'address' },
-              {
-                internalType: 'uint256',
-                name: 'claimAmount',
-                type: 'uint256',
-                tag: 'decimals',
-              },
-            ],
-            internalType: 'struct IBountyManager.Contributor[]',
-            name: 'contributors',
-            type: 'tuple[]',
-            description: 'The contributor information for the Claim.',
-          },
-        ],
-        name: 'verifyClaim',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Completes a Bounty by verifying a claim.',
-      },
-      {
-        inputs: [],
-        name: 'version',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            description: "The module's major version.",
-          },
-          {
-            internalType: 'uint256',
-            name: '_1',
-            type: 'uint256',
-            description: "The module's minor version.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's version.",
-      },
-    ],
-  },
-} as const
-export const Module = {
-  'v1.0': {
-    name: 'Module',
-    description: '',
-    version: 'v1.0',
-    moduleType: 'base',
-    deploymentArgs: { configData: [], dependencyData: [] },
-    abi: [
-      { inputs: [], name: 'InvalidInitialization', type: 'error' },
-      {
-        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
-        name: 'Module_OrchestratorCallbackFailed',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'caller', type: 'address' },
-        ],
-        name: 'Module__CallerNotAuthorized',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__CannotCallInit2Again', type: 'error' },
-      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
-      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__NoDependencyOrMalformedDependencyData',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
-      { inputs: [], name: 'NotInitializing', type: 'error' },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'uint64',
-            name: 'version',
-            type: 'uint64',
-          },
-        ],
-        name: 'Initialized',
-        type: 'event',
-        outputs: [],
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'parentOrchestrator',
-            type: 'address',
-            description:
-              'The address of the orchestrator the module is linked to.',
-          },
-          {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
-          },
-        ],
-        name: 'ModuleInitialized',
-        type: 'event',
-        outputs: [],
-        description: 'Module has been initialized.',
-      },
-      {
-        inputs: [{ internalType: 'bytes', name: 'data', type: 'bytes' }],
-        name: 'decoder',
-        outputs: [{ internalType: 'bool', name: 'requirement', type: 'bool' }],
-        stateMutability: 'pure',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'addr', type: 'address' },
-        ],
-        name: 'grantModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'identifier',
-        outputs: [
-          {
-            internalType: 'bytes32',
-            name: '_0',
-            type: 'bytes32',
-            description: "The module's identifier.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's identifier.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IOrchestrator',
-            name: 'orchestrator_',
-            type: 'address',
-          },
-          {
-            components: [
-              {
-                internalType: 'uint256',
-                name: 'majorVersion',
-                type: 'uint256',
-              },
-              {
-                internalType: 'uint256',
-                name: 'minorVersion',
-                type: 'uint256',
-              },
-              { internalType: 'string', name: 'url', type: 'string' },
-              { internalType: 'string', name: 'title', type: 'string' },
-            ],
-            internalType: 'struct IModule.Metadata',
-            name: 'metadata',
-            type: 'tuple',
-            description: "The module's metadata.",
-          },
-          { internalType: 'bytes', name: '', type: 'bytes' },
-        ],
-        name: 'init',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: "The module's initializer function.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IOrchestrator',
-            name: 'orchestrator_',
-            type: 'address',
-          },
-          { internalType: 'bytes', name: 'dependencyData', type: 'bytes' },
-        ],
-        name: 'init2',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'forwarder',
-            type: 'address',
-            description: 'The contract address to be verified.',
-          },
-        ],
-        name: 'isTrustedForwarder',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
-      },
-      {
-        inputs: [],
-        name: 'orchestrator',
-        outputs: [
-          {
-            internalType: 'contract IOrchestrator',
-            name: '_0',
-            type: 'address',
-            description: "The module's orchestrator.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          "Returns the module's {IOrchestrator} orchestrator instance.",
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'addr', type: 'address' },
-        ],
-        name: 'revokeModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
-        ],
-        name: 'supportsInterface',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'title',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's title.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's title.",
       },
       {
         inputs: [],
