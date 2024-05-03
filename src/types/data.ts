@@ -9,7 +9,7 @@ export type GetModuleVersion<N extends ModuleName> = Extract<
   { name: N }
 >['version']
 
-export type ModuleData<
+export type GetModuleData<
   N extends ModuleName,
   V extends GetModuleVersion<N>,
 > = Extract<BaseData[number], { name: N; version: V }>

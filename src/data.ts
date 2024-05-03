@@ -3603,7 +3603,6 @@ export const data = [
           description:
             'The address of the token that will be deposited to the funding manager',
           type: 'address',
-          tags: 'decimals',
         },
       ],
       dependencyData: [],
@@ -4573,18 +4572,19 @@ export const data = [
           name: 'initialTokenSupply',
           type: 'uint256',
           description: 'The initial virtual issuance token supply',
+          tags: ['decimals'],
         },
         {
           name: 'initialCollateralSupply',
           type: 'uint256',
           description: 'The initial virtual collateral token supply',
+          tags: ['decimals'],
         },
         {
           name: 'acceptedToken',
           type: 'address',
           description:
             'The address of the token that will be deposited to the funding manager',
-          tags: 'decimals',
         },
       ],
       dependencyData: [],
