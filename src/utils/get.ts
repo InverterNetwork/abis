@@ -4,8 +4,10 @@ export function getModuleData<
   N extends ModuleName,
   V extends GetModuleVersion<N>,
 >(name: N, version: V) {
-  return data.find(
+  const moduleData = data.find(
     (module): module is GetModuleData<N, V> =>
       module.name === name && module.version === version
   )
+  if (!moduleData) throw new Error('ModuleData Returned Undefined')
+  return moduleData
 }
