@@ -1,12 +1,12 @@
 import { DeploymentArgData, DeploymentArgs } from '.'
-import { ModuleType, Tag } from '../../src/base'
+import { ModuleType, Tag } from '../../src/'
 
 export type Descriptions = Record<'selfDescription' | string, string>
 export type Tags = Record<string, Tag[]>
 
 export type ModuleMeta = {
   name: string
-  version: string
+  version: `${number}`
   moduleType: ModuleType
   description: string
 }

@@ -6,7 +6,7 @@ import write from './write'
 import { AbiMemberConfigs, Config, Tags } from '../../types'
 import getParsedRawMetadata from '../../utils/getParsedRawMetadata'
 import { getConfigPath } from '../../utils/getParsedConfig'
-import { Tag } from '../../../src/base'
+import { Tag } from '../../../src'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files

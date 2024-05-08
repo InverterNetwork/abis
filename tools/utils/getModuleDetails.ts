@@ -1,4 +1,4 @@
-import { ModuleType } from '../../src/base'
+import { ModuleType } from '../../src/'
 import { ParsedRawMetadata } from '../types'
 
 export default function (
@@ -11,7 +11,10 @@ export default function (
     description = userdocNotice || '',
     moduleType = parts[parts.length - 3] as ModuleType,
     name = parts[parts.length - 2],
-    version = parts[parts.length - 1].replace('.json', '')
+    version = parts[parts.length - 1]
+      .replace('.json', '')
+      .slice(1)
+      .split('.')[0] as `${number}`
 
   return { name, version, moduleType, description }
 }
