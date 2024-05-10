@@ -1,12 +1,8 @@
-import { GetModuleData, ModuleName, GetModuleVersion, data } from '..'
+import { GetModuleData, ModuleName, data } from '..'
 
-export function getModuleData<
-  N extends ModuleName,
-  V extends GetModuleVersion<N>,
->(name: N, version: V) {
+export function getModuleData<N extends ModuleName>(name: N) {
   const moduleData = data.find(
-    (module): module is GetModuleData<N, V> =>
-      module.name === name && module.version === version
+    (module): module is GetModuleData<N> => module.name === name
   )
   if (!moduleData) throw new Error('ModuleData Returned Undefined')
   return moduleData

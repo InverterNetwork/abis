@@ -22,7 +22,7 @@ type ExtendedDeploymentArgData = DeploymentArgData & {
   description: string
 }
 
-export type ExtendedDeploymentArgs = {
+export type ExtendedDeploymentInpits = {
   configData?: ExtendedDeploymentArgData[]
   dependencyData?: ExtendedDeploymentArgData[]
 }
