@@ -5,7 +5,7 @@ import {
 } from '../types'
 import { getEntries } from '.'
 
-export default function (
+export default function getAbiMemberDescriptions(
   output: ParsedRawMetadata['output'],
   abiMemberConfigs: AbiMemberConfigs
 ) {
@@ -40,7 +40,7 @@ export default function (
             // if the type is returns, replace the key with the returnNames
             // this is to handle the case where the return value has been renamed
             // in the config file by the maintainers
-            if (type === 'returns' && abiMemberConfigs?.[name])
+            if (type === 'returns')
               key = abiMemberConfigs[name].returnNames[index]
 
             acc[name].push({

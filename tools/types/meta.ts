@@ -1,4 +1,4 @@
-import { DeploymentArgData, DeploymentArgs } from '.'
+import { DeploymentArgData, DeploymentInputs } from '.'
 import { ModuleType, Tag } from '../../src/'
 
 export type Descriptions = Record<'selfDescription' | string, string>
@@ -28,8 +28,7 @@ export type ExtendedDeploymentArgs = {
 }
 
 export type AbiMeta = {
-  // deploymentArgs: ExtendedDeploymentArgs
-  deploymentArgs: DeploymentArgs
+  deploymentInputs: DeploymentInputs
   moduleMeta: ModuleMeta
   abiMemberMetas: AbiMemberMetas
 }

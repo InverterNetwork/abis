@@ -6,7 +6,7 @@ export type DeploymentArgData = {
   tags: Tags
 }
 
-export type DeploymentArgs = {
+export type DeploymentInputs = {
   configData?: DeploymentArgData[]
   dependencyData?: DeploymentArgData[]
 }
@@ -19,6 +19,6 @@ export type AbiMemberConfig = {
 export type AbiMemberConfigs = Record<string, AbiMemberConfig>
 
 export type Config = {
-  deploymentArgs: DeploymentArgs
+  deploymentInputs: DeploymentInputs
   abiMembers: AbiMemberConfigs
 }

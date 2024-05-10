@@ -12,6 +12,7 @@
     "@commitlint/cli": "^18",
     "@commitlint/config-conventional": "^18",
     "@types/bun": "^1",
+    "@types/lodash": "^4.17.1",
     "@typescript-eslint/eslint-plugin": "^6",
     "@typescript-eslint/parser": "^6",
     "abitype": "^1",

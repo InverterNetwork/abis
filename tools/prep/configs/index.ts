@@ -39,7 +39,7 @@ export default function prep() {
 
       // 7- Create a new object with the event and method names + the config fields
       const data: Config = {
-        deploymentArgs: {
+        deploymentInputs: {
           configData: [],
           dependencyData: [],
         },
