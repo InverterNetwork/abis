@@ -40,7 +40,7 @@ export default function (
             // if the type is returns, replace the key with the returnNames
             // this is to handle the case where the return value has been renamed
             // in the config file by the maintainers
-            if (type === 'returns')
+            if (type === 'returns' && abiMemberConfigs?.[name])
               key = abiMemberConfigs[name].returnNames[index]
 
             acc[name].push({

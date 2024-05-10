@@ -28,7 +28,7 @@ export default function compile() {
           itemPath,
           parsedMetadata
         ),
-        { name, description, version, moduleType } = moduleMeta,
+        { name, description, moduleType } = moduleMeta,
         // 6- Update the ABI outputs
         updatedAbi = updateAbiOutputNames(
           parsedMetadata.output.abi,
@@ -41,7 +41,6 @@ export default function compile() {
       accumulated.push({
         name,
         description,
-        version,
         moduleType,
         deploymentArgs,
         abi: extendedAbi,

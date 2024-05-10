@@ -6,7 +6,6 @@ export type Compiled = {
   name: string
   description: string
   moduleType: ModuleType
-  version: `${number}`
   deploymentArgs: DeploymentArgs
   abi: ExtendedAbi
 }[]

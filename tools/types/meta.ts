@@ -6,7 +6,6 @@ export type Tags = Record<string, Tag[]>
 
 export type ModuleMeta = {
   name: string
-  version: `${number}`
   moduleType: ModuleType
   description: string
 }
