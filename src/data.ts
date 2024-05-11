@@ -5046,7 +5046,6 @@ export const data = [
           description:
             'The address of the token that will be deposited to the funding manager',
           type: 'address',
-          tags: 'decimals',
         },
       ],
       dependencyData: [],
