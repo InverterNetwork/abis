@@ -1,6 +1,6 @@
 {
   "name": "@inverter-network/abis",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.4",
   "author": "InverterNetwork <github@InverterNetwork>",
   "repository": {
     "type": "git",
@@ -12,6 +12,7 @@
     "@commitlint/cli": "^18",
     "@commitlint/config-conventional": "^18",
     "@types/bun": "^1",
+    "@types/lodash": "^4.17.1",
     "@typescript-eslint/eslint-plugin": "^6",
     "@typescript-eslint/parser": "^6",
     "abitype": "^1",
@@ -78,7 +79,7 @@
     "release": "standard-version -a",
     "release:alpha": "standard-version -a --prerelease alpha --skip.changelog",
     "release:beta": "standard-version -a --prerelease beta --skip.changelog",
-    "release:pub": "git push --follow-tags origin main",
+    "release:pub": "git push --follow-tags",
     "trans:tags": "bun tools/transition/singleTagToTagArray.ts && prettier --write ./deployments > /dev/null 2>&1"
   },
   "types": "./dist/index.d.ts"

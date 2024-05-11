@@ -24,11 +24,11 @@ export default function compile() {
       // 3- Parse the raw metadata
       const parsedMetadata = getParsedRawMetadata(itemPath),
         // 4- Get ABI metadata
-        { abiMemberMetas, moduleMeta, deploymentArgs } = constructAbiMeta(
+        { abiMemberMetas, moduleMeta, deploymentInputs } = constructAbiMeta(
           itemPath,
           parsedMetadata
         ),
-        { name, description, version, moduleType } = moduleMeta,
+        { name, description, moduleType } = moduleMeta,
         // 6- Update the ABI outputs
         updatedAbi = updateAbiOutputNames(
           parsedMetadata.output.abi,
@@ -41,9 +41,8 @@ export default function compile() {
       accumulated.push({
         name,
         description,
-        version,
         moduleType,
-        deploymentArgs,
+        deploymentInputs,
         abi: extendedAbi,
       })
     }

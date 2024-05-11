@@ -5,7 +5,7 @@ import {
 } from '../types'
 import { getEntries } from '.'
 
-export default function (
+export default function getAbiMemberDescriptions(
   output: ParsedRawMetadata['output'],
   abiMemberConfigs: AbiMemberConfigs
 ) {
