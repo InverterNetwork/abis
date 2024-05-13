@@ -1,16 +1,11 @@
-import { ExtendedAbi } from '../../src/extendedAbi'
-import { ModuleType } from '../../src/base'
-import { DeploymentArgs } from './'
+import { ExtendedAbi } from '../../src/types/extendedAbi'
+import { ModuleType } from '../../src'
+import { DeploymentInputs } from './'
 
 export type Compiled = {
-  [key: string]: {
-    [key: string]: {
-      name: string
-      description: string
-      moduleType: ModuleType
-      version: string
-      deploymentArgs: DeploymentArgs
-      abi: ExtendedAbi
-    }
-  }
-}
+  name: string
+  description: string
+  moduleType: ModuleType
+  deploymentInputs: DeploymentInputs
+  abi: ExtendedAbi
+}[]

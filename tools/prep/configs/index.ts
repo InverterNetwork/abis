@@ -6,7 +6,7 @@ import write from './write'
 import { AbiMemberConfigs, Config, Tags } from '../../types'
 import getParsedRawMetadata from '../../utils/getParsedRawMetadata'
 import { getConfigPath } from '../../utils/getParsedConfig'
-import { Tag } from '../../../src/base'
+import { Tag } from '../../../src'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files
@@ -33,13 +33,13 @@ export default function prep() {
         // 6- Create a function that returns an object with the default tags
         getDefaultTags = (name: string) =>
           parameterNames[name].reduce((acc, name) => {
-            acc[name] = '' as Tag
+            acc[name] = ['' as Tag] as Tag[]
             return acc
           }, {} as Tags)
 
       // 7- Create a new object with the event and method names + the config fields
       const data: Config = {
-        deploymentArgs: {
+        deploymentInputs: {
           configData: [],
           dependencyData: [],
         },

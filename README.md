@@ -57,13 +57,18 @@ The following packages need to be installed globally for the husky hooks to work
 bun install
 ```
 
-## Updating the ABIs
+### Watching TS Problems
+
+```bash
+bun watch
+```
+
+### Updating the ABIs
 
 1. Update the deployments submodules in the `deployments` directory.
 
 ```bash
 bun compile
-
 ```
 
 ## How to make a release
@@ -74,7 +79,7 @@ bun compile
 2. Merge PR into main
 3. Checkout main
 4. `git pull`
-5. `bun release`
+5. `bun release: '' | alpha | beta` optionally add `-- --release-as minor | major`
 6. Make sure everything looks good (e.g. in CHANGELOG.md)
 7. Lastly follow the instructions given by release log
 8. Done

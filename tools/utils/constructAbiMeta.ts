@@ -1,4 +1,4 @@
-import { DeploymentArgs, ParsedRawMetadata } from '../types'
+import { DeploymentInputs, ParsedRawMetadata } from '../types'
 import { AbiMeta } from '../types/meta'
 import getParsedConfig from './getParsedConfig'
 import getModuleDetails from './getModuleDetails'
@@ -9,7 +9,7 @@ export default function (
   parsedMetadata: ParsedRawMetadata
 ): AbiMeta {
   // 0- Get config data
-  const { deploymentArgs, abiMembers } = getParsedConfig(itemPath),
+  const { deploymentInputs, abiMembers } = getParsedConfig(itemPath),
     // 1- Get module details
     moduleMeta = getModuleDetails(
       parsedMetadata.output.userdoc.notice,
@@ -21,6 +21,6 @@ export default function (
   return {
     moduleMeta,
     abiMemberMetas,
-    deploymentArgs: deploymentArgs as DeploymentArgs,
+    deploymentInputs: deploymentInputs as DeploymentInputs,
   }
 }

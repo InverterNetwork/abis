@@ -1,4 +1,4 @@
-import { ModuleType } from '../../src/base'
+import { ModuleType } from '../../src/'
 import { ParsedRawMetadata } from '../types'
 
 export default function (
@@ -9,9 +9,8 @@ export default function (
   const parts = itemPath.split('/'),
     // 3- Extract the module metas
     description = userdocNotice || '',
-    moduleType = parts[parts.length - 3] as ModuleType,
-    name = parts[parts.length - 2],
-    version = parts[parts.length - 1].replace('.json', '')
+    moduleType = parts[parts.length - 2] as ModuleType,
+    name = parts[parts.length - 1].replace('.json', '')
 
-  return { name, version, moduleType, description }
+  return { name, moduleType, description }
 }

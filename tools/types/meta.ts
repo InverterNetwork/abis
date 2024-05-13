@@ -1,12 +1,11 @@
-import { DeploymentArgData, DeploymentArgs } from '.'
-import { ModuleType, Tag } from '../../src/base'
+import { DeploymentArgData, DeploymentInputs } from '.'
+import { ModuleType, Tag } from '../../src/'
 
 export type Descriptions = Record<'selfDescription' | string, string>
-export type Tags = Record<string, Tag>
+export type Tags = Record<string, Tag[]>
 
 export type ModuleMeta = {
   name: string
-  version: string
   moduleType: ModuleType
   description: string
 }
@@ -23,14 +22,13 @@ type ExtendedDeploymentArgData = DeploymentArgData & {
   description: string
 }
 
-export type ExtendedDeploymentArgs = {
+export type ExtendedDeploymentInpits = {
   configData?: ExtendedDeploymentArgData[]
   dependencyData?: ExtendedDeploymentArgData[]
 }
 
 export type AbiMeta = {
-  // deploymentArgs: ExtendedDeploymentArgs
-  deploymentArgs: DeploymentArgs
+  deploymentInputs: DeploymentInputs
   moduleMeta: ModuleMeta
   abiMemberMetas: AbiMemberMetas
 }

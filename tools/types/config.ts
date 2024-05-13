@@ -1,23 +1,24 @@
-import { Tag } from '../../src/base'
+import { Tags } from './meta'
 
 export type DeploymentArgData = {
   name: string
   type: string
+  tags: Tags
 }
 
-export type DeploymentArgs = {
+export type DeploymentInputs = {
   configData?: DeploymentArgData[]
   dependencyData?: DeploymentArgData[]
 }
 
 export type AbiMemberConfig = {
-  tags: Record<string, Tag>
+  tags: Tags
   returnNames: string[]
 }
 
 export type AbiMemberConfigs = Record<string, AbiMemberConfig>
 
 export type Config = {
-  deploymentArgs: DeploymentArgs
+  deploymentInputs: DeploymentInputs
   abiMembers: AbiMemberConfigs
 }

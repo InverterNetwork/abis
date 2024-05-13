@@ -1,2 +1,1 @@
-bun compile
 bun pre-commit

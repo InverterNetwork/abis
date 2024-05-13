@@ -1,13 +1,8 @@
 import fs from 'fs'
+import { Compiled } from '../types'
 
-export default function (data: Record<string, any>, destPath: string) {
-  let indexContent = ''
+export default function (data: Compiled, destPath: string) {
+  const stringified = `export const data = ${JSON.stringify(data)} as const;\n`
 
-  for (const moduleName in data) {
-    indexContent += `export const ${moduleName} = ${JSON.stringify(
-      data[moduleName]
-    )} as const;\n`
-  }
-
-  fs.writeFileSync(destPath, indexContent)
+  fs.writeFileSync(destPath, stringified)
 }
