@@ -1,6 +1,6 @@
 {
   "name": "@inverter-network/abis",
-  "version": "0.1.0-alpha.6",
+  "version": "0.1.0-alpha.7",
   "author": "InverterNetwork <github@InverterNetwork>",
   "repository": {
     "type": "git",
@@ -8,6 +8,9 @@
   },
   "main": "./dist/cjs/index.js",
   "module": "./dist/index.js",
+  "dependencies": {
+    "type-fest-4": "npm:type-fest@^4"
+  },
   "devDependencies": {
     "@commitlint/cli": "^18",
     "@commitlint/config-conventional": "^18",
@@ -22,8 +25,7 @@
     "lint-staged": "^15",
     "pinst": "^3",
     "prettier": "^3",
-    "standard-version": "^9",
-    "type-fest-4": "npm:type-fest@^4"
+    "standard-version": "^9"
   },
   "peerDependencies": {
     "eslint": "^8",
