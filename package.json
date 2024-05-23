@@ -6,7 +6,6 @@
     "type": "git",
     "url": "git+ssh://git@github.com/InverterNetwork/abis.git"
   },
-  "main": "./dist/cjs/index.js",
   "module": "./dist/index.js",
   "dependencies": {
     "type-fest-4": "npm:type-fest@^4"
@@ -32,7 +31,6 @@
     "typescript": "^5"
   },
   "exports": {
-    "require": "./dist/cjs/index.js",
     "import": "./dist/index.js"
   },
   "bugs": {
