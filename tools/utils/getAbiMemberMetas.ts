@@ -25,7 +25,8 @@ export default function (
     if (!desciptions[key]) continue
     acc[key].descriptions = desciptions[key].reduce(
       (acc, { name, description }) => {
-        acc[name] = description
+        // prune description from more than one space
+        acc[name] = description.replace(/\s+/g, ' ').trim()
         return acc
       },
       {} as AbiMemberMeta['descriptions']

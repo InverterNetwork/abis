@@ -8,9 +8,12 @@ export default function (
   // 2- Split the path of the JSON file
   const parts = itemPath.split('/'),
     // 3- Extract the module metas
-    description = userdocNotice || '',
+    rawDescription = userdocNotice || '',
     moduleType = parts[parts.length - 2] as ModuleType,
     name = parts[parts.length - 1].replace('.json', '')
+
+  // prune the description from more than one space
+  const description = rawDescription.replace(/\s+/g, ' ').trim()
 
   return { name, moduleType, description }
 }

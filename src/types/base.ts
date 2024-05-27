@@ -8,5 +8,5 @@ export type Tag =
 
 export type UserFacingModuleType = Exclude<
   ModuleType,
-  'external' | 'factories' | 'orchestrator' | 'base' | 'utils'
+  'external' | 'factories' | 'base' | 'utils'
 >
