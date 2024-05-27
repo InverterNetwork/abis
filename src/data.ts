@@ -222,7 +222,7 @@ export const data = [
   {
     name: 'TransactionForwarder_v1',
     description:
-      'This contract enables users to interact with smart contracts indirectly through          a trusted forwarder. It supports meta transactions, allowing transactions to be          sent by one party but signed and paid for by another. It also handles batch          transactions (multi-call), facilitating complex, multi-step interactions within a single          transaction.',
+      'This contract enables users to interact with smart contracts indirectly through a trusted forwarder. It supports meta transactions, allowing transactions to be sent by one party but signed and paid for by another. It also handles batch transactions (multi-call), facilitating complex, multi-step interactions within a single transaction.',
     moduleType: 'external',
     deploymentInputs: { configData: [] },
     abi: [
@@ -500,7 +500,7 @@ export const data = [
   {
     name: 'OrchestratorFactory_v1',
     description:
-      '{OrchestratorFactory_v1} facilitates the deployment of orchestrators and their          associated modules for the Inverter Network, ensuring seamless creation and          configuration of various components in a single transaction.',
+      '{OrchestratorFactory_v1} facilitates the deployment of orchestrators and their associated modules for the Inverter Network, ensuring seamless creation and configuration of various components in a single transaction.',
     moduleType: 'factories',
     deploymentInputs: { configData: [] },
     abi: [
@@ -895,7 +895,7 @@ export const data = [
   {
     name: 'InverterBeacon_v1',
     description:
-      'Manages upgrades and versioning for smart contract implementations, allowing          contract administrators to dynamically change contract logic while maintaining          the state. Supports emergency shutdown mechanisms to halt operations if needed.',
+      'Manages upgrades and versioning for smart contract implementations, allowing contract administrators to dynamically change contract logic while maintaining the state. Supports emergency shutdown mechanisms to halt operations if needed.',
     moduleType: 'factories',
     deploymentInputs: { configData: [] },
     abi: [
@@ -1162,7 +1162,7 @@ export const data = [
   {
     name: 'ModuleFactory_v1',
     description:
-      'Enables the creation and registration of Inverter Modules,          facilitating the deployment of module instances linked to specific beacons.          Allows for configuration of modules starting state via provided deployment data.',
+      'Enables the creation and registration of Inverter Modules, facilitating the deployment of module instances linked to specific beacons. Allows for configuration of modules starting state via provided deployment data.',
     moduleType: 'factories',
     deploymentInputs: { configData: [] },
     abi: [
@@ -1538,8 +1538,8 @@ export const data = [
   {
     name: 'LM_PC_RecurringPayments_v1',
     description:
-      'Facilitates the creation, management, and execution of scheduled recurring          payments within the Inverter Network, allowing for systematic and timed          financial commitments or subscriptions.',
-    moduleType: 'logicModule',
+      'Facilitates the creation, management, and execution of scheduled recurring payments within the Inverter Network, allowing for systematic and timed financial commitments or subscriptions.',
+    moduleType: 'optionalModule',
     deploymentInputs: {
       configData: [
         {
@@ -2394,8 +2394,8 @@ export const data = [
   {
     name: 'LM_PC_Bounties_v1',
     description:
-      'Provides functionality to manage bounties and process claims,          allowing participants to propose, update, and claim bounties securely          and transparently.',
-    moduleType: 'logicModule',
+      'Provides functionality to manage bounties and process claims, allowing participants to propose, update, and claim bounties securely and transparently.',
+    moduleType: 'optionalModule',
     deploymentInputs: { configData: [] },
     abi: [
       {
@@ -3527,7 +3527,7 @@ export const data = [
     name: 'LM_PC_PaymentRouter_v1',
     description:
       'This module enables pushing payments directly to the Payment Processor.',
-    moduleType: 'logicModule',
+    moduleType: 'optionalModule',
     deploymentInputs: { configData: [] },
     abi: [
       {
@@ -4074,7 +4074,7 @@ export const data = [
   {
     name: 'LM_PC_KPIRewarder_v1',
     description: '',
-    moduleType: 'logicModule',
+    moduleType: 'optionalModule',
     deploymentInputs: { configData: [] },
     abi: [
       {
@@ -5790,7 +5790,7 @@ export const data = [
   {
     name: 'FM_BC_Restricted_Bancor_Redeeming_VirtualSupply_v1',
     description:
-      "This contract enables the issuance and redeeming of tokens on a bonding curve, using          a virtual supply for both the issuance and the collateral as input. It integrates          Aragon's Bancor Formula to manage the calculations for token issuance and redemption          rates based on specified reserve ratios.",
+      "This contract enables the issuance and redeeming of tokens on a bonding curve, using a virtual supply for both the issuance and the collateral as input. It integrates Aragon's Bancor Formula to manage the calculations for token issuance and redemption rates based on specified reserve ratios.",
     moduleType: 'fundingManager',
     deploymentInputs: {
       configData: [
@@ -7352,7 +7352,7 @@ export const data = [
   {
     name: 'FM_Rebasing_v1',
     description:
-      'This contract manages the issuance and redemption of rebasable funding tokens          within the Inverter Network. It supports operations like deposits and withdrawals,          implementing dynamic supply adjustments to maintain proportional ownership.',
+      'This contract manages the issuance and redemption of rebasable funding tokens within the Inverter Network. It supports operations like deposits and withdrawals, implementing dynamic supply adjustments to maintain proportional ownership.',
     moduleType: 'fundingManager',
     deploymentInputs: {
       configData: [
@@ -8281,7 +8281,7 @@ export const data = [
   {
     name: 'FM_BC_Bancor_Redeeming_VirtualSupply_v1',
     description:
-      "This contract enables the issuance and redeeming of tokens on a bonding curve, using          a virtual supply for both the issuance and the collateral as input. It integrates          Aragon's Bancor Formula to manage the calculations for token issuance and redemption          rates based on specified reserve ratios.",
+      "This contract enables the issuance and redeeming of tokens on a bonding curve, using a virtual supply for both the issuance and the collateral as input. It integrates Aragon's Bancor Formula to manage the calculations for token issuance and redemption rates based on specified reserve ratios.",
     moduleType: 'fundingManager',
     deploymentInputs: {
       configData: [
@@ -9853,7 +9853,7 @@ export const data = [
   {
     name: 'PP_Simple_v1',
     description:
-      'Manages ERC20 payment processing for modules within the Inverter Network          that are compliant with the {IERC20PaymentClientBase_v1} interface.',
+      'Manages ERC20 payment processing for modules within the Inverter Network that are compliant with the {IERC20PaymentClientBase_v1} interface.',
     moduleType: 'paymentProcessor',
     deploymentInputs: { configData: [] },
     abi: [
@@ -10288,7 +10288,7 @@ export const data = [
   {
     name: 'PP_Streaming_v1',
     description:
-      'Manages continuous and linear streaming payment streams within the Inverter          Network, allowing multiple concurrent streams per recipient. Provides tools          to claim streamed amounts and manage payment schedules dynamically.',
+      'Manages continuous and linear streaming payment streams within the Inverter Network, allowing multiple concurrent streams per recipient. Provides tools to claim streamed amounts and manage payment schedules dynamically.',
     moduleType: 'paymentProcessor',
     deploymentInputs: { configData: [] },
     abi: [
@@ -11422,7 +11422,7 @@ export const data = [
   {
     name: 'AUT_EXT_VotingRoles_v1',
     description:
-      'Facilitates voting and motion management within the Inverter Network,          allowing designated voters to participate in governance through proposals,          voting, and execution of decisions.',
+      'Facilitates voting and motion management within the Inverter Network, allowing designated voters to participate in governance through proposals, voting, and execution of decisions.',
     moduleType: 'authorizer',
     deploymentInputs: {
       configData: [
@@ -12058,7 +12058,7 @@ export const data = [
   {
     name: 'AUT_Roles_v1',
     description:
-      'Provides a robust access control mechanism for managing roles and permissions          across different modules within the Inverter Network, ensuring secure and          controlled access to critical functionalities.',
+      'Provides a robust access control mechanism for managing roles and permissions across different modules within the Inverter Network, ensuring secure and controlled access to critical functionalities.',
     moduleType: 'authorizer',
     deploymentInputs: {
       configData: [
@@ -12836,7 +12836,7 @@ export const data = [
   {
     name: 'AUT_TokenGated_Roles_v1',
     description:
-      "Extends the Inverter's role-based access control to include token gating,          enabling roles to be conditionally assigned based on token ownership.          This mechanism allows for dynamic permissioning tied to specific token          holdings.",
+      "Extends the Inverter's role-based access control to include token gating, enabling roles to be conditionally assigned based on token ownership. This mechanism allows for dynamic permissioning tied to specific token holdings.",
     moduleType: 'authorizer',
     deploymentInputs: {
       configData: [

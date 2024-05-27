@@ -8,7 +8,7 @@ const dirname = import.meta.dirname,
   // The path JSON file
   itemPath = path.join(
     dirname,
-    '../deployments/build/modules/logicModule/BountyManager/v1.0.json'
+    '../deployments/build/modules/optionalModule/BountyManager/v1.0.json'
   )
 
 describe('Log Param Names', () => {
