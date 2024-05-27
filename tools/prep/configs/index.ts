@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { isEqual, merge } from 'lodash'
 import getMetas from '../../utils/getMetas'
 import readPath from '../../utils/readPath'
 import write from './write'
@@ -9,7 +10,7 @@ import { getConfigPath } from '../../utils/getParsedConfig'
 import { Tag } from '../../../src'
 
 const dirname = import.meta.dirname,
-  // The path of the directory containing nested the JSON files
+  // The path of the directory containing nested JSON files
   startPath = path.join(dirname, '../../../deployments/build')
 
 export default function prep() {
@@ -19,9 +20,6 @@ export default function prep() {
     (itemPath: string) => {
       // 2- Get the path of the _config.json file
       const configPath = getConfigPath(itemPath)
-
-      // 3- If the configPath file exists, skip the file
-      if (fs.existsSync(configPath)) return
 
       // 4- Parse the raw metadata and get the event and method names
       const parsedRawMetadata = getParsedRawMetadata(itemPath),
@@ -38,10 +36,9 @@ export default function prep() {
           }, {} as Tags)
 
       // 7- Create a new object with the event and method names + the config fields
-      const data: Config = {
+      const newData: Config = {
         deploymentInputs: {
           configData: [],
-          dependencyData: [],
         },
         abiMembers: abiMemberNames.reduce((acc, name: string) => {
           const defaultTags = getDefaultTags(name)
@@ -53,8 +50,22 @@ export default function prep() {
         }, {} as AbiMemberConfigs),
       }
 
-      // 7- Write the data to the configPath file
-      write(data, configPath)
+      // 8- If the configPath file exists, read its content, merge and compare
+      if (fs.existsSync(configPath)) {
+        const existingConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
+
+        // Use lodash to deeply merge the existing config with new data
+        const mergedConfig = merge(newData, existingConfig)
+
+        // Compare the existing config with the merged config
+        if (!isEqual(existingConfig, mergedConfig)) {
+          // If different, write the updated data to the configPath file
+          write(mergedConfig, configPath)
+        }
+      } else {
+        // If the config file does not exist, write the new data
+        write(newData, configPath)
+      }
     }
   )
 }

@@ -22,9 +22,8 @@ type ExtendedDeploymentArgData = DeploymentArgData & {
   description: string
 }
 
-export type ExtendedDeploymentInpits = {
+export type ExtendedDeploymentInputs = {
   configData?: ExtendedDeploymentArgData[]
-  dependencyData?: ExtendedDeploymentArgData[]
 }
 
 export type AbiMeta = {
