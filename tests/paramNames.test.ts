@@ -15,9 +15,9 @@ describe('Log Param Names', () => {
   it('Should create a valid object', async () => {
     const parsed = getParsedRawMetadata(itemPath)
     const res = getMetas.parameterNames(parsed.output.abi)
-    const id = 'BuntyManager-ParamNames'
-    writeLog(res, id)
+    const label = 'BuntyManager-ParamNames'
 
+    writeLog({ content: res, label })
     expect(res).pass()
   })
 })

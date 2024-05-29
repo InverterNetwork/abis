@@ -18,8 +18,8 @@ describe('Member Desc Objs', () => {
         const parsed = getParsedRawMetadata(itemPath)
         const config = getParsedConfig(itemPath)
         const res = getAbiMemberDescriptions(parsed.output, config.abiMembers)
-        const id = itemPath.split('/v1.0')[0].split('/').pop()
-        writeLog(res, id)
+        const label = itemPath.split('/v1.0')[0].split('/').pop()
+        writeLog({ content: res, label })
       }
     )
 

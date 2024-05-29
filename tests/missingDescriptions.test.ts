@@ -83,7 +83,7 @@ describe('#Log Missing Descriptons', () => {
     }, {})
 
     // write the log
-    writeLog(obj, 'missingDescriptions')
+    writeLog({ content: obj, label: 'missingDescriptions' })
     expect(obj).toBeTruthy()
   })
 })
