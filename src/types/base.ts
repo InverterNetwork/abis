@@ -1,9 +1,10 @@
 import { ModuleType } from './data'
 
 export type Tag =
+  | 'approval'
   | 'any'
   | 'decimals'
-  | `decimals:${'internal' | 'external'}:${'exact' | 'indirect'}:${string}`
+  | `decimals:${'params' | 'contract'}:${'exact' | 'indirect'}:${string}`
 
 export type UserFacingModuleType = Exclude<
   ModuleType,
