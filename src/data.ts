@@ -515,9 +515,9 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'constructor',
       },
-      { inputs: [], name: 'ERC1167FailedCreateClone', type: 'error' },
       { inputs: [], name: 'InvalidInitialization', type: 'error' },
       { inputs: [], name: 'NotInitializing', type: 'error' },
+      { inputs: [], name: 'OrchestratorFactory__InvalidBeacon', type: 'error' },
       { inputs: [], name: 'OrchestratorFactory__InvalidId', type: 'error' },
       {
         inputs: [],
@@ -526,7 +526,7 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'OrchestratorFactory__OrchestratorOwnerIsInvalid',
+        name: 'OrchestratorFactory__OrchestratorAdminIsInvalid',
         type: 'error',
       },
       {
@@ -624,20 +624,38 @@ export const data = [
         type: 'function',
       },
       {
+        inputs: [],
+        name: 'beacon',
+        outputs: [
+          {
+            internalType: 'contract IInverterBeacon_v1',
+            name: '_0',
+            type: 'address',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the {IOrchestrator_v1} beacon address.',
+      },
+      {
         inputs: [
           {
             components: [
-              { internalType: 'address', name: 'owner', type: 'address' },
               {
-                internalType: 'contract IERC20',
-                name: 'token',
+                internalType: 'bool',
+                name: 'independentUpdates',
+                type: 'bool',
+              },
+              {
+                internalType: 'address',
+                name: 'independentUpdateAdmin',
                 type: 'address',
               },
             ],
-            internalType: 'struct IOrchestratorFactory_v1.OrchestratorConfig',
-            name: 'orchestratorConfig',
+            internalType: 'struct IOrchestratorFactory_v1.WorkflowConfig',
+            name: 'workflowConfig',
             type: 'tuple',
-            description: "The orchestrator's config data.",
+            description: "The workflow's config data.",
           },
           {
             components: [
@@ -764,8 +782,7 @@ export const data = [
         ],
         stateMutability: 'nonpayable',
         type: 'function',
-        description:
-          "Creates a new orchestrator_v1 with caller being the orchestrator's owner.",
+        description: 'Creates a new orchestrator_v1.',
       },
       {
         inputs: [
@@ -800,10 +817,11 @@ export const data = [
             description: 'The address of the governor contract.',
           },
           {
-            internalType: 'address',
-            name: 'target_',
+            internalType: 'contract IInverterBeacon_v1',
+            name: 'beacon_',
             type: 'address',
-            description: 'The address of the governor contract.',
+            description:
+              'The address of the beacon containing the orchestrator implementation.',
           },
           {
             internalType: 'address',
@@ -866,15 +884,6 @@ export const data = [
         type: 'function',
       },
       {
-        inputs: [],
-        name: 'target',
-        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Returns the {IOrchestrator_v1} target implementation address.',
-      },
-      {
         inputs: [
           { internalType: 'address', name: 'newOwner', type: 'address' },
         ],
@@ -889,6 +898,141 @@ export const data = [
         outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
         type: 'function',
+      },
+    ],
+  },
+  {
+    name: 'InverterProxyAdmin_v1',
+    description:
+      'Acts as the admin of the Inverter Transparent Upgradeable Proxies and is responsible for upgrading the proxies to the newest version.',
+    moduleType: 'factories',
+    deploymentInputs: { configData: [] },
+    abi: [
+      {
+        inputs: [
+          { internalType: 'address', name: 'initialOwner', type: 'address' },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'constructor',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'owner', type: 'address' }],
+        name: 'OwnableInvalidOwner',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'OwnableUnauthorizedAccount',
+        type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'previousOwner',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'newOwner',
+            type: 'address',
+          },
+        ],
+        name: 'OwnershipTransferStarted',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'previousOwner',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'newOwner',
+            type: 'address',
+          },
+        ],
+        name: 'OwnershipTransferred',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        inputs: [],
+        name: 'acceptOwnership',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'owner',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'pendingOwner',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'renounceOwnership',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'newOwner', type: 'address' },
+        ],
+        name: 'transferOwnership',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IInverterTransparentUpgradeableProxy_v1',
+            name: 'proxy',
+            type: 'address',
+            description: 'The proxy to upgrade.',
+          },
+        ],
+        name: 'upgradeToNewestVersion',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Upgrades the corresponding proxy to the newest version of the implementation.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IInverterTransparentUpgradeableProxy_v1[]',
+            name: 'proxies',
+            type: 'address[]',
+            description: 'The proxies to upgrade.',
+          },
+        ],
+        name: 'upgradeToNewestVersionBatched',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Upgrades multiple proxies to the newest version of the implementation.',
       },
     ],
   },
@@ -1053,6 +1197,21 @@ export const data = [
       },
       {
         inputs: [],
+        name: 'getImplementationAddress',
+        outputs: [
+          {
+            internalType: 'address',
+            name: '_0',
+            type: 'address',
+            description: 'The address of the implementation.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the implementation address of the beacon.',
+      },
+      {
+        inputs: [],
         name: 'implementation',
         outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
@@ -1178,6 +1337,11 @@ export const data = [
         type: 'constructor',
       },
       { inputs: [], name: 'InvalidInitialization', type: 'error' },
+      {
+        inputs: [],
+        name: 'ModuleFactory__InvalidInitialRegistrationData',
+        type: 'error',
+      },
       {
         inputs: [],
         name: 'ModuleFactory__InvalidInverterBeacon',
@@ -1368,9 +1532,34 @@ export const data = [
             type: 'bytes',
             description: 'The configData of the module',
           },
+          {
+            components: [
+              {
+                internalType: 'bool',
+                name: 'independentUpdates',
+                type: 'bool',
+              },
+              {
+                internalType: 'address',
+                name: 'independentUpdateAdmin',
+                type: 'address',
+              },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.WorkflowConfig',
+            name: 'workflowConfig',
+            type: 'tuple',
+            description: 'The configData of the workflow',
+          },
         ],
         name: 'createModule',
-        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        outputs: [
+          {
+            internalType: 'address',
+            name: '_0',
+            type: 'address',
+            description: 'Returns the address of the created module proxy',
+          },
+        ],
         stateMutability: 'nonpayable',
         type: 'function',
         description: 'Creates a module instance identified by given metadata.',
@@ -1420,6 +1609,29 @@ export const data = [
           'Returns the {IInverterBeacon_v1} instance registered and the id for given metadata.',
       },
       {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'proxy',
+            type: 'address',
+            description: 'The beacon proxy address.',
+          },
+        ],
+        name: 'getOrchestratorOfProxy',
+        outputs: [
+          {
+            internalType: 'address',
+            name: '_0',
+            type: 'address',
+            description:
+              'The corresponding orchestrator address for the provided proxy.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the orchestrator address of a beacon proxy.',
+      },
+      {
         inputs: [],
         name: 'governor',
         outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
@@ -1434,6 +1646,32 @@ export const data = [
             name: '_governor',
             type: 'address',
             description: 'The address of the governor contract.',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
+            internalType: 'struct IModule_v1.Metadata[]',
+            name: 'initialMetadataRegistration',
+            type: 'tuple[]',
+            description:
+              'List of beacon addresses that will be registered during the initialization.',
+          },
+          {
+            internalType: 'contract IInverterBeacon_v1[]',
+            name: 'initialBeaconRegistration',
+            type: 'address[]',
           },
         ],
         name: 'init',
@@ -4072,10 +4310,19 @@ export const data = [
     ],
   },
   {
-    name: 'LM_PC_KPIRewarder_v1',
-    description: '',
+    name: 'LM_PC_Staking_v1',
+    description:
+      'Provides a mechanism for users to stake tokens and earn rewards.',
     moduleType: 'optionalModule',
-    deploymentInputs: { configData: [] },
+    deploymentInputs: {
+      configData: [
+        {
+          name: 'stakingToken',
+          type: 'address',
+          description: 'The token users stake to earn rewards.',
+        },
+      ],
+    },
     abi: [
       {
         inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
@@ -4146,41 +4393,6 @@ export const data = [
       { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
       {
         inputs: [],
-        name: 'Module__LM_PC_KPIRewarder_v1__InvalidKPINumber',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__LM_PC_KPIRewarder_v1__InvalidKPITrancheValues',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__LM_PC_KPIRewarder_v1__InvalidKPIValueLengths',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__LM_PC_KPIRewarder_v1__InvalidTargetValue',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__LM_PC_KPIRewarder_v1__InvalidTrancheNumber',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__LM_PC_KPIRewarder_v1__ModuleCannotUseStakingTokenAsBond',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__LM_PC_KPIRewarder_v1__StakingQueueIsFull',
-        type: 'error',
-      },
-      {
-        inputs: [],
         name: 'Module__LM_PC_Staking_v1__InvalidDuration',
         type: 'error',
       },
@@ -4195,124 +4407,12 @@ export const data = [
         type: 'error',
       },
       { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__OptimisticOracleIntegrator__CallerNotOO',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__OptimisticOracleIntegrator__InvalidDefaultCurrency',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__OptimisticOracleIntegrator__InvalidDefaultLiveness',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__OptimisticOracleIntegrator__InvalidOOInstance',
-        type: 'error',
-      },
       { inputs: [], name: 'NotInitializing', type: 'error' },
       { inputs: [], name: 'ReentrancyGuardReentrantCall', type: 'error' },
       {
         inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
         name: 'SafeERC20FailedOperation',
         type: 'error',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'bytes32',
-            name: 'dataId',
-            type: 'bytes32',
-          },
-          {
-            indexed: false,
-            internalType: 'bytes32',
-            name: 'data',
-            type: 'bytes32',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'asserter',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'bytes32',
-            name: 'assertionId',
-            type: 'bytes32',
-          },
-        ],
-        name: 'DataAsserted',
-        type: 'event',
-        outputs: [],
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'bool',
-            name: 'assertedTruthfully',
-            type: 'bool',
-          },
-          {
-            indexed: true,
-            internalType: 'bytes32',
-            name: 'dataId',
-            type: 'bytes32',
-          },
-          {
-            indexed: false,
-            internalType: 'bytes32',
-            name: 'data',
-            type: 'bytes32',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'asserter',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'bytes32',
-            name: 'assertionId',
-            type: 'bytes32',
-          },
-        ],
-        name: 'DataAssertionResolved',
-        type: 'event',
-        outputs: [],
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'address',
-            name: 'token',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-          },
-        ],
-        name: 'FeeFundsDeposited',
-        type: 'event',
-        outputs: [],
-        description:
-          'Event emitted when funds for paying the bonding fee are deposited into the contract',
       },
       {
         anonymous: false,
@@ -4327,51 +4427,6 @@ export const data = [
         name: 'Initialized',
         type: 'event',
         outputs: [],
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'KPI_Id',
-            type: 'uint256',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'numOfTranches',
-            type: 'uint256',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'totalKPIRewards',
-            type: 'uint256',
-          },
-          {
-            indexed: false,
-            internalType: 'bool',
-            name: 'continuous',
-            type: 'bool',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256[]',
-            name: 'trancheValues',
-            type: 'uint256[]',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256[]',
-            name: 'trancheRewards',
-            type: 'uint256[]',
-          },
-        ],
-        name: 'KPICreated',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a KPI is created',
       },
       {
         anonymous: false,
@@ -4498,22 +4553,1027 @@ export const data = [
         anonymous: false,
         inputs: [
           {
+            indexed: true,
+            internalType: 'address',
+            name: 'user',
+            type: 'address',
+          },
+          {
             indexed: false,
             internalType: 'uint256',
-            name: 'newDuration',
+            name: 'amount',
             type: 'uint256',
           },
         ],
-        name: 'RewardsDurationUpdated',
+        name: 'Staked',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when the reward duration is updated.',
+        description: 'Event emitted when a user stakes an amount.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'user',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+          },
+        ],
+        name: 'Unstaked',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a user unstakes an amount.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'token', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals:params:indirect:token'],
+            description: 'amount of tokens that have been paid out',
+          },
+        ],
+        name: 'amountPaid',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Notifies the PaymentClient, that tokens have been paid out accordingly',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'user',
+            type: 'address',
+            description: 'The address of a user that staked',
+          },
+        ],
+        name: 'balanceOf',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals:contract:indirect:stakingToken'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Returns the amount of tokens a user staked in this contract',
+      },
+      {
+        inputs: [],
+        name: 'claimRewards',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Collects the rewards that are earned up until now',
+      },
+      {
+        inputs: [],
+        name: 'collectPaymentOrders',
+        outputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'recipient', type: 'address' },
+              {
+                internalType: 'address',
+                name: 'paymentToken',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'amount',
+                type: 'uint256',
+                tags: ['decimals:params:indirect:paymentToken'],
+              },
+              { internalType: 'uint256', name: 'start', type: 'uint256' },
+              { internalType: 'uint256', name: 'cliff', type: 'uint256' },
+              { internalType: 'uint256', name: 'end', type: 'uint256' },
+            ],
+            internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder[]',
+            name: '_0',
+            type: 'tuple[]',
+            description: 'list of payment orders',
+          },
+          {
+            internalType: 'address[]',
+            name: '_1',
+            type: 'address[]',
+            description: 'total amount of token to pay',
+          },
+          { internalType: 'uint256[]', name: '_2', type: 'uint256[]' },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Collects outstanding payment orders.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'user',
+            type: 'address',
+            description: 'The address of a user that staked',
+          },
+        ],
+        name: 'earned',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Returns the amount of tokens earned up until now by the current stake of a user',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: ': how much token are staked',
+          },
+          {
+            internalType: 'uint256',
+            name: 'duration',
+            type: 'uint256',
+            description: ': how long the tokens will be staked',
+          },
+        ],
+        name: 'estimateReward',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Returns a estimation of how much rewards will be earned with the current state of the staking contract',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'target', type: 'address' },
+        ],
+        name: 'grantModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+        ],
+        name: 'grantModuleRoleBatched',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'identifier',
+        outputs: [
+          {
+            internalType: 'bytes32',
+            name: '_0',
+            type: 'bytes32',
+            description: "The module's identifier.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's identifier.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator_v1',
+            name: 'orchestrator_',
+            type: 'address',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: "The module's metadata.",
+          },
+          {
+            internalType: 'bytes',
+            name: 'configData',
+            type: 'bytes',
+            description:
+              'Variable config data for specific module implementations.',
+          },
+        ],
+        name: 'init',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: "The module's initializer function.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'forwarder',
+            type: 'address',
+            description: 'The contract address to be verified.',
+          },
+        ],
+        name: 'isTrustedForwarder',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'bool Is the given address the trusted forwarder',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Checks if the provided address is the trusted forwarder',
+      },
+      {
+        inputs: [],
+        name: 'orchestrator',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator_v1',
+            name: '_0',
+            type: 'address',
+            description: "The module's orchestrator.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+      },
+      {
+        inputs: [{ internalType: 'address', name: '_token', type: 'address' }],
+        name: 'outstandingTokenAmount',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals:params:indirect:_token'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the total outstanding token payment amount.',
+      },
+      {
+        inputs: [],
+        name: 'paymentOrders',
+        outputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'recipient', type: 'address' },
+              {
+                internalType: 'address',
+                name: 'paymentToken',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'amount',
+                type: 'uint256',
+                tags: ['decimals:params:indirect:paymentToken'],
+              },
+              { internalType: 'uint256', name: 'start', type: 'uint256' },
+              { internalType: 'uint256', name: 'cliff', type: 'uint256' },
+              { internalType: 'uint256', name: 'end', type: 'uint256' },
+            ],
+            internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder[]',
+            name: '_0',
+            type: 'tuple[]',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the list of outstanding payment orders.',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'target', type: 'address' },
+        ],
+        name: 'revokeModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+        ],
+        name: 'revokeModuleRoleBatched',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'rewardRate',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'rewardsEnd',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: ': how much token should be distributed',
+          },
+          {
+            internalType: 'uint256',
+            name: 'duration',
+            type: 'uint256',
+            description: ': how much time it will take to distribute the token',
+          },
+        ],
+        name: 'setRewards',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Sets the rewards that are to be distributed',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals:contract:indirect:stakingToken', 'approval'],
+            description: ': how much token should be staked',
+          },
+        ],
+        name: 'stake',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Stake a specified amount of tokens to earn rewards',
+      },
+      {
+        inputs: [],
+        name: 'stakingToken',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
+        ],
+        name: 'supportsInterface',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'title',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: "The module's title.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's title.",
+      },
+      {
+        inputs: [],
+        name: 'totalSupply',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals:contract:indirect:stakingToken'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'trustedForwarder',
+        outputs: [
+          {
+            internalType: 'address',
+            name: '_0',
+            type: 'address',
+            description: 'address The trusted forwarder',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the trusted forwarder',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals:contract:indirect:stakingToken'],
+            description: ': how much token should be unstaked',
+          },
+        ],
+        name: 'unstake',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Unstake a specified amount of tokens and collect rewards',
+      },
+      {
+        inputs: [],
+        name: 'url',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: "The module's URL.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's URL.",
+      },
+      {
+        inputs: [],
+        name: 'version',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: "The module's major version.",
+          },
+          {
+            internalType: 'uint256',
+            name: '_1',
+            type: 'uint256',
+            description: "The module's minor version.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's version.",
+      },
+    ],
+  },
+  {
+    name: 'LM_PC_KPIRewarder_v1',
+    description:
+      'Provides a mechanism for distributing rewards to stakers based on Key Performance Indicators (KPIs).',
+    moduleType: 'optionalModule',
+    deploymentInputs: {
+      configData: [
+        {
+          name: 'stakingTokenAddr',
+          type: 'address',
+          description: 'The token users stake to earn rewards.',
+        },
+        {
+          name: 'currencyAddr',
+          type: 'address',
+          description:
+            'The token the Optimistic Oracle will charge its fee in.',
+        },
+        {
+          name: 'ooAddr',
+          type: 'address',
+          description: 'The address of the optimisitic oracle.',
+        },
+        {
+          name: 'liveness',
+          type: 'uint64',
+          description:
+            'How long (in seconds) a query to the oracle will be open for dispute.',
+        },
+      ],
+    },
+    abi: [
+      {
+        inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
+        name: 'AddressEmptyCode',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'AddressInsufficientBalance',
+        type: 'error',
+      },
+      { inputs: [], name: 'FailedInnerCall', type: 'error' },
+      { inputs: [], name: 'InvalidInitialization', type: 'error' },
+      {
+        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
+        name: 'Module_OrchestratorCallbackFailed',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'caller', type: 'address' },
+        ],
+        name: 'Module__CallerNotAuthorized',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClientBase__ArrayLengthMismatch',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClientBase__CallerNotAuthorized',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
+        name: 'Module__ERC20PaymentClientBase__InsufficientFunds',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClientBase__InvalidAmount',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClientBase__InvalidRecipient',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClientBase__InvalidToken',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClientBase__Invalidend',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClientBase__TokenTransferFailed',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
+      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__LM_PC_KPIRewarder_v1__InvalidKPINumber',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__LM_PC_KPIRewarder_v1__InvalidKPITrancheValues',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__LM_PC_KPIRewarder_v1__InvalidKPIValueLengths',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__LM_PC_KPIRewarder_v1__InvalidStakeAmount',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__LM_PC_KPIRewarder_v1__InvalidTrancheNumber',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__LM_PC_KPIRewarder_v1__ModuleCannotUseStakingTokenAsBond',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__LM_PC_KPIRewarder_v1__StakingQueueIsFull',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__LM_PC_KPIRewarder_v1__UnresolvedAssertionExists',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__LM_PC_Staking_v1__InvalidDuration',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__LM_PC_Staking_v1__InvalidRewardRate',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__LM_PC_Staking_v1__InvalidStakingToken',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OptimisticOracleIntegrator__CallerNotOO',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__OptimisticOracleIntegrator__CurrencyBondTooLow',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__OptimisticOracleIntegrator__InvalidDefaultCurrency',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__OptimisticOracleIntegrator__InvalidDefaultLiveness',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__OptimisticOracleIntegrator__InvalidOOInstance',
+        type: 'error',
+      },
+      { inputs: [], name: 'NotInitializing', type: 'error' },
+      { inputs: [], name: 'ReentrancyGuardReentrantCall', type: 'error' },
+      {
+        inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
+        name: 'SafeERC20FailedOperation',
+        type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'bytes32',
+            name: 'dataId',
+            type: 'bytes32',
+          },
+          {
+            indexed: false,
+            internalType: 'bytes32',
+            name: 'data',
+            type: 'bytes32',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'asserter',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'bytes32',
+            name: 'assertionId',
+            type: 'bytes32',
+          },
+        ],
+        name: 'DataAsserted',
+        type: 'event',
+        outputs: [],
       },
       {
         anonymous: false,
         inputs: [
           {
             indexed: false,
+            internalType: 'bool',
+            name: 'assertedTruthfully',
+            type: 'bool',
+          },
+          {
+            indexed: true,
+            internalType: 'bytes32',
+            name: 'dataId',
+            type: 'bytes32',
+          },
+          {
+            indexed: false,
+            internalType: 'bytes32',
+            name: 'data',
+            type: 'bytes32',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'asserter',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'bytes32',
+            name: 'assertionId',
+            type: 'bytes32',
+          },
+        ],
+        name: 'DataAssertionResolved',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+          },
+        ],
+        name: 'FeeFundsDeposited',
+        type: 'event',
+        outputs: [],
+        description:
+          'Event emitted when funds for paying the bonding fee are deposited into the contract',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint64',
+            name: 'version',
+            type: 'uint64',
+          },
+        ],
+        name: 'Initialized',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'KPI_Id',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'numOfTranches',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'totalKPIRewards',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'bool',
+            name: 'continuous',
+            type: 'bool',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256[]',
+            name: 'trancheValues',
+            type: 'uint256[]',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256[]',
+            name: 'trancheRewards',
+            type: 'uint256[]',
+          },
+        ],
+        name: 'KPICreated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a KPI is created',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'parentOrchestrator',
+            type: 'address',
+            description:
+              'The address of the orchestrator the module is linked to.',
+          },
+          {
+            indexed: true,
+            internalType: 'string',
+            name: 'moduleTitle',
+            type: 'string',
+            description: 'The title of the module.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'majorVersion',
+            type: 'uint256',
+            description: 'The major version of the module.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'minorVersion',
+            type: 'uint256',
+            description: 'The minor version of the module.',
+          },
+        ],
+        name: 'ModuleInitialized',
+        type: 'event',
+        outputs: [],
+        description: 'Module has been initialized.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that will receive the payment.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: 'The amount of tokens the payment consists of.',
+          },
+        ],
+        name: 'PaymentOrderAdded',
+        type: 'event',
+        outputs: [],
+        description: 'Added a payment order.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'bytes32',
+            name: 'assertionId',
+            type: 'bytes32',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'creationTime',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'assertedValue',
+            type: 'uint256',
+          },
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'KpiToUse',
+            type: 'uint256',
+          },
+        ],
+        name: 'RewardRoundConfigured',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'rewardAmount',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'duration',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'newRewardRate',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'newRewardsEnd',
+            type: 'uint256',
+          },
+        ],
+        name: 'RewardSet',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a reward is added.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'user',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+          },
+        ],
+        name: 'RewardsDistributed',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a user receives Rewards.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
             internalType: 'address',
             name: 'user',
             type: 'address',
@@ -4535,7 +5595,7 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: false,
+            indexed: true,
             internalType: 'address',
             name: 'user',
             type: 'address',
@@ -4622,6 +5682,7 @@ export const data = [
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
+            tags: ['decimals:params:indirect:token'],
             description: 'amount of tokens that have been paid out',
           },
         ],
@@ -4698,7 +5759,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'assertionId',
             type: 'bytes32',
-            description: 'The id of the Assertion generating the callback.',
+            description: 'The identifier of the assertion that was disputed.',
           },
         ],
         name: 'assertionDisputedCallback',
@@ -4706,7 +5767,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Callback function for the moment the OptimisticOracleV3 assertion is disputed.',
+          'Callback function that is called by Optimistic Oracle V3 when an assertion is disputed.',
       },
       {
         inputs: [],
@@ -4716,21 +5777,34 @@ export const data = [
         type: 'function',
       },
       {
+        inputs: [],
+        name: 'assertionPending',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
         inputs: [
           {
             internalType: 'bytes32',
             name: 'assertionId',
             type: 'bytes32',
-            description: 'The id of the Assertion generating the callback.',
+            description: 'The identifier of the assertion that was resolved.',
           },
-          { internalType: 'bool', name: 'assertedTruthfully', type: 'bool' },
+          {
+            internalType: 'bool',
+            name: 'assertedTruthfully',
+            type: 'bool',
+            description:
+              'Whether the assertion was resolved as truthful or not.',
+          },
         ],
         name: 'assertionResolvedCallback',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Callback function for the moment the OptimisticOracleV3 assertion resolves.',
+          'Callback function that is called by Optimistic Oracle V3 when an assertion is resolved.',
       },
       {
         inputs: [
@@ -4742,7 +5816,14 @@ export const data = [
           },
         ],
         name: 'balanceOf',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals:contract:indirect:stakingToken'],
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
@@ -4754,6 +5835,7 @@ export const data = [
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Collects the rewards that are earned up until now',
       },
       {
         inputs: [],
@@ -4767,7 +5849,12 @@ export const data = [
                 name: 'paymentToken',
                 type: 'address',
               },
-              { internalType: 'uint256', name: 'amount', type: 'uint256' },
+              {
+                internalType: 'uint256',
+                name: 'amount',
+                type: 'uint256',
+                tags: ['decimals:params:indirect:paymentToken'],
+              },
               { internalType: 'uint256', name: 'start', type: 'uint256' },
               { internalType: 'uint256', name: 'cliff', type: 'uint256' },
               { internalType: 'uint256', name: 'end', type: 'uint256' },
@@ -4820,6 +5907,13 @@ export const data = [
       },
       {
         inputs: [],
+        name: 'defaultBond',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
         name: 'defaultCurrency',
         outputs: [
           { internalType: 'contract IERC20', name: '_0', type: 'address' },
@@ -4840,6 +5934,7 @@ export const data = [
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
+            tags: ['decimals:contract:indirect:defaultCurrency', 'approval'],
             description: 'The amount to deposit',
           },
         ],
@@ -4868,7 +5963,14 @@ export const data = [
           },
         ],
         name: 'earned',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
@@ -4886,6 +5988,7 @@ export const data = [
             internalType: 'uint256',
             name: 'duration',
             type: 'uint256',
+            tags: ['decimals'],
             description: ': how long the tokens will be staked',
           },
         ],
@@ -5012,6 +6115,7 @@ export const data = [
                 internalType: 'uint256',
                 name: 'totalRewards',
                 type: 'uint256',
+                tags: ['decimals'],
               },
               { internalType: 'bool', name: 'continuous', type: 'bool' },
               {
@@ -5189,7 +6293,12 @@ export const data = [
                 name: 'paymentToken',
                 type: 'address',
               },
-              { internalType: 'uint256', name: 'amount', type: 'uint256' },
+              {
+                internalType: 'uint256',
+                name: 'amount',
+                type: 'uint256',
+                tags: ['decimals:params:indirect:paymentToken'],
+              },
               { internalType: 'uint256', name: 'start', type: 'uint256' },
               { internalType: 'uint256', name: 'cliff', type: 'uint256' },
               { internalType: 'uint256', name: 'end', type: 'uint256' },
@@ -5212,22 +6321,17 @@ export const data = [
             description: 'The dataId to be posted',
           },
           {
-            internalType: 'bytes32',
-            name: 'data',
-            type: 'bytes32',
-            description: 'The data to be posted',
+            internalType: 'uint256',
+            name: 'assertedValue',
+            type: 'uint256',
+            description:
+              'The target value that will be asserted and posted as data to the oracle',
           },
           {
             internalType: 'address',
             name: 'asserter',
             type: 'address',
             description: 'The address of the asserter',
-          },
-          {
-            internalType: 'uint256',
-            name: 'assertedValue',
-            type: 'uint256',
-            description: 'The target value that will be asserted',
           },
           {
             internalType: 'uint256',
@@ -5256,7 +6360,12 @@ export const data = [
         name: 'registryOfKPIs',
         outputs: [
           { internalType: 'uint256', name: 'numOfTranches', type: 'uint256' },
-          { internalType: 'uint256', name: 'totalRewards', type: 'uint256' },
+          {
+            internalType: 'uint256',
+            name: 'totalRewards',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
           { internalType: 'bool', name: 'continuous', type: 'bool' },
         ],
         stateMutability: 'view',
@@ -5320,12 +6429,33 @@ export const data = [
             type: 'address',
             description: 'The address of the new default currency.',
           },
+          {
+            internalType: 'uint256',
+            name: '_newBond',
+            type: 'uint256',
+            description: 'The new bond amount.',
+          },
         ],
-        name: 'setDefaultCurrency',
+        name: 'setDefaultCurrencyAndBond',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Sets the default currency for the bond.',
+        description: 'Sets the default currency and amount for the bond.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: '_minimumStake',
+            type: 'uint256',
+            description: 'The minimum amount',
+          },
+        ],
+        name: 'setMinimumStake',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Sets the minimum amount a user must stake',
       },
       {
         inputs: [
@@ -5349,6 +6479,7 @@ export const data = [
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
+            tags: ['decimals'],
             description: ': how much token should be distributed',
           },
           {
@@ -5370,6 +6501,7 @@ export const data = [
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
+            tags: ['decimals:contract:indirect:stakingToken', 'approval'],
             description: ': how much token should be staked',
           },
         ],
@@ -5389,7 +6521,14 @@ export const data = [
       {
         inputs: [{ internalType: 'address', name: '', type: 'address' }],
         name: 'stakingQueueAmounts',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals:contract:indirect:stakingToken'],
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
       },
@@ -5434,7 +6573,14 @@ export const data = [
       {
         inputs: [],
         name: 'totalSupply',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals:contract:indirect:stakingToken'],
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
       },
@@ -5459,6 +6605,7 @@ export const data = [
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
+            tags: ['decimals:contract:indirect:stakingToken'],
             description: ': how much token should be unstaked',
           },
         ],
@@ -5795,77 +6942,94 @@ export const data = [
     deploymentInputs: {
       configData: [
         {
-          name: 'name',
-          type: 'bytes32',
-          description: 'The name of the issuance token',
+          components: [
+            {
+              name: 'name',
+              type: 'string',
+              description: 'The name of the issuance token',
+            },
+            {
+              name: 'symbol',
+              type: 'string',
+              description: 'The symbol of the issuance token',
+            },
+            {
+              name: 'decimals',
+              type: 'uint8',
+              description: 'The decimals used within the issuance token',
+            },
+            {
+              name: 'maxSupply',
+              type: 'uint256',
+              description: 'The max total supply of the token',
+              tags: ['decimals:params:exact:decimals'],
+            },
+          ],
+          name: 'issuanceToken',
+          type: 'tuple',
         },
         {
-          name: 'symbol',
-          type: 'bytes32',
-          description: 'The symbol of the issuance token',
-        },
-        {
-          name: 'decimals',
-          type: 'uint8',
-          description: 'The decimals used within the issuance token',
-        },
-        {
-          name: 'maxSupply',
-          type: 'uint256',
-          description: 'The max total supply of the token',
-          tags: ['decimals:internal:exact:decimals'],
-        },
-        {
-          name: 'formula',
+          name: 'tokenAdmin',
           type: 'address',
-          description:
-            'The formula contract used to calculate the issucance and redemption rate',
+          description: 'The admin of the token',
         },
         {
-          name: 'reserveRatioForBuying',
-          type: 'uint32',
-          description:
-            'The reserve ratio, expressed in PPM, used for issuance on the bonding curve',
-        },
-        {
-          name: 'reserveRatioForSelling',
-          type: 'uint32',
-          description:
-            'The reserve ratio, expressed in PPM, used for redeeming on the bonding curve',
-        },
-        {
-          name: 'buyFee',
-          type: 'uint256',
-          description: 'The buy fee expressed in base points',
-        },
-        {
-          name: 'sellFee',
-          type: 'uint256',
-          description: 'The sell fee expressed in base points',
-        },
-        {
-          name: 'buyIsOpen',
-          type: 'bool',
-          description:
-            'The indicator used for enabling/disabling the buying functionalities on deployment',
-        },
-        {
-          name: 'sellIsOpen',
-          type: 'bool',
-          description:
-            'The indicator used for enabling/disabling the selling functionalties on deployment',
-        },
-        {
-          name: 'initialTokenSupply',
-          type: 'uint256',
-          description: 'The initial virtual issuance token supply',
-          tags: ['decimals:internal:exact:decimals'],
-        },
-        {
-          name: 'initialCollateralSupply',
-          type: 'uint256',
-          description: 'The initial virtual collateral token supply',
-          tags: ['decimals:internal:indirect:acceptedToken'],
+          components: [
+            {
+              name: 'formula',
+              type: 'address',
+              description:
+                'The formula contract used to calculate the issucance and redemption rate',
+            },
+            {
+              name: 'reserveRatioForBuying',
+              type: 'uint32',
+              description:
+                'The reserve ratio, expressed in PPM, used for issuance on the bonding curve',
+            },
+            {
+              name: 'reserveRatioForSelling',
+              type: 'uint32',
+              description:
+                'The reserve ratio, expressed in PPM, used for redeeming on the bonding curve',
+            },
+            {
+              name: 'buyFee',
+              type: 'uint256',
+              description: 'The buy fee expressed in base points',
+            },
+            {
+              name: 'sellFee',
+              type: 'uint256',
+              description: 'The sell fee expressed in base points',
+            },
+            {
+              name: 'buyIsOpen',
+              type: 'bool',
+              description:
+                'The indicator used for enabling/disabling the buying functionalities on deployment',
+            },
+            {
+              name: 'sellIsOpen',
+              type: 'bool',
+              description:
+                'The indicator used for enabling/disabling the selling functionalties on deployment',
+            },
+            {
+              name: 'initialTokenSupply',
+              type: 'uint256',
+              description: 'The initial virtual issuance token supply',
+              tags: ['decimals:params:exact:decimals'],
+            },
+            {
+              name: 'initialCollateralSupply',
+              type: 'uint256',
+              description: 'The initial virtual collateral token supply',
+              tags: ['decimals:params:indirect:acceptedToken'],
+            },
+          ],
+          name: 'bondingCurveParams',
+          type: 'tuple',
         },
         {
           name: 'acceptedToken',
@@ -6024,13 +7188,13 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newBuyFee',
             type: 'uint256',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'oldBuyFee',
             type: 'uint256',
@@ -6099,7 +7263,7 @@ export const data = [
             description: 'The address that will receive the receipt tokens.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: '_amount',
             type: 'uint256',
@@ -6226,7 +7390,7 @@ export const data = [
               'The protocol treasury address receiving the token fee amount',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'feeAmount',
             type: 'uint256',
@@ -6259,7 +7423,7 @@ export const data = [
               'The protocol treasury address receiving the token fee amount',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'feeAmount',
             type: 'uint256',
@@ -6277,14 +7441,14 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newSellFee',
             type: 'uint256',
             description: 'The new sell fee',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'oldSellFee',
             type: 'uint256',
@@ -6371,7 +7535,7 @@ export const data = [
             description: 'The address that will receive the issued tokens.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'depositAmount',
             type: 'uint256',
@@ -6379,7 +7543,7 @@ export const data = [
             description: 'The amount of collateral token deposited.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'receivedAmount',
             type: 'uint256',
@@ -6410,7 +7574,7 @@ export const data = [
             description: 'The address that will receive the redeemed tokens.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'depositAmount',
             type: 'uint256',
@@ -6418,7 +7582,7 @@ export const data = [
             description: 'The amount of issued token deposited.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'receivedAmount',
             type: 'uint256',
@@ -6449,7 +7613,7 @@ export const data = [
             description: 'The address that will receive the underlying tokens.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: '_amount',
             type: 'uint256',
@@ -6467,14 +7631,14 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'amountAdded',
             type: 'uint256',
             tags: ['decimals'],
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newSupply',
             type: 'uint256',
@@ -6491,14 +7655,14 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'amountSubtracted',
             type: 'uint256',
             tags: ['decimals'],
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newSupply',
             type: 'uint256',
@@ -6515,14 +7679,14 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newSupply',
             type: 'uint256',
             tags: ['decimals'],
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'oldSupply',
             type: 'uint256',
@@ -6539,7 +7703,7 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'amountAdded',
             type: 'uint256',
@@ -6547,7 +7711,7 @@ export const data = [
             description: 'The amount added to the virtual issuance supply',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newSupply',
             type: 'uint256',
@@ -6565,7 +7729,7 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'amountSubtracted',
             type: 'uint256',
@@ -6574,7 +7738,7 @@ export const data = [
               'The amount subtracted from the virtual issuance supply',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newSupply',
             type: 'uint256',
@@ -6592,7 +7756,7 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newSupply',
             type: 'uint256',
@@ -6600,7 +7764,7 @@ export const data = [
             description: 'The new virtual issuance supply',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'oldSupply',
             type: 'uint256',
@@ -6631,7 +7795,7 @@ export const data = [
             description: 'The address that will receive the underlying tokens.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: '_amount',
             type: 'uint256',
@@ -6657,14 +7821,14 @@ export const data = [
             internalType: 'uint256',
             name: '_depositAmount',
             type: 'uint256',
-            tags: ['decimals'],
+            tags: ['decimals', 'approval'],
             description: 'The amount of collateral token depoisited.',
           },
           {
             internalType: 'uint256',
             name: '_minAmountOut',
             type: 'uint256',
-            tags: ['decimals:external:indirect:getIssuanceToken'],
+            tags: ['decimals:contract:indirect:getIssuanceToken'],
             description:
               'The minimum acceptable amount the user expects to receive from the transaction.',
           },
@@ -6695,14 +7859,14 @@ export const data = [
             internalType: 'uint256',
             name: '_depositAmount',
             type: 'uint256',
-            tags: ['decimals'],
+            tags: ['decimals', 'approval'],
             description: 'The amount of collateral token depoisited.',
           },
           {
             internalType: 'uint256',
             name: '_minAmountOut',
             type: 'uint256',
-            tags: ['decimals:external:indirect:getIssuanceToken'],
+            tags: ['decimals:contract:indirect:getIssuanceToken'],
             description:
               'The minimum acceptable amount the user expects to receive from the transaction.',
           },
@@ -6736,12 +7900,12 @@ export const data = [
             internalType: 'uint256',
             name: 'mintAmount',
             type: 'uint256',
-            tags: ['decimals:external:indirect:getIssuanceToken'],
+            tags: ['decimals:contract:indirect:getIssuanceToken'],
             description:
               'The amount of new tokens that will be minted as a result of the deposit.',
           },
         ],
-        stateMutability: 'nonpayable',
+        stateMutability: 'view',
         type: 'function',
         description:
           'Calculates the amount of tokens to be minted based on a given deposit amount.',
@@ -6766,7 +7930,7 @@ export const data = [
               'The amount of collateral that will be redeemed as a result of the deposit.',
           },
         ],
-        stateMutability: 'nonpayable',
+        stateMutability: 'view',
         type: 'function',
         description:
           'Calculates the amount of tokens to be redeemed based on a given deposit amount.',
@@ -7079,12 +8243,14 @@ export const data = [
             internalType: 'uint256',
             name: '_depositAmount',
             type: 'uint256',
+            tags: ['decimals:contract:indirect:getIssuanceToken', 'approval'],
             description: 'The amount of issued token depoisited.',
           },
           {
             internalType: 'uint256',
             name: '_minAmountOut',
             type: 'uint256',
+            tags: ['decimals'],
             description:
               'The minimum acceptable amount the user expects to receive from the transaction.',
           },
@@ -7115,6 +8281,7 @@ export const data = [
             internalType: 'uint256',
             name: '_depositAmount',
             type: 'uint256',
+            tags: ['decimals:contract:indirect:getIssuanceToken', 'approval'],
             description: 'The amount of issued token to deposited.',
           },
           {
@@ -7462,7 +8629,7 @@ export const data = [
             description: 'The address that will receive the receipt tokens.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: '_amount',
             type: 'uint256',
@@ -7588,7 +8755,7 @@ export const data = [
             description: 'The address that will receive the underlying tokens.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: '_amount',
             type: 'uint256',
@@ -7620,7 +8787,7 @@ export const data = [
             description: 'The address that will receive the underlying tokens.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: '_amount',
             type: 'uint256',
@@ -7761,7 +8928,7 @@ export const data = [
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            tags: ['decimals'],
+            tags: ['decimals', 'approval'],
           },
         ],
         name: 'deposit',
@@ -7776,7 +8943,7 @@ export const data = [
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            tags: ['decimals'],
+            tags: ['decimals', 'approval'],
           },
         ],
         name: 'depositFor',
@@ -8286,77 +9453,94 @@ export const data = [
     deploymentInputs: {
       configData: [
         {
-          name: 'name',
-          type: 'bytes32',
-          description: 'The name of the issuance token',
+          components: [
+            {
+              name: 'name',
+              type: 'string',
+              description: 'The name of the issuance token',
+            },
+            {
+              name: 'symbol',
+              type: 'string',
+              description: 'The symbol of the issuance token',
+            },
+            {
+              name: 'decimals',
+              type: 'uint8',
+              description: 'The decimals used within the issuance token',
+            },
+            {
+              name: 'maxSupply',
+              type: 'uint256',
+              description: 'The max total supply of the token',
+              tags: ['decimals:params:exact:decimals'],
+            },
+          ],
+          name: 'issuanceToken',
+          type: 'tuple',
         },
         {
-          name: 'symbol',
-          type: 'bytes32',
-          description: 'The symbol of the issuance token',
-        },
-        {
-          name: 'decimals',
-          type: 'uint8',
-          description: 'The decimals used within the issuance token',
-        },
-        {
-          name: 'maxSupply',
-          type: 'uint256',
-          description: 'The max total supply of the token',
-          tags: ['decimals:internal:exact:decimals'],
-        },
-        {
-          name: 'formula',
+          name: 'tokenAdmin',
           type: 'address',
-          description:
-            'The formula contract used to calculate the issucance and redemption rate',
+          description: 'The admin of the token',
         },
         {
-          name: 'reserveRatioForBuying',
-          type: 'uint32',
-          description:
-            'The reserve ratio, expressed in PPM, used for issuance on the bonding curve',
-        },
-        {
-          name: 'reserveRatioForSelling',
-          type: 'uint32',
-          description:
-            'The reserve ratio, expressed in PPM, used for redeeming on the bonding curve',
-        },
-        {
-          name: 'buyFee',
-          type: 'uint256',
-          description: 'The buy fee expressed in base points',
-        },
-        {
-          name: 'sellFee',
-          type: 'uint256',
-          description: 'The sell fee expressed in base points',
-        },
-        {
-          name: 'buyIsOpen',
-          type: 'bool',
-          description:
-            'The indicator used for enabling/disabling the buying functionalities on deployment',
-        },
-        {
-          name: 'sellIsOpen',
-          type: 'bool',
-          description:
-            'The indicator used for enabling/disabling the selling functionalties on deployment',
-        },
-        {
-          name: 'initialTokenSupply',
-          type: 'uint256',
-          description: 'The initial virtual issuance token supply',
-          tags: ['decimals:internal:exact:decimals'],
-        },
-        {
-          name: 'initialCollateralSupply',
-          type: 'uint256',
-          description: 'The initial virtual collateral token supply',
-          tags: ['decimals:internal:indirect:acceptedToken'],
+          components: [
+            {
+              name: 'formula',
+              type: 'address',
+              description:
+                'The formula contract used to calculate the issucance and redemption rate',
+            },
+            {
+              name: 'reserveRatioForBuying',
+              type: 'uint32',
+              description:
+                'The reserve ratio, expressed in PPM, used for issuance on the bonding curve',
+            },
+            {
+              name: 'reserveRatioForSelling',
+              type: 'uint32',
+              description:
+                'The reserve ratio, expressed in PPM, used for redeeming on the bonding curve',
+            },
+            {
+              name: 'buyFee',
+              type: 'uint256',
+              description: 'The buy fee expressed in base points',
+            },
+            {
+              name: 'sellFee',
+              type: 'uint256',
+              description: 'The sell fee expressed in base points',
+            },
+            {
+              name: 'buyIsOpen',
+              type: 'bool',
+              description:
+                'The indicator used for enabling/disabling the buying functionalities on deployment',
+            },
+            {
+              name: 'sellIsOpen',
+              type: 'bool',
+              description:
+                'The indicator used for enabling/disabling the selling functionalties on deployment',
+            },
+            {
+              name: 'initialTokenSupply',
+              type: 'uint256',
+              description: 'The initial virtual issuance token supply',
+              tags: ['decimals:params:exact:decimals'],
+            },
+            {
+              name: 'initialCollateralSupply',
+              type: 'uint256',
+              description: 'The initial virtual collateral token supply',
+              tags: ['decimals:params:indirect:acceptedToken'],
+            },
+          ],
+          name: 'bondingCurveParams',
+          type: 'tuple',
         },
         {
           name: 'acceptedToken',
@@ -8510,13 +9694,13 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newBuyFee',
             type: 'uint256',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'oldBuyFee',
             type: 'uint256',
@@ -8585,7 +9769,7 @@ export const data = [
             description: 'The address that will receive the receipt tokens.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: '_amount',
             type: 'uint256',
@@ -8712,7 +9896,7 @@ export const data = [
               'The protocol treasury address receiving the token fee amount',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'feeAmount',
             type: 'uint256',
@@ -8745,7 +9929,7 @@ export const data = [
               'The protocol treasury address receiving the token fee amount',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'feeAmount',
             type: 'uint256',
@@ -8763,14 +9947,14 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newSellFee',
             type: 'uint256',
             description: 'The new sell fee',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'oldSellFee',
             type: 'uint256',
@@ -8857,7 +10041,7 @@ export const data = [
             description: 'The address that will receive the issued tokens.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'depositAmount',
             type: 'uint256',
@@ -8865,7 +10049,7 @@ export const data = [
             description: 'The amount of collateral token deposited.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'receivedAmount',
             type: 'uint256',
@@ -8896,7 +10080,7 @@ export const data = [
             description: 'The address that will receive the redeemed tokens.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'depositAmount',
             type: 'uint256',
@@ -8904,7 +10088,7 @@ export const data = [
             description: 'The amount of issued token deposited.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'receivedAmount',
             type: 'uint256',
@@ -8935,7 +10119,7 @@ export const data = [
             description: 'The address that will receive the underlying tokens.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: '_amount',
             type: 'uint256',
@@ -8953,14 +10137,14 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'amountAdded',
             type: 'uint256',
             tags: ['decimals'],
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newSupply',
             type: 'uint256',
@@ -8977,14 +10161,14 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'amountSubtracted',
             type: 'uint256',
             tags: ['decimals'],
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newSupply',
             type: 'uint256',
@@ -9001,14 +10185,14 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newSupply',
             type: 'uint256',
             tags: ['decimals'],
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'oldSupply',
             type: 'uint256',
@@ -9025,7 +10209,7 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'amountAdded',
             type: 'uint256',
@@ -9033,7 +10217,7 @@ export const data = [
             description: 'The amount added to the virtual issuance supply',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newSupply',
             type: 'uint256',
@@ -9051,7 +10235,7 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'amountSubtracted',
             type: 'uint256',
@@ -9060,7 +10244,7 @@ export const data = [
               'The amount subtracted from the virtual issuance supply',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newSupply',
             type: 'uint256',
@@ -9078,7 +10262,7 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'newSupply',
             type: 'uint256',
@@ -9086,7 +10270,7 @@ export const data = [
             description: 'The new virtual issuance supply',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: 'oldSupply',
             type: 'uint256',
@@ -9117,7 +10301,7 @@ export const data = [
             description: 'The address that will receive the underlying tokens.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint256',
             name: '_amount',
             type: 'uint256',
@@ -9143,7 +10327,7 @@ export const data = [
             internalType: 'uint256',
             name: '_minAmountOut',
             type: 'uint256',
-            tags: ['decimals:external:indirect:getIssuanceToken'],
+            tags: ['decimals:contract:indirect:getIssuanceToken', 'approval'],
             description:
               'The minimum acceptable amount the user expects to receive from the transaction.',
           },
@@ -9181,7 +10365,7 @@ export const data = [
             internalType: 'uint256',
             name: '_minAmountOut',
             type: 'uint256',
-            tags: ['decimals:external:indirect:getIssuanceToken'],
+            tags: ['decimals:contract:indirect:getIssuanceToken', 'approval'],
             description:
               'The minimum acceptable amount the user expects to receive from the transaction.',
           },
@@ -9215,12 +10399,12 @@ export const data = [
             internalType: 'uint256',
             name: 'mintAmount',
             type: 'uint256',
-            tags: ['decimals:external:indirect:getIssuanceToken'],
+            tags: ['decimals:contract:indirect:getIssuanceToken'],
             description:
               'The amount of new tokens that will be minted as a result of the deposit.',
           },
         ],
-        stateMutability: 'nonpayable',
+        stateMutability: 'view',
         type: 'function',
         description:
           'Calculates the amount of tokens to be minted based on a given deposit amount.',
@@ -9245,7 +10429,7 @@ export const data = [
               'The amount of collateral that will be redeemed as a result of the deposit.',
           },
         ],
-        stateMutability: 'nonpayable',
+        stateMutability: 'view',
         type: 'function',
         description:
           'Calculates the amount of tokens to be redeemed based on a given deposit amount.',
@@ -9569,12 +10753,14 @@ export const data = [
             internalType: 'uint256',
             name: '_depositAmount',
             type: 'uint256',
+            tags: ['decimals:contract:indirect:getIssuanceToken', 'approval'],
             description: 'The amount of issued token depoisited.',
           },
           {
             internalType: 'uint256',
             name: '_minAmountOut',
             type: 'uint256',
+            tags: ['decimals'],
             description:
               'The minimum acceptable amount the user expects to receive from the transaction.',
           },
@@ -9605,12 +10791,14 @@ export const data = [
             internalType: 'uint256',
             name: '_depositAmount',
             type: 'uint256',
+            tags: ['decimals:contract:indirect:getIssuanceToken', 'approval'],
             description: 'The amount of issued token to deposited.',
           },
           {
             internalType: 'uint256',
             name: '_minAmountOut',
             type: 'uint256',
+            tags: ['decimals'],
             description:
               'The minimum acceptable amount the user expects to receive from the transaction.',
           },
@@ -9891,6 +11079,14 @@ export const data = [
         type: 'error',
       },
       {
+        inputs: [
+          { internalType: 'address', name: 'paymentClient', type: 'address' },
+          { internalType: 'address', name: 'paymentReceiver', type: 'address' },
+        ],
+        name: 'Module__PaymentProcessor__NothingToClaim',
+        type: 'error',
+      },
+      {
         inputs: [],
         name: 'Module__PaymentProcessor__OnlyCallableByModule',
         type: 'error',
@@ -10047,6 +11243,44 @@ export const data = [
           'Emitted when an amount of ERC20 tokens gets sent out of the contract.',
       },
       {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'paymentClient',
+            type: 'address',
+            description:
+              'The token address in which the payment should have happened.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that should have received the payment.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: 'The amount of tokens that were unclaimable.',
+          },
+        ],
+        name: 'UnclaimableAmountAdded',
+        type: 'event',
+        outputs: [],
+        description:
+          'Emitted when a payment was unclaimable due to a token error.',
+      },
+      {
         inputs: [
           {
             internalType: 'contract IERC20PaymentClientBase_v1',
@@ -10058,10 +11292,40 @@ export const data = [
         ],
         name: 'cancelRunningPayments',
         outputs: [],
-        stateMutability: 'nonpayable',
+        stateMutability: 'view',
         type: 'function',
         description:
           'Cancels all unfinished payments from an {IERC20PaymentClientBase_v1} instance.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client',
+            type: 'address',
+            description:
+              'The IERC20PaymentClientBase_v1 instance address that processes all claims from _msgSender',
+          },
+          {
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description: 'address of the payment token',
+          },
+          {
+            internalType: 'address',
+            name: 'receiver',
+            type: 'address',
+            description:
+              'The address that will receive the previously unclaimable amount',
+          },
+        ],
+        name: 'claimPreviouslyUnclaimable',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'claim every unclaimable amount that the paymentClient owes to the _msgSender and send it to a specified receiver',
       },
       {
         inputs: [
@@ -10186,7 +11450,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Processes all payments from an {IERC20PaymentClientBase_v1} instance.',
+          'Processes all payments from an {IERC20PaymentClientBase_v1} instance. Please note: this function does not support callbacks on transfer of tokens.',
       },
       {
         inputs: [
@@ -10246,6 +11510,34 @@ export const data = [
         stateMutability: 'view',
         type: 'function',
         description: 'Returns the trusted forwarder',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client',
+            type: 'address',
+            description: 'address of the payment client',
+          },
+          {
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description: 'address of the payment token',
+          },
+          {
+            internalType: 'address',
+            name: 'paymentReceiver',
+            type: 'address',
+            description: "PaymentReceiver's address.",
+          },
+        ],
+        name: 'unclaimable',
+        outputs: [{ internalType: 'uint256', name: 'amount', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Getter for the amount of tokens that could not be claimed.',
       },
       {
         inputs: [],
@@ -10352,16 +11644,16 @@ export const data = [
         type: 'error',
       },
       {
+        inputs: [],
+        name: 'Module__PaymentProcessor__CannotCallOnOtherClientsOrders',
+        type: 'error',
+      },
+      {
         inputs: [
           { internalType: 'address', name: 'paymentClient', type: 'address' },
           { internalType: 'address', name: 'paymentReceiver', type: 'address' },
         ],
-        name: 'Module__PP_Streaming__NothingToClaim',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__PaymentProcessor__CannotCallOnOtherClientsOrders',
+        name: 'Module__PaymentProcessor__NothingToClaim',
         type: 'error',
       },
       {
@@ -10745,6 +12037,44 @@ export const data = [
             description: 'The payment client that originated the order.',
           },
           {
+            indexed: true,
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that wshould have received the payment.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'The amount of tokens that were unclaimable.',
+          },
+        ],
+        name: 'UnclaimableAmountAdded',
+        type: 'event',
+        outputs: [],
+        description:
+          'Emitted when a payment was unclaimable due to a token error.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'paymentClient',
+            type: 'address',
+            description: 'The payment client that originated the order.',
+          },
+          {
             indexed: false,
             internalType: 'address',
             name: 'recipient',
@@ -10777,7 +12107,6 @@ export const data = [
         ],
         name: 'UnclaimableAmountAdded',
         type: 'event',
-        outputs: [],
         description:
           'Emitted when a payment was unclaimable due to a token error.',
       },
@@ -10847,6 +12176,12 @@ export const data = [
             type: 'address',
             description:
               'The IERC20PaymentClientBase_v1 instance address that processes all claims from _msgSender',
+          },
+          {
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description: 'address of the payment token',
           },
           {
             internalType: 'address',
@@ -11076,7 +12411,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Processes all payments from an {IERC20PaymentClientBase_v1} instance.',
+          'Processes all payments from an {IERC20PaymentClientBase_v1} instance. Please note: this function does not support callbacks on transfer of tokens.',
       },
       {
         inputs: [
@@ -11318,6 +12653,12 @@ export const data = [
             name: 'client',
             type: 'address',
             description: 'address of the payment client',
+          },
+          {
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description: 'address of the payment token',
           },
           {
             internalType: 'address',
@@ -12063,19 +13404,13 @@ export const data = [
     deploymentInputs: {
       configData: [
         {
-          name: 'initialOwner',
+          name: 'initialAdmin',
           type: 'address',
-          description: 'The initial owner of the workflow',
-        },
-        {
-          name: 'initialManager',
-          type: 'address',
-          description: 'The initial manager of the workflow',
+          description: 'The initial admin of the workflow',
         },
       ],
     },
     abi: [
-      { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
       { inputs: [], name: 'AccessControlBadConfirmation', type: 'error' },
       {
         inputs: [
@@ -12093,6 +13428,16 @@ export const data = [
       },
       {
         inputs: [],
+        name: 'Module__Authorizer__AdminRoleCannotBeEmpty',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__Authorizer__InvalidInitialAdmin',
+        type: 'error',
+      },
+      {
+        inputs: [],
         name: 'Module__Authorizer__ModuleNotSelfManaged',
         type: 'error',
       },
@@ -12103,7 +13448,7 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'Module__Authorizer__OwnerRoleCannotBeEmpty',
+        name: 'Module__Authorizer__OrchestratorCannotHaveAdminRole',
         type: 'error',
       },
       {
@@ -12263,20 +13608,6 @@ export const data = [
         type: 'function',
       },
       {
-        inputs: [],
-        name: 'ORCHESTRATOR_MANAGER_ROLE',
-        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'ORCHESTRATOR_OWNER_ROLE',
-        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
         inputs: [
           {
             internalType: 'bytes32',
@@ -12315,7 +13646,7 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'getManagerRole',
+        name: 'getAdminRole',
         outputs: [
           {
             internalType: 'bytes32',
@@ -12326,22 +13657,7 @@ export const data = [
         ],
         stateMutability: 'pure',
         type: 'function',
-        description: 'Returns the role ID of the manager role',
-      },
-      {
-        inputs: [],
-        name: 'getOwnerRole',
-        outputs: [
-          {
-            internalType: 'bytes32',
-            name: '_0',
-            type: 'bytes32',
-            description: 'The role ID',
-          },
-        ],
-        stateMutability: 'pure',
-        type: 'function',
-        description: 'Returns the role ID of the owner role',
+        description: 'Returns the role ID of the admin role',
       },
       {
         inputs: [{ internalType: 'bytes32', name: 'role', type: 'bytes32' }],
@@ -12841,14 +14157,9 @@ export const data = [
     deploymentInputs: {
       configData: [
         {
-          name: 'initialOwner',
+          name: 'initialAdmin',
           type: 'address',
-          description: 'The initial owner of the workflow',
-        },
-        {
-          name: 'initialManager',
-          type: 'address',
-          description: 'The initial manager of the workflow',
+          description: 'The initial admin of the workflow',
         },
       ],
     },
@@ -12891,6 +14202,24 @@ export const data = [
         type: 'error',
       },
       {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'token', type: 'address' },
+        ],
+        name: 'Module__AUT_TokenGated_Roles__TokenRoleMustHaveThreshold',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__Authorizer__AdminRoleCannotBeEmpty',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__Authorizer__InvalidInitialAdmin',
+        type: 'error',
+      },
+      {
         inputs: [],
         name: 'Module__Authorizer__ModuleNotSelfManaged',
         type: 'error',
@@ -12902,7 +14231,7 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'Module__Authorizer__OwnerRoleCannotBeEmpty',
+        name: 'Module__Authorizer__OrchestratorCannotHaveAdminRole',
         type: 'error',
       },
       {
@@ -13116,20 +14445,6 @@ export const data = [
         type: 'function',
       },
       {
-        inputs: [],
-        name: 'ORCHESTRATOR_MANAGER_ROLE',
-        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'ORCHESTRATOR_OWNER_ROLE',
-        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
         inputs: [
           {
             internalType: 'bytes32',
@@ -13168,7 +14483,7 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'getManagerRole',
+        name: 'getAdminRole',
         outputs: [
           {
             internalType: 'bytes32',
@@ -13179,22 +14494,7 @@ export const data = [
         ],
         stateMutability: 'pure',
         type: 'function',
-        description: 'Returns the role ID of the manager role',
-      },
-      {
-        inputs: [],
-        name: 'getOwnerRole',
-        outputs: [
-          {
-            internalType: 'bytes32',
-            name: '_0',
-            type: 'bytes32',
-            description: 'The role ID',
-          },
-        ],
-        stateMutability: 'pure',
-        type: 'function',
-        description: 'Returns the role ID of the owner role',
+        description: 'Returns the role ID of the admin role',
       },
       {
         inputs: [{ internalType: 'bytes32', name: 'role', type: 'bytes32' }],
@@ -13232,7 +14532,7 @@ export const data = [
             internalType: 'address',
             name: 'token',
             type: 'address',
-            tags: ['decimals:internal:indirect:token'],
+            tags: ['decimals:params:indirect:token'],
             description: 'The token to check the threshold for.',
           },
         ],
@@ -13375,7 +14675,7 @@ export const data = [
             internalType: 'uint256',
             name: 'threshold',
             type: 'uint256',
-            tags: ['decimals:internal:indirect:token'],
+            tags: ['decimals:params:indirect:token'],
             description:
               'The minimum balance of the token required to qualify for the role.',
           },
@@ -13385,7 +14685,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'One-step setup for Modules to create a token-gated role and set its threshold.',
+          'One-step setup for Modules to create a token-gated role and set its threshold. Please be aware that using tokens that are transferable and have active markets could make the token-gated authorization vulnerable to flash loans, potentially bypassing the authorization mechanism.',
       },
       {
         inputs: [
@@ -13412,7 +14712,7 @@ export const data = [
       {
         inputs: [
           { internalType: 'bytes32', name: 'roleId', type: 'bytes32' },
-          { internalType: 'address', name: 'account', type: 'address' },
+          { internalType: 'address', name: 'who', type: 'address' },
         ],
         name: 'hasRole',
         outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
@@ -13702,7 +15002,7 @@ export const data = [
             internalType: 'uint256',
             name: 'threshold',
             type: 'uint256',
-            tags: ['decimals:internal:indirect:token'],
+            tags: ['decimals:params:indirect:token'],
             description:
               'The user will need to have at least this number to qualify for the role.',
           },
@@ -13731,7 +15031,7 @@ export const data = [
             internalType: 'uint256',
             name: 'threshold',
             type: 'uint256',
-            tags: ['decimals:internal:indirect:token'],
+            tags: ['decimals:params:indirect:token'],
             description:
               'The new minimum balance of the token required to qualify for the role.',
           },
@@ -13906,6 +15206,16 @@ export const data = [
       },
       {
         inputs: [],
+        name: 'ModuleManagerBase__ModuleFactoryInvalid',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'ModuleManagerBase__ModuleNotRegistered',
+        type: 'error',
+      },
+      {
+        inputs: [],
         name: 'ModuleManagerBase__ModuleUpdateAlreadyStarted',
         type: 'error',
       },
@@ -13915,11 +15225,6 @@ export const data = [
           { internalType: 'uint256', name: '_timelockUntil', type: 'uint256' },
         ],
         name: 'ModuleManagerBase__ModuleUpdateTimelockStillActive',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'ModuleManagerBase__ModulesNotConsecutive',
         type: 'error',
       },
       {
@@ -13960,6 +15265,14 @@ export const data = [
       {
         inputs: [],
         name: 'Orchestrator__InvalidRemovalOfPaymentProcessor',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'currentToken', type: 'address' },
+          { internalType: 'address', name: 'newToken', type: 'address' },
+        ],
+        name: 'Orchestrator__MismatchedTokenForFundingManager',
         type: 'error',
       },
       {
@@ -14262,7 +15575,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Executes replacing the current authorizer with `_authorizer`',
+          'Executes replacing the current authorizer with `_authorizer`!!! IMPORTANT !!! When changing the Authorizer the current set of assigned addresses to Roles are lost. Make sure initial owners are set properly.',
       },
       {
         inputs: [
@@ -14278,7 +15591,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Executes replaces the current funding manager with `fundingManager_`',
+          'Executes replaces the current funding manager with `fundingManager_`!!! IMPORTANT !!! When changing the FundingManager the current funds still contained in the module might not be retrievable. Make sure to clean the FundingManager properly beforehand.',
       },
       {
         inputs: [
@@ -14294,7 +15607,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Executes replaces the current payment processor with `paymentProcessor_`',
+          'Executes replaces the current payment processor with `paymentProcessor_`!!! IMPORTANT !!! When changing the PaymentProcessor the current ongoing payment orders are lost. Make sure to resolve those payments properly beforehand.',
       },
       {
         inputs: [
@@ -14404,6 +15717,7 @@ export const data = [
       {
         inputs: [
           { internalType: 'uint256', name: 'orchestratorId_', type: 'uint256' },
+          { internalType: 'address', name: 'moduleFactory_', type: 'address' },
           { internalType: 'address[]', name: 'modules', type: 'address[]' },
           {
             internalType: 'contract IFundingManager_v1',
@@ -14551,6 +15865,13 @@ export const data = [
           { internalType: 'bool', name: 'timelockActive', type: 'bool' },
           { internalType: 'uint256', name: 'timelockUntil', type: 'uint256' },
         ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'moduleFactory',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
         type: 'function',
       },

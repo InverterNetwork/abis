@@ -22,8 +22,17 @@ export default function getAbiMemberDescriptions(
       else if ('details' in value)
         description = toSingleSpace(value?.details || '')
 
+      if (name === 'constructor') continue
       if (!acc[name]) acc[name] = []
-      acc[name].push({ name: 'selfDescription', description })
+
+      try {
+        acc[name].push({ name: 'selfDescription', description })
+      } catch {
+        console.error(
+          `Error at: acc[${name}]: description: ${description} \n`,
+          acc[name]
+        )
+      }
     }
   }
 
@@ -31,6 +40,8 @@ export default function getAbiMemberDescriptions(
   for (const field of ['events', 'methods'] as const) {
     for (const [key, value] of getEntries(output.devdoc[field] || [])) {
       const name = String(key).split('(')[0]
+
+      if (name === 'constructor') continue
 
       if (!acc[name]) acc[name] = []
 
