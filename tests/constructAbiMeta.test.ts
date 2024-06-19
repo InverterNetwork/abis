@@ -17,8 +17,8 @@ describe('Constructed Abi Meta', () => {
         // console.log('itemPath:', itemPath)
         const parsed = getParsedRawMetadata(itemPath)
         const res = constructAbiMeta(itemPath, parsed)
-        const id = 'abiMeta-' + itemPath.split('/v1.0')[0].split('/').pop()
-        writeLog(res, id)
+        const label = 'abiMeta-' + itemPath.split('/v1.0')[0].split('/').pop()
+        writeLog({ content: res, label })
       }
     )
 
