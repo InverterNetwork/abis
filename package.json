@@ -80,7 +80,8 @@
     "release:alpha": "standard-version -a --prerelease alpha --skip.changelog",
     "release:beta": "standard-version -a --prerelease beta --skip.changelog",
     "release:pub": "git push --follow-tags origin main",
-    "trans:tags": "bun tools/transition/singleTagToTagArray.ts && prettier --write ./deployments > /dev/null 2>&1"
+    "trans:tags": "bun tools/transition/singleTagToTagArray.ts && prettier --write ./deployments > /dev/null 2>&1",
+    "cp:dist-sdk": "bun compile && bun run build && cp -r dist ../sdk/node_modules/@inverter-network/abis/"
   },
   "types": "./dist/index.d.ts"
 }

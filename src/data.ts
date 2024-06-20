@@ -1774,6 +1774,642 @@ export const data = [
     ],
   },
   {
+    name: 'AUT_EXT_VotingRoles_v1',
+    description:
+      'Facilitates voting and motion management within the Inverter Network, allowing designated voters to participate in governance through proposals, voting, and execution of decisions.',
+    moduleType: 'optionalModule',
+    deploymentInputs: {
+      configData: [
+        {
+          name: 'voters',
+          type: 'address[]',
+          description: 'An array of addresses which are the eligible voters.',
+        },
+        {
+          name: 'threshold',
+          type: 'uint256',
+          description:
+            'The amount of voters that are needed for a vote to pass.',
+        },
+        {
+          name: 'voteDuration',
+          type: 'uint256',
+          description:
+            'The duration of a vote. Needs to be more than 1 day but less than 2 weeks.',
+        },
+      ],
+    },
+    abi: [
+      { inputs: [], name: 'InvalidInitialization', type: 'error' },
+      {
+        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
+        name: 'Module_OrchestratorCallbackFailed',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'caller', type: 'address' },
+        ],
+        name: 'Module__CallerNotAuthorized',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
+      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
+      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__VotingRoleManager__AttemptedDoubleVote',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__VotingRoleManager__CallerNotVoter',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__VotingRoleManager__EmptyVoters',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__VotingRoleManager__InvalidMotionId',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__VotingRoleManager__InvalidSupport',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__VotingRoleManager__InvalidVoterAddress',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__VotingRoleManager__InvalidVotingDuration',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__VotingRoleManager__IsAlreadyVoter',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__VotingRoleManager__MotionAlreadyExecuted',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__VotingRoleManager__MotionInVotingPhase',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__VotingRoleManager__MotionVotingPhaseClosed',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__VotingRoleManager__ThresholdNotReached',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__VotingRoleManager__UnreachableThreshold',
+        type: 'error',
+      },
+      { inputs: [], name: 'NotInitializing', type: 'error' },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint64',
+            name: 'version',
+            type: 'uint64',
+          },
+        ],
+        name: 'Initialized',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'parentOrchestrator',
+            type: 'address',
+            description:
+              'The address of the orchestrator the module is linked to.',
+          },
+          {
+            indexed: true,
+            internalType: 'string',
+            name: 'moduleTitle',
+            type: 'string',
+            description: 'The title of the module.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'majorVersion',
+            type: 'uint256',
+            description: 'The major version of the module.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'minorVersion',
+            type: 'uint256',
+            description: 'The minor version of the module.',
+          },
+        ],
+        name: 'ModuleInitialized',
+        type: 'event',
+        outputs: [],
+        description: 'Module has been initialized.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'motionId',
+            type: 'uint256',
+            description: 'The motion ID.',
+          },
+        ],
+        name: 'MotionCreated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a motion is created',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'motionId',
+            type: 'uint256',
+            description: 'The motion ID.',
+          },
+        ],
+        name: 'MotionExecuted',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a motion is executed.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'oldThreshold',
+            type: 'uint256',
+            description: 'The old threshold.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'newThreshold',
+            type: 'uint256',
+            description: 'The new threshold.',
+          },
+        ],
+        name: 'ThresholdUpdated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when the required threshold changes.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'oldVotingDuration',
+            type: 'uint256',
+            description: 'The old voting duration.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'newVotingDuration',
+            type: 'uint256',
+            description: 'The new voting duration.',
+          },
+        ],
+        name: 'VoteDurationUpdated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when the voting duration changes.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'who',
+            type: 'address',
+            description: 'The added address.',
+          },
+        ],
+        name: 'VoterAdded',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a new voter address gets added.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'who',
+            type: 'address',
+            description: 'The removed address.',
+          },
+        ],
+        name: 'VoterRemoved',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a voter address gets removed.',
+      },
+      {
+        inputs: [],
+        name: 'MAX_VOTING_DURATION',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'MIN_VOTING_DURATION',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'who', type: 'address' }],
+        name: 'addVoter',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'uint256', name: 'motionId', type: 'uint256' },
+          { internalType: 'uint8', name: 'support', type: 'uint8' },
+        ],
+        name: 'castVote',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'target', type: 'address' },
+          { internalType: 'bytes', name: 'action', type: 'bytes' },
+        ],
+        name: 'createMotion',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'uint256', name: 'motionId', type: 'uint256' },
+        ],
+        name: 'executeMotion',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'uint256', name: '_ID', type: 'uint256' },
+          { internalType: 'address', name: 'voter', type: 'address' },
+        ],
+        name: 'getReceipt',
+        outputs: [
+          {
+            components: [
+              { internalType: 'bool', name: 'hasVoted', type: 'bool' },
+              { internalType: 'uint8', name: 'support', type: 'uint8' },
+            ],
+            internalType: 'struct IAUT_EXT_VotingRoles_v1.Receipt',
+            name: '_0',
+            type: 'tuple',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'target', type: 'address' },
+        ],
+        name: 'grantModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+        ],
+        name: 'grantModuleRoleBatched',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'identifier',
+        outputs: [
+          {
+            internalType: 'bytes32',
+            name: '_0',
+            type: 'bytes32',
+            description: "The module's identifier.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's identifier.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator_v1',
+            name: 'orchestrator_',
+            type: 'address',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: "The module's metadata.",
+          },
+          {
+            internalType: 'bytes',
+            name: 'configData',
+            type: 'bytes',
+            description:
+              'Variable config data for specific module implementations.',
+          },
+        ],
+        name: 'init',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: "The module's initializer function.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'forwarder',
+            type: 'address',
+            description: 'The contract address to be verified.',
+          },
+        ],
+        name: 'isTrustedForwarder',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'bool Is the given address the trusted forwarder',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Checks if the provided address is the trusted forwarder',
+      },
+      {
+        inputs: [{ internalType: 'address', name: '', type: 'address' }],
+        name: 'isVoter',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'motionCount',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+        name: 'motions',
+        outputs: [
+          { internalType: 'address', name: 'target', type: 'address' },
+          { internalType: 'bytes', name: 'action', type: 'bytes' },
+          { internalType: 'uint256', name: 'startTimestamp', type: 'uint256' },
+          { internalType: 'uint256', name: 'endTimestamp', type: 'uint256' },
+          {
+            internalType: 'uint256',
+            name: 'requiredThreshold',
+            type: 'uint256',
+          },
+          { internalType: 'uint256', name: 'forVotes', type: 'uint256' },
+          { internalType: 'uint256', name: 'againstVotes', type: 'uint256' },
+          { internalType: 'uint256', name: 'abstainVotes', type: 'uint256' },
+          { internalType: 'uint256', name: 'executedAt', type: 'uint256' },
+          { internalType: 'bool', name: 'executionResult', type: 'bool' },
+          { internalType: 'bytes', name: 'executionReturnData', type: 'bytes' },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'orchestrator',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator_v1',
+            name: '_0',
+            type: 'address',
+            description: "The module's orchestrator.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'who', type: 'address' }],
+        name: 'removeVoter',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'target', type: 'address' },
+        ],
+        name: 'revokeModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+        ],
+        name: 'revokeModuleRoleBatched',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'uint256', name: 'newThreshold', type: 'uint256' },
+        ],
+        name: 'setThreshold',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'uint256', name: 'newVoteDuration', type: 'uint256' },
+        ],
+        name: 'setVotingDuration',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
+        ],
+        name: 'supportsInterface',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'threshold',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'title',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: "The module's title.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's title.",
+      },
+      {
+        inputs: [],
+        name: 'trustedForwarder',
+        outputs: [
+          {
+            internalType: 'address',
+            name: '_0',
+            type: 'address',
+            description: 'address The trusted forwarder',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the trusted forwarder',
+      },
+      {
+        inputs: [],
+        name: 'url',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: "The module's URL.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's URL.",
+      },
+      {
+        inputs: [],
+        name: 'version',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: "The module's major version.",
+          },
+          {
+            internalType: 'uint256',
+            name: '_1',
+            type: 'uint256',
+            description: "The module's minor version.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's version.",
+      },
+      {
+        inputs: [],
+        name: 'voteDuration',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'voterCount',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+    ],
+  },
+  {
     name: 'LM_PC_RecurringPayments_v1',
     description:
       'Facilitates the creation, management, and execution of scheduled recurring payments within the Inverter Network, allowing for systematic and timed financial commitments or subscriptions.',
@@ -6956,7 +7592,8 @@ export const data = [
             {
               name: 'decimals',
               type: 'uint8',
-              description: 'The decimals used within the issuance token',
+              description:
+                'The decimals used within the issuance token ( should be bigger or equal to 7 and bigger or equel to the collateral token decimals )',
             },
             {
               name: 'maxSupply',
@@ -7016,23 +7653,21 @@ export const data = [
                 'The indicator used for enabling/disabling the selling functionalties on deployment',
             },
             {
-              name: 'initialTokenSupply',
+              name: 'initialIssuanceSupply',
               type: 'uint256',
               description: 'The initial virtual issuance token supply',
-              tags: ['decimals:params:exact:decimals'],
             },
             {
               name: 'initialCollateralSupply',
               type: 'uint256',
               description: 'The initial virtual collateral token supply',
-              tags: ['decimals:params:indirect:acceptedToken'],
             },
           ],
           name: 'bondingCurveParams',
           type: 'tuple',
         },
         {
-          name: 'acceptedToken',
+          name: 'collateralToken',
           type: 'address',
           description:
             'The address of the token that will be deposited to the funding manager',
@@ -9467,7 +10102,8 @@ export const data = [
             {
               name: 'decimals',
               type: 'uint8',
-              description: 'The decimals used within the issuance token',
+              description:
+                'The decimals used within the issuance token ( should be bigger or equal to 7 and bigger or equel to the collateral token decimals )',
             },
             {
               name: 'maxSupply',
@@ -9527,23 +10163,21 @@ export const data = [
                 'The indicator used for enabling/disabling the selling functionalties on deployment',
             },
             {
-              name: 'initialTokenSupply',
+              name: 'initialIssuanceSupply',
               type: 'uint256',
               description: 'The initial virtual issuance token supply',
-              tags: ['decimals:params:exact:decimals'],
             },
             {
               name: 'initialCollateralSupply',
               type: 'uint256',
               description: 'The initial virtual collateral token supply',
-              tags: ['decimals:params:indirect:acceptedToken'],
             },
           ],
           name: 'bondingCurveParams',
           type: 'tuple',
         },
         {
-          name: 'acceptedToken',
+          name: 'collateralToken',
           type: 'address',
           description:
             'The address of the token that will be deposited to the funding manager',
@@ -12757,642 +13391,6 @@ export const data = [
         type: 'function',
         description:
           'see all active payment orders for a paymentClient associated with a particular paymentReceiver',
-      },
-    ],
-  },
-  {
-    name: 'AUT_EXT_VotingRoles_v1',
-    description:
-      'Facilitates voting and motion management within the Inverter Network, allowing designated voters to participate in governance through proposals, voting, and execution of decisions.',
-    moduleType: 'authorizer',
-    deploymentInputs: {
-      configData: [
-        {
-          name: 'voters',
-          type: 'address[]',
-          description: 'An array of addresses which are the eligible voters.',
-        },
-        {
-          name: 'threshold',
-          type: 'uint256',
-          description:
-            'The amount of voters that are needed for a vote to pass.',
-        },
-        {
-          name: 'voteDuration',
-          type: 'uint256',
-          description:
-            'The duration of a vote. Needs to be more than 1 day but less than 2 weeks.',
-        },
-      ],
-    },
-    abi: [
-      { inputs: [], name: 'InvalidInitialization', type: 'error' },
-      {
-        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
-        name: 'Module_OrchestratorCallbackFailed',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'caller', type: 'address' },
-        ],
-        name: 'Module__CallerNotAuthorized',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
-      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
-      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__VotingRoleManager__AttemptedDoubleVote',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__VotingRoleManager__CallerNotVoter',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__VotingRoleManager__EmptyVoters',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__VotingRoleManager__InvalidMotionId',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__VotingRoleManager__InvalidSupport',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__VotingRoleManager__InvalidVoterAddress',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__VotingRoleManager__InvalidVotingDuration',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__VotingRoleManager__IsAlreadyVoter',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__VotingRoleManager__MotionAlreadyExecuted',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__VotingRoleManager__MotionInVotingPhase',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__VotingRoleManager__MotionVotingPhaseClosed',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__VotingRoleManager__ThresholdNotReached',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__VotingRoleManager__UnreachableThreshold',
-        type: 'error',
-      },
-      { inputs: [], name: 'NotInitializing', type: 'error' },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'uint64',
-            name: 'version',
-            type: 'uint64',
-          },
-        ],
-        name: 'Initialized',
-        type: 'event',
-        outputs: [],
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'parentOrchestrator',
-            type: 'address',
-            description:
-              'The address of the orchestrator the module is linked to.',
-          },
-          {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
-          },
-        ],
-        name: 'ModuleInitialized',
-        type: 'event',
-        outputs: [],
-        description: 'Module has been initialized.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'motionId',
-            type: 'uint256',
-            description: 'The motion ID.',
-          },
-        ],
-        name: 'MotionCreated',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a motion is created',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'uint256',
-            name: 'motionId',
-            type: 'uint256',
-            description: 'The motion ID.',
-          },
-        ],
-        name: 'MotionExecuted',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a motion is executed.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'oldThreshold',
-            type: 'uint256',
-            description: 'The old threshold.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'newThreshold',
-            type: 'uint256',
-            description: 'The new threshold.',
-          },
-        ],
-        name: 'ThresholdUpdated',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when the required threshold changes.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'oldVotingDuration',
-            type: 'uint256',
-            description: 'The old voting duration.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'newVotingDuration',
-            type: 'uint256',
-            description: 'The new voting duration.',
-          },
-        ],
-        name: 'VoteDurationUpdated',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when the voting duration changes.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'who',
-            type: 'address',
-            description: 'The added address.',
-          },
-        ],
-        name: 'VoterAdded',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a new voter address gets added.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'who',
-            type: 'address',
-            description: 'The removed address.',
-          },
-        ],
-        name: 'VoterRemoved',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a voter address gets removed.',
-      },
-      {
-        inputs: [],
-        name: 'MAX_VOTING_DURATION',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'MIN_VOTING_DURATION',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [{ internalType: 'address', name: 'who', type: 'address' }],
-        name: 'addVoter',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'uint256', name: 'motionId', type: 'uint256' },
-          { internalType: 'uint8', name: 'support', type: 'uint8' },
-        ],
-        name: 'castVote',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'target', type: 'address' },
-          { internalType: 'bytes', name: 'action', type: 'bytes' },
-        ],
-        name: 'createMotion',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'uint256', name: 'motionId', type: 'uint256' },
-        ],
-        name: 'executeMotion',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'uint256', name: '_ID', type: 'uint256' },
-          { internalType: 'address', name: 'voter', type: 'address' },
-        ],
-        name: 'getReceipt',
-        outputs: [
-          {
-            components: [
-              { internalType: 'bool', name: 'hasVoted', type: 'bool' },
-              { internalType: 'uint8', name: 'support', type: 'uint8' },
-            ],
-            internalType: 'struct IAUT_EXT_VotingRoles_v1.Receipt',
-            name: '_0',
-            type: 'tuple',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
-        ],
-        name: 'grantModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
-        ],
-        name: 'grantModuleRoleBatched',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'identifier',
-        outputs: [
-          {
-            internalType: 'bytes32',
-            name: '_0',
-            type: 'bytes32',
-            description: "The module's identifier.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's identifier.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IOrchestrator_v1',
-            name: 'orchestrator_',
-            type: 'address',
-          },
-          {
-            components: [
-              {
-                internalType: 'uint256',
-                name: 'majorVersion',
-                type: 'uint256',
-              },
-              {
-                internalType: 'uint256',
-                name: 'minorVersion',
-                type: 'uint256',
-              },
-              { internalType: 'string', name: 'url', type: 'string' },
-              { internalType: 'string', name: 'title', type: 'string' },
-            ],
-            internalType: 'struct IModule_v1.Metadata',
-            name: 'metadata',
-            type: 'tuple',
-            description: "The module's metadata.",
-          },
-          {
-            internalType: 'bytes',
-            name: 'configData',
-            type: 'bytes',
-            description:
-              'Variable config data for specific module implementations.',
-          },
-        ],
-        name: 'init',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: "The module's initializer function.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'forwarder',
-            type: 'address',
-            description: 'The contract address to be verified.',
-          },
-        ],
-        name: 'isTrustedForwarder',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
-      },
-      {
-        inputs: [{ internalType: 'address', name: '', type: 'address' }],
-        name: 'isVoter',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'motionCount',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-        name: 'motions',
-        outputs: [
-          { internalType: 'address', name: 'target', type: 'address' },
-          { internalType: 'bytes', name: 'action', type: 'bytes' },
-          { internalType: 'uint256', name: 'startTimestamp', type: 'uint256' },
-          { internalType: 'uint256', name: 'endTimestamp', type: 'uint256' },
-          {
-            internalType: 'uint256',
-            name: 'requiredThreshold',
-            type: 'uint256',
-          },
-          { internalType: 'uint256', name: 'forVotes', type: 'uint256' },
-          { internalType: 'uint256', name: 'againstVotes', type: 'uint256' },
-          { internalType: 'uint256', name: 'abstainVotes', type: 'uint256' },
-          { internalType: 'uint256', name: 'executedAt', type: 'uint256' },
-          { internalType: 'bool', name: 'executionResult', type: 'bool' },
-          { internalType: 'bytes', name: 'executionReturnData', type: 'bytes' },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'orchestrator',
-        outputs: [
-          {
-            internalType: 'contract IOrchestrator_v1',
-            name: '_0',
-            type: 'address',
-            description: "The module's orchestrator.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
-      },
-      {
-        inputs: [{ internalType: 'address', name: 'who', type: 'address' }],
-        name: 'removeVoter',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
-        ],
-        name: 'revokeModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
-        ],
-        name: 'revokeModuleRoleBatched',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'uint256', name: 'newThreshold', type: 'uint256' },
-        ],
-        name: 'setThreshold',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'uint256', name: 'newVoteDuration', type: 'uint256' },
-        ],
-        name: 'setVotingDuration',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
-        ],
-        name: 'supportsInterface',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'threshold',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'title',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's title.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's title.",
-      },
-      {
-        inputs: [],
-        name: 'trustedForwarder',
-        outputs: [
-          {
-            internalType: 'address',
-            name: '_0',
-            type: 'address',
-            description: 'address The trusted forwarder',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the trusted forwarder',
-      },
-      {
-        inputs: [],
-        name: 'url',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's URL.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's URL.",
-      },
-      {
-        inputs: [],
-        name: 'version',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            description: "The module's major version.",
-          },
-          {
-            internalType: 'uint256',
-            name: '_1',
-            type: 'uint256',
-            description: "The module's minor version.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's version.",
-      },
-      {
-        inputs: [],
-        name: 'voteDuration',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'voterCount',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
       },
     ],
   },
