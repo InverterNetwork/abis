@@ -8649,6 +8649,7 @@ export const data = [
             internalType: 'uint256',
             name: '_0',
             type: 'uint256',
+            tags: ['decimals'],
             description: 'uint The static price for buying the issuance token',
           },
         ],
@@ -8665,6 +8666,7 @@ export const data = [
             internalType: 'uint256',
             name: '_0',
             type: 'uint256',
+            tags: ['decimals:contract:indirect:getIssuanceToken'],
             description: 'uint The static price for selling the issuance token',
           },
         ],
@@ -8848,7 +8850,14 @@ export const data = [
       {
         inputs: [],
         name: 'projectCollateralFeeCollected',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
@@ -11149,6 +11158,7 @@ export const data = [
             internalType: 'uint256',
             name: '_0',
             type: 'uint256',
+            tags: ['decimals'],
             description: 'uint The static price for buying the issuance token',
           },
         ],
@@ -11165,6 +11175,7 @@ export const data = [
             internalType: 'uint256',
             name: '_0',
             type: 'uint256',
+            tags: ['decimals:contract:indirect:getIssuanceToken'],
             description: 'uint The static price for selling the issuance token',
           },
         ],
@@ -11359,7 +11370,14 @@ export const data = [
       {
         inputs: [],
         name: 'projectCollateralFeeCollected',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
