@@ -1,7 +1,7 @@
 {
   "name": "@inverter-network/abis",
   "homepage": "https://github.com/InverterNetwork/abis",
-  "version": "0.1.5",
+  "version": "0.1.6-alpha.0",
   "description": "INVERTER typescript ABIs",
   "author": "InverterNetwork <github@InverterNetwork>",
   "license": "LGPL-3.0",
