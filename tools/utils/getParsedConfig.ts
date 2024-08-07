@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { Config } from '../types'
+import type { Config } from '../types'
 
 export function getConfigPath(itemPath: string) {
   return itemPath.replace('.json', '_config.json')

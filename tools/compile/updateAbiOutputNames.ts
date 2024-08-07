@@ -1,5 +1,5 @@
-import { Abi } from 'abitype'
-import { AbiMemberMetas } from '../types'
+import type { Abi } from 'abitype'
+import type { AbiMemberMetas } from '../types'
 
 export default function (abi: Abi, abiMemberMetas: AbiMemberMetas) {
   // 1- Itterate over the member metas

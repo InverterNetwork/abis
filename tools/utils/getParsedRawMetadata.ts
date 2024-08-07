@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { Out, ParsedRawMetadata } from '../types'
+import type { Out, ParsedRawMetadata } from '../types'
 
 export default function (itemPath: string) {
   // 1- Parse the file content of the JSON file

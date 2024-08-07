@@ -1,4 +1,4 @@
-import {
+import type {
   AbiConstructor,
   AbiError,
   AbiEvent,
@@ -10,7 +10,7 @@ import {
   SolidityTuple,
   SolidityArrayWithTuple,
 } from 'abitype'
-import { Tag } from './base'
+import type { Tag } from './base'
 
 type ExtendedAbiParameterBase = {
   name?: string

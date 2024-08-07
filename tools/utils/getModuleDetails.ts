@@ -1,5 +1,5 @@
-import { ModuleType } from '../../src/'
-import { ParsedRawMetadata } from '../types'
+import type { ModuleType } from '../../src/'
+import type { ParsedRawMetadata } from '../types'
 
 export default function (
   userdocNotice: ParsedRawMetadata['output']['userdoc']['notice'],

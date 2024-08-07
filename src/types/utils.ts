@@ -1,4 +1,4 @@
-import { BaseData, ModuleName, ModuleType } from './data'
+import type { BaseData, ModuleName, ModuleType } from './data'
 
 export type GetModuleNameByType<T extends ModuleType> = Extract<
   BaseData[number],

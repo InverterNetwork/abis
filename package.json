@@ -59,9 +59,6 @@
       "bun prettier:fix"
     ]
   },
-  "dependencies": {
-    "type-fest-4": "npm:type-fest@^4"
-  },
   "devDependencies": {
     "@commitlint/cli": "^18",
     "@commitlint/config-conventional": "^18",

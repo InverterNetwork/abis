@@ -1,4 +1,5 @@
-import { GetModuleData, ModuleName, data } from '..'
+import { data } from '..'
+import type { GetModuleData, ModuleName } from '..'
 
 export function getModuleData<N extends ModuleName>(name: N) {
   const moduleData = data.find(

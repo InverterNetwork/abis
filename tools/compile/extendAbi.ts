@@ -1,6 +1,6 @@
-import { AbiMemberMeta, AbiMemberMetas } from '../types'
-import { Abi, AbiParameter } from 'abitype'
-import { ExtendedAbiParameter, ExtendedAbi } from '../../src'
+import type { AbiMemberMeta, AbiMemberMetas } from '../types'
+import type { Abi, AbiParameter } from 'abitype'
+import type { ExtendedAbiParameter, ExtendedAbi } from '../../src'
 
 export default function (
   abi: Abi,

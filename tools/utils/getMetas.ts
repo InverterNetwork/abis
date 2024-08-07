@@ -1,4 +1,4 @@
-import { Abi, AbiEventParameter, AbiParameter } from 'abitype'
+import type { Abi, AbiEventParameter, AbiParameter } from 'abitype'
 
 const eventNames = (abi: Abi): string[] =>
   abi
@@ -6,6 +6,8 @@ const eventNames = (abi: Abi): string[] =>
       if ('type' in entry && entry.type === 'event') {
         return entry.name
       }
+
+      return
     })
     .filter((name): name is string => !!name)
 
@@ -15,6 +17,8 @@ const methodNames = (abi: Abi) =>
       if ('type' in entry && entry.type === 'function') {
         return entry.name
       }
+
+      return
     })
     .filter((name): name is string => !!name)
 
@@ -30,6 +34,8 @@ const returnNames = (abi: Abi) => {
       if ('name' in entry) {
         return memberNames.includes(entry.name)
       }
+
+      return
     })
   // 3- Iterate over the filtered entries
   for (const entry of memberEntries) {
@@ -90,5 +96,7 @@ const getFlatParameterNames = (
       if (['tuple', 'tuple[]'].includes(param.type) && 'components' in param)
         return [...getFlatParameterNames(param.components), param.name]
       else if ('name' in param) return param.name
+
+      return
     })
     .filter((name): name is string => !!name)

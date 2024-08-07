@@ -3,9 +3,10 @@ import write from './write'
 import updateAbiOutputNames from './updateAbiOutputNames'
 import readPath from '../utils/readPath'
 import getParsedRawMetadata from '../utils/getParsedRawMetadata'
-import { Compiled } from '../types'
 import constructAbiMeta from '../utils/constructAbiMeta'
 import extendAbi from './extendAbi'
+
+import type { Compiled } from '../types'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files

@@ -1,4 +1,4 @@
-export { default as Out } from './out'
+export type { default as Out } from './out'
 export * from './config'
 export * from './out'
 export * from './meta'

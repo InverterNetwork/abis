@@ -1,6 +1,5 @@
-import { ExtendedAbi } from '../../src/types/extendedAbi'
-import { ModuleType } from '../../src'
-import { DeploymentInputs } from './'
+import type { ModuleType, ExtendedAbi } from '../../src'
+import type { DeploymentInputs } from './'
 
 export type Compiled = {
   name: string

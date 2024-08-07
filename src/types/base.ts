@@ -1,4 +1,4 @@
-import { ModuleType } from './data'
+import type { ModuleType } from './data'
 
 export type Tag =
   | 'approval'

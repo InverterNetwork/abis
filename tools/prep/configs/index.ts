@@ -4,10 +4,11 @@ import { isEqual, merge } from 'lodash'
 import getMetas from '../../utils/getMetas'
 import readPath from '../../utils/readPath'
 import write from './write'
-import { AbiMemberConfigs, Config, Tags } from '../../types'
 import getParsedRawMetadata from '../../utils/getParsedRawMetadata'
 import { getConfigPath } from '../../utils/getParsedConfig'
-import { Tag } from '../../../src'
+
+import type { AbiMemberConfigs, Config, Tags } from '../../types'
+import type { Tag } from '../../../src'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested JSON files

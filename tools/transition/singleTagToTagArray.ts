@@ -2,7 +2,8 @@ import path from 'path'
 import readPath from '../utils/readPath'
 import fs from 'fs'
 import write from '../prep/configs/write'
-import { Config, Tags } from '../types'
+
+import type { Config, Tags } from '../types'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files
