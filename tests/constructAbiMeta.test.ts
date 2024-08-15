@@ -11,7 +11,7 @@ const dirname = import.meta.dirname,
 
 describe('Constructed Abi Meta', () => {
   it('Should Log Abi Meta', async () => {
-    readPath(
+    await readPath(
       { startPath, extName: 'json', exclude: '_config' },
       (itemPath: string) => {
         // console.log('itemPath:', itemPath)

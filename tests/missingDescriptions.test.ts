@@ -12,10 +12,10 @@ const dirname = import.meta.dirname,
   startPath = path.join(dirname, '../deployments/build')
 
 describe('#Log Missing Descriptons', () => {
-  it('Should Log the accumulated', () => {
+  it('Should Log the accumulated', async () => {
     const acc = new Map<string, any>()
 
-    readPath(
+    await readPath(
       { startPath, extName: 'json', exclude: '_config' },
       (itemPath: string) => {
         // get the parsed metadata

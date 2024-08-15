@@ -4,8 +4,8 @@ import fs from 'fs'
 
 const dirname = import.meta.dirname
 
-export default function clean() {
-  readPath(
+export default async function clean() {
+  await readPath(
     {
       startPath: path.join(dirname, '../../deployments/build'),
       extName: 'json',

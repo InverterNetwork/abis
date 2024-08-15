@@ -8,10 +8,10 @@ import fs from 'fs'
 // The path of the directory containing nested JSON files
 const startPath = path.join(__dirname, '../../deployments/build')
 
-export default function getRedundantAbiConfigMembers() {
+export default async function getRedundantAbiConfigMembers() {
   const buildAbiMemberNames: Record<string, string[]> = {}
 
-  readPath(
+  await readPath(
     { startPath, extName: 'json', exclude: '_config' },
     (itemPath: string) => {
       const abiName = path.basename(itemPath, '.json'),
@@ -27,7 +27,7 @@ export default function getRedundantAbiConfigMembers() {
   let totalDiff = 0
   const redundantConfigMemberNames: Record<string, string[]> = {}
 
-  readPath(
+  await readPath(
     { startPath, extName: 'json', include: '_config' },
     (itemPath: string) => {
       const abiName = path.basename(itemPath, '.json').replace('_config', '')
@@ -41,7 +41,7 @@ export default function getRedundantAbiConfigMembers() {
       const configAbiMemberNames = Object.keys(existingConfig.abiMembers)
 
       const redundantMemberNames = configAbiMemberNames.filter(
-        (name) => !buildAbiMemberNames[abiName].includes(name)
+        (name) => !buildAbiMemberNames?.[abiName]?.includes?.(name)
       )
 
       if (redundantMemberNames.length) {

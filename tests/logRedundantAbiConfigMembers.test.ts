@@ -5,7 +5,7 @@ import getRedundantAbiConfigMembers from '../tools/utils/getRedundantAbiConfigMe
 describe('#Log_Redundant_Abi_Config_Members', () => {
   it('Log diff of redundant abi config members', async () => {
     const { redundantConfigMemberNames, totalDiff } =
-      getRedundantAbiConfigMembers()
+      await getRedundantAbiConfigMembers()
 
     if (totalDiff)
       writeLog({

@@ -12,7 +12,7 @@ const dirname = import.meta.dirname,
 
 describe('Member Desc Objs', () => {
   it('Should Log Member Descs', async () => {
-    readPath(
+    await readPath(
       { startPath, extName: 'json', exclude: '_config' },
       (itemPath: string) => {
         const parsed = getParsedRawMetadata(itemPath)

@@ -10,7 +10,7 @@ const startPath = path.join(__dirname, '../../deployments/build')
 
 export default async function redundantConfigs() {
   const { redundantConfigMemberNames, totalDiff } =
-    getRedundantAbiConfigMembers()
+    await getRedundantAbiConfigMembers()
 
   if (!totalDiff) {
     console.log('No redundant config members found')
@@ -44,16 +44,14 @@ export default async function redundantConfigs() {
           if (answer.toLowerCase() === 'y') {
             delete existingConfig.abiMembers[key]
             console.log(`Deleted member "${chalk.red(key)}"`)
-            fs.writeFileSync(
-              itemPath,
-              JSON.stringify(existingConfig, null, 2),
-              'utf8'
-            )
+            fs.writeFileSync(itemPath, JSON.stringify(existingConfig), 'utf8')
           } else {
             console.log(`Skipped deletion of member "${chalk.yellow(key)}"`)
           }
         }
       }
+
+      return
     }
   )
 
