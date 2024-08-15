@@ -7,13 +7,12 @@ import readPath from '../tools/utils/readPath'
 import getParsedConfig from '../tools/utils/getParsedConfig'
 import getMetas from '../tools/utils/getMetas'
 
-const dirname = import.meta.dirname,
-  // The path of the directory containing nested the JSON files
-  startPath = path.join(dirname, '../deployments/build')
+const startPath = path.join(__dirname, '../deployments/build')
+// The path of the directory containing nested JSON files
 
-describe('#Log Missing Descriptons', () => {
+describe('#Log Missing Descriptions', () => {
   it('Should Log the accumulated', async () => {
-    const acc = new Map<string, any>()
+    const acc: Record<string, Record<string, string[]>> = {}
 
     await readPath(
       { startPath, extName: 'json', exclude: '_config' },
@@ -28,62 +27,45 @@ describe('#Log Missing Descriptons', () => {
           config.abiMembers
         )
         // get the name of the module from the path
-        const moduleName = itemPath.split('/v1.0')[0].split('/').pop()!
+        const moduleName = path.basename(itemPath, '.json')
         // get the parameter names from the abi
         const paramNames = getMetas.parameterNames(parsed.output.abi)
-        // 0. Iterate over the parameter entries key being the member name and value being the parameter names
-        const data = Object.entries(paramNames)
-          .flatMap(([memberName, paramNames]) => {
-            // 1. itterate over the parameter names and check if the descriptions are missing
-            return paramNames.map((paramName) => {
-              // 2. Initialize the missing descriptions object
-              const acc = {} as any
-              // 3. Initialize the member name object
-              if (!acc[memberName]) acc[memberName] = {}
-              // 4. if descriptions are emoty for the member name return no descriptions data string
-              if (!descriptions[memberName])
-                return (acc[memberName] = 'no descriptions data')
-              // 5. if the member name has no self description add missing to the self description
-              if (
-                !descriptions[memberName].some(
-                  ({ name }) => name === 'selfDescription'
-                )
+        // Iterate over the parameter entries, key being the member name and value being the parameter names
+
+        const data = Object.entries(paramNames).reduce(
+          (acc, [memberName, paramNames]) => {
+            const missingDescriptions: string[] = []
+
+            if (
+              !!descriptions[memberName] &&
+              !descriptions[memberName].find(
+                (i) => i.name === 'selfDescription'
               )
-                acc[memberName]['selfDescription'] = 'missing'
-              // 6. Check if the parameter name is missing in the descriptions
-              if (
-                !descriptions[memberName].some(({ name }) => name === paramName)
-              ) {
-                // 7. Add the missing parameter name to the member name
-                acc[memberName][paramName] = 'missing'
-              }
-              // 8. Remove empty objects
-              if (Object.keys(acc[memberName]).length === 0) return null
-              return acc
-            })
-          })
-          .filter((x): x is NonNullable<typeof x> => x !== null)
+            )
+              missingDescriptions.push('selfDescription')
 
-        if (data.length === 0) return
+            for (const paramName of paramNames) {
+              if (!descriptions[memberName]) continue
 
-        const dataObj = data.reduce((acc, x) => {
-          const key = Object.keys(x)[0]
-          acc[key] = x[key]
-          return acc
-        }, {})
+              if (!descriptions[memberName].find((i) => i.name === paramName))
+                missingDescriptions.push(paramName)
+            }
 
-        acc.set(moduleName, dataObj)
+            if (!missingDescriptions.length) return acc
+
+            acc[memberName] = missingDescriptions
+
+            return acc
+          },
+          {} as Record<string, string[]>
+        )
+
+        acc[moduleName] = data
       }
     )
 
-    // convert the map to an object
-    const obj = [...acc.entries()].reduce((acc, [key, value]) => {
-      ;(acc as any)[key] = value
-      return acc
-    }, {})
-
     // write the log
-    writeLog({ content: obj, label: 'missingDescriptions' })
-    expect(obj).toBeTruthy()
+    writeLog({ content: acc, label: 'missingDescriptions' })
+    expect(acc).toBeTruthy()
   })
 })

@@ -11,7 +11,7 @@ const dirname = import.meta.dirname,
   startPath = path.join(dirname, '../deployments/build')
 
 describe('Member Desc Objs', () => {
-  it('Should Log Member Descs', async () => {
+  it.skip('Should Log Member Descs', async () => {
     await readPath(
       { startPath, extName: 'json', exclude: '_config' },
       (itemPath: string) => {

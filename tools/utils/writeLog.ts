@@ -3,6 +3,8 @@ import path from 'path'
 
 const logsPath = path.join(__dirname, '../../logs')
 
+console.log(logsPath)
+
 export default function writeLog({
   content,
   label,
