@@ -220,6 +220,410 @@ export const data = [
     ],
   },
   {
+    name: 'ERC20Issuance_v1',
+    description:
+      'This contract creates an {ERC20} token with a supply cap and a whitelist-gated functionality to mint and burn tokens.',
+    moduleType: 'external',
+    deploymentInputs: { configData: [] },
+    abi: [
+      {
+        inputs: [
+          { internalType: 'string', name: 'name_', type: 'string' },
+          { internalType: 'string', name: 'symbol_', type: 'string' },
+          { internalType: 'uint8', name: 'decimals_', type: 'uint8' },
+          { internalType: 'uint256', name: 'maxSupply_', type: 'uint256' },
+          { internalType: 'address', name: 'initialAdmin_', type: 'address' },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'constructor',
+      },
+      {
+        inputs: [
+          { internalType: 'uint256', name: 'increasedSupply', type: 'uint256' },
+          { internalType: 'uint256', name: 'cap', type: 'uint256' },
+        ],
+        name: 'ERC20ExceededCap',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'spender', type: 'address' },
+          { internalType: 'uint256', name: 'allowance', type: 'uint256' },
+          { internalType: 'uint256', name: 'needed', type: 'uint256' },
+        ],
+        name: 'ERC20InsufficientAllowance',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'sender', type: 'address' },
+          { internalType: 'uint256', name: 'balance', type: 'uint256' },
+          { internalType: 'uint256', name: 'needed', type: 'uint256' },
+        ],
+        name: 'ERC20InsufficientBalance',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'approver', type: 'address' },
+        ],
+        name: 'ERC20InvalidApprover',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'uint256', name: 'cap', type: 'uint256' }],
+        name: 'ERC20InvalidCap',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'receiver', type: 'address' },
+        ],
+        name: 'ERC20InvalidReceiver',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'sender', type: 'address' }],
+        name: 'ERC20InvalidSender',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'spender', type: 'address' }],
+        name: 'ERC20InvalidSpender',
+        type: 'error',
+      },
+      { inputs: [], name: 'IERC20Issuance__CallerIsNotMinter', type: 'error' },
+      {
+        inputs: [{ internalType: 'address', name: 'owner', type: 'address' }],
+        name: 'OwnableInvalidOwner',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'OwnableUnauthorizedAccount',
+        type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'owner',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'spender',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'value',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'Approval',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'minter',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'bool',
+            name: 'allowed',
+            type: 'bool',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'MinterSet',
+        type: 'event',
+        outputs: [],
+        description: 'Emitted when the minter is set.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'previousOwner',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'newOwner',
+            type: 'address',
+          },
+        ],
+        name: 'OwnershipTransferred',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'from',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'value',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'Transfer',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'owner', type: 'address' },
+          { internalType: 'address', name: 'spender', type: 'address' },
+        ],
+        name: 'allowance',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'address', name: '', type: 'address' }],
+        name: 'allowedMinters',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'spender', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'value',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'approve',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'balanceOf',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: '_from',
+            type: 'address',
+            description: 'The address of the owner or approved address.',
+          },
+          {
+            internalType: 'uint256',
+            name: '_amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'The amount of tokens to burn.',
+          },
+        ],
+        name: 'burn',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Burns tokens.',
+      },
+      {
+        inputs: [],
+        name: 'cap',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'decimals',
+        outputs: [{ internalType: 'uint8', name: '_0', type: 'uint8' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: '_to',
+            type: 'address',
+            description: 'The address of the recipient.',
+          },
+          {
+            internalType: 'uint256',
+            name: '_amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'The amount of tokens to mint.',
+          },
+        ],
+        name: 'mint',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Mints new tokens.',
+      },
+      {
+        inputs: [],
+        name: 'name',
+        outputs: [{ internalType: 'string', name: '_0', type: 'string' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'owner',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'renounceOwnership',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: '_minter',
+            type: 'address',
+            description: 'The address of the minter.',
+          },
+          {
+            internalType: 'bool',
+            name: '_allowed',
+            type: 'bool',
+            tags: ['decimals'],
+            description: 'If the address is allowed to mint or not.',
+          },
+        ],
+        name: 'setMinter',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Sets the minting rights of an address.',
+      },
+      {
+        inputs: [],
+        name: 'symbol',
+        outputs: [{ internalType: 'string', name: '_0', type: 'string' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'totalSupply',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'to', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'value',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'transfer',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'from', type: 'address' },
+          { internalType: 'address', name: 'to', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'value',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'transferFrom',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'newOwner', type: 'address' },
+        ],
+        name: 'transferOwnership',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+    ],
+  },
+  {
     name: 'TransactionForwarder_v1',
     description:
       'This contract enables users to interact with smart contracts indirectly through a trusted forwarder. It supports meta transactions, allowing transactions to be sent by one party but signed and paid for by another. It also handles batch transactions (multi-call), facilitating complex, multi-step interactions within a single transaction.',
