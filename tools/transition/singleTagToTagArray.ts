@@ -2,15 +2,16 @@ import path from 'path'
 import readPath from '../utils/readPath'
 import fs from 'fs'
 import write from '../prep/configs/write'
-import { Config, Tags } from '../types'
+
+import type { Config, Tags } from '../types'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files
   startPath = path.join(dirname, '../../deployments/build')
 
-export default function main() {
+export default async function main() {
   // 1- Read the directory recursively
-  readPath(
+  await readPath(
     { startPath, extName: 'json', include: '_config' },
     (itemPath: string) => {
       // 3- If the configPath file exists, skip the file

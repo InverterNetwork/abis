@@ -1,14 +1,66 @@
 {
   "name": "@inverter-network/abis",
-  "version": "0.1.0",
-  "author": "InverterNetwork <github@InverterNetwork>",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/InverterNetwork/abis.git"
+  "description": "INVERTER typescript ABIs",
+  "version": "0.2.0-alpha.2",
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "sideEffects": false,
+  "directories": {
+    "tool": "tools",
+    "test": "tests"
   },
-  "module": "./dist/index.js",
-  "dependencies": {
-    "type-fest-4": "npm:type-fest@^4"
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "default": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "prep:configs": "bun tools/prep/configs/index.ts && prettier --write ./deployments > /dev/null 2>&1",
+    "clean:configs": "bun tools/clean/configs.ts",
+    "clean:redundant": "bun tools/clean/redundantConfigs.ts",
+    "check:missing:descriptions": "bun tools/check/missingDescriptions.ts",
+    "compile": "bun tools/compile/index.ts && prettier --write ./src/data.ts",
+    "watch": "tsc -w -p ./tsconfig.json",
+    "build": "bun clean && bun build:cjs && bun build:esm && bun build:types",
+    "build:cjs": "tsc --project ./tsconfig.build.json --module commonjs --outDir ./dist/cjs --removeComments --verbatimModuleSyntax false && printf '{\"type\":\"commonjs\"}' > ./dist/cjs/package.json",
+    "build:esm": "tsc --project ./tsconfig.build.json --module ESNext --outDir ./dist/esm && printf '{\"type\": \"module\",\"sideEffects\":false}' > ./dist/esm/package.json",
+    "build:types": "tsc --project ./tsconfig.build.json --module esnext --declarationDir ./dist/types --emitDeclarationOnly --declaration --declarationMap",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
+    "postinstall": "husky || true",
+    "prepack": "pinst --disable",
+    "package": "bun run build && npm pack",
+    "postpack": "pinst --enable",
+    "pre-commit": "lint-staged",
+    "pre-push": "bun run build",
+    "lint:fix": "eslint --ext .tsx --ext .ts ./src --fix",
+    "prettier:fix": "prettier --write ./src/.",
+    "release": "standard-version -a",
+    "release:alpha": "standard-version -a --prerelease alpha --skip.changelog",
+    "release:beta": "standard-version -a --prerelease beta --skip.changelog",
+    "release:pub": "git push --follow-tags origin main",
+    "trans:tags": "bun tools/transition/singleTagToTagArray.ts && prettier --write ./deployments > /dev/null 2>&1",
+    "cp:dist-sdk": "bun compile && bun run build && cp -r dist ../sdk/node_modules/@inverter-network/abis/ && cp package.json ../sdk/node_modules/@inverter-network/abis/"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": [
+      "bun lint:fix",
+      "bun prettier:fix"
+    ]
+  },
+  "peerDependencies": {
+    "eslint": "^8",
+    "typescript": "^5"
   },
   "devDependencies": {
     "@commitlint/cli": "^18",
@@ -26,21 +78,15 @@
     "prettier": "^3",
     "standard-version": "^9"
   },
-  "peerDependencies": {
-    "eslint": "^8",
-    "typescript": "^5"
-  },
-  "exports": {
-    "import": "./dist/index.js"
-  },
+  "license": "LGPL-3.0",
+  "homepage": "https://github.com/InverterNetwork/abis",
+  "repository": "inverter-network/abis",
+  "authors": [
+    "mguleryuz"
+  ],
   "bugs": {
     "url": "https://github.com/InverterNetwork/abis"
   },
-  "description": "INVERTER typescript ABIs",
-  "files": [
-    "dist"
-  ],
-  "homepage": "https://github.com/InverterNetwork/abis",
   "keywords": [
     "InverterNetwork",
     "npm",
@@ -50,38 +96,5 @@
     "solidity",
     "evm",
     "abis"
-  ],
-  "license": "LGPL-3.0",
-  "lint-staged": {
-    "src/**/*.{ts,tsx}": [
-      "bun lint:fix",
-      "bun prettier:fix"
-    ]
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-    "prep:configs": "bun tools/prep/configs/index.ts && prettier --write ./deployments > /dev/null 2>&1",
-    "clean:configs": "bun tools/clean/configs.ts",
-    "compile": "bun tools/compile/index.ts && prettier --write ./src/data.ts",
-    "watch": "tsc -w -p ./tsconfig.dev.json",
-    "build": "bun clean && tsc -p ./tsconfig.json",
-    "clean": "rm -rf dist tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
-    "postinstall": "husky",
-    "prepack": "pinst --disable",
-    "package": "bun run build && npm pack",
-    "postpack": "pinst --enable",
-    "pre-commit": "lint-staged",
-    "pre-push": "bun run build",
-    "lint:fix": "eslint --ext .tsx --ext .ts ./src --fix",
-    "prettier:fix": "prettier --write ./src/.",
-    "release": "standard-version -a",
-    "release:alpha": "standard-version -a --prerelease alpha --skip.changelog",
-    "release:beta": "standard-version -a --prerelease beta --skip.changelog",
-    "release:pub": "git push --follow-tags origin main",
-    "trans:tags": "bun tools/transition/singleTagToTagArray.ts && prettier --write ./deployments > /dev/null 2>&1",
-    "cp:dist-sdk": "bun compile && bun run build && cp -r dist ../sdk/node_modules/@inverter-network/abis/"
-  },
-  "types": "./dist/index.d.ts"
+  ]
 }

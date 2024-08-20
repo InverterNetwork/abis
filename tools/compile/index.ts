@@ -3,9 +3,10 @@ import write from './write'
 import updateAbiOutputNames from './updateAbiOutputNames'
 import readPath from '../utils/readPath'
 import getParsedRawMetadata from '../utils/getParsedRawMetadata'
-import { Compiled } from '../types'
 import constructAbiMeta from '../utils/constructAbiMeta'
 import extendAbi from './extendAbi'
+
+import type { Compiled } from '../types'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files
@@ -13,12 +14,12 @@ const dirname = import.meta.dirname,
   // The path of the file to be written in to
   destPath = path.join(dirname, '../../src/data.ts')
 
-export default function compile() {
+export default async function compile() {
   // 1- Initialize the accumulated data
   const accumulated: Compiled = []
 
   // 2- Read the directory recursively
-  readPath(
+  await readPath(
     { startPath, extName: 'json', exclude: '_config' },
     (itemPath: string) => {
       // 3- Parse the raw metadata
@@ -52,4 +53,4 @@ export default function compile() {
   write(accumulated, destPath)
 }
 
-compile()
+await compile()

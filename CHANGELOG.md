@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.6](https://github.com/inverter-network/abis/compare/v0.1.6-alpha.1...v0.1.6) (2024-08-07)
+
+
+### Bug Fixes
+
+* universal pkg mngr ([56cdbd2](https://github.com/inverter-network/abis/commit/56cdbd2a57424e97ee86e3481ec0c4a9ad95c273))
+
+### [0.1.5](https://github.com/InverterNetwork/abis/compare/v0.1.4...v0.1.5) (2024-07-26)
+
+### [0.1.4](https://github.com/InverterNetwork/abis/compare/v0.1.3...v0.1.4) (2024-07-05)
+
+### [0.1.3](https://github.com/InverterNetwork/abis/compare/v0.1.2...v0.1.3) (2024-07-04)
+
+### [0.1.2](https://github.com/InverterNetwork/abis/compare/v0.1.1...v0.1.2) (2024-07-04)
+
+
+### Bug Fixes
+
+* bc decimal tags ([dabe271](https://github.com/InverterNetwork/abis/commit/dabe2719b6cd19a86771c46fb9071f193d95ccda))
+
+### [0.1.1](https://github.com/InverterNetwork/abis/compare/v0.1.0...v0.1.1) (2024-06-20)
+
 ## [0.1.0](https://github.com/InverterNetwork/abis/compare/v0.1.0-alpha.12...v0.1.0) (2024-06-11)
 
 ### [0.0.7](https://github.com/InverterNetwork/abis/compare/v0.0.7-alpha.3...v0.0.7) (2024-04-29)

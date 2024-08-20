@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { Compiled } from '../types'
+import type { Compiled } from '../types'
 
 export default function (data: Compiled, destPath: string) {
   const stringified = `export const data = ${JSON.stringify(data)} as const;\n`

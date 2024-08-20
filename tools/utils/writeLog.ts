@@ -1,9 +1,9 @@
 import fs from 'fs'
 import path from 'path'
 
-const dirname = import.meta.dirname
+const logsPath = path.join(__dirname, '../../logs')
 
-const logsPath = path.join(dirname, '../logs')
+console.log(logsPath)
 
 export default function writeLog({
   content,

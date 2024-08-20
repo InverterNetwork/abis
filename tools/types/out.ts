@@ -1,4 +1,4 @@
-import { Abi } from 'abitype'
+import type { Abi } from 'abitype'
 
 type LinkReferences = Record<string, unknown>
 export type MethodIdentifiers = Record<

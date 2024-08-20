@@ -1,5 +1,4 @@
-import { DeploymentInputs, ParsedRawMetadata } from '../types'
-import { AbiMeta } from '../types/meta'
+import type { DeploymentInputs, ParsedRawMetadata, AbiMeta } from '../types'
 import getParsedConfig from './getParsedConfig'
 import getModuleDetails from './getModuleDetails'
 import getAbiMemberMetas from './getAbiMemberMetas'

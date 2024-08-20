@@ -220,17 +220,417 @@ export const data = [
     ],
   },
   {
+    name: 'ERC20Issuance_v1',
+    description:
+      'This contract creates an {ERC20} token with a supply cap and a whitelist-gated functionality to mint and burn tokens.',
+    moduleType: 'external',
+    deploymentInputs: { configData: [] },
+    abi: [
+      {
+        inputs: [
+          { internalType: 'string', name: 'name_', type: 'string' },
+          { internalType: 'string', name: 'symbol_', type: 'string' },
+          { internalType: 'uint8', name: 'decimals_', type: 'uint8' },
+          { internalType: 'uint256', name: 'maxSupply_', type: 'uint256' },
+          { internalType: 'address', name: 'initialAdmin_', type: 'address' },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'constructor',
+      },
+      {
+        inputs: [
+          { internalType: 'uint256', name: 'increasedSupply', type: 'uint256' },
+          { internalType: 'uint256', name: 'cap', type: 'uint256' },
+        ],
+        name: 'ERC20ExceededCap',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'spender', type: 'address' },
+          { internalType: 'uint256', name: 'allowance', type: 'uint256' },
+          { internalType: 'uint256', name: 'needed', type: 'uint256' },
+        ],
+        name: 'ERC20InsufficientAllowance',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'sender', type: 'address' },
+          { internalType: 'uint256', name: 'balance', type: 'uint256' },
+          { internalType: 'uint256', name: 'needed', type: 'uint256' },
+        ],
+        name: 'ERC20InsufficientBalance',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'approver', type: 'address' },
+        ],
+        name: 'ERC20InvalidApprover',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'uint256', name: 'cap', type: 'uint256' }],
+        name: 'ERC20InvalidCap',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'receiver', type: 'address' },
+        ],
+        name: 'ERC20InvalidReceiver',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'sender', type: 'address' }],
+        name: 'ERC20InvalidSender',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'spender', type: 'address' }],
+        name: 'ERC20InvalidSpender',
+        type: 'error',
+      },
+      { inputs: [], name: 'IERC20Issuance__CallerIsNotMinter', type: 'error' },
+      {
+        inputs: [{ internalType: 'address', name: 'owner', type: 'address' }],
+        name: 'OwnableInvalidOwner',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'OwnableUnauthorizedAccount',
+        type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'owner',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'spender',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'value',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'Approval',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'minter',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'bool',
+            name: 'allowed',
+            type: 'bool',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'MinterSet',
+        type: 'event',
+        outputs: [],
+        description: 'Emitted when the minter is set.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'previousOwner',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'newOwner',
+            type: 'address',
+          },
+        ],
+        name: 'OwnershipTransferred',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'from',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'value',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'Transfer',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'owner', type: 'address' },
+          { internalType: 'address', name: 'spender', type: 'address' },
+        ],
+        name: 'allowance',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'address', name: '', type: 'address' }],
+        name: 'allowedMinters',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'spender', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'value',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'approve',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'balanceOf',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: '_from',
+            type: 'address',
+            description: 'The address of the owner or approved address.',
+          },
+          {
+            internalType: 'uint256',
+            name: '_amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'The amount of tokens to burn.',
+          },
+        ],
+        name: 'burn',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Burns tokens.',
+      },
+      {
+        inputs: [],
+        name: 'cap',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'decimals',
+        outputs: [{ internalType: 'uint8', name: '_0', type: 'uint8' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: '_to',
+            type: 'address',
+            description: 'The address of the recipient.',
+          },
+          {
+            internalType: 'uint256',
+            name: '_amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'The amount of tokens to mint.',
+          },
+        ],
+        name: 'mint',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Mints new tokens.',
+      },
+      {
+        inputs: [],
+        name: 'name',
+        outputs: [{ internalType: 'string', name: '_0', type: 'string' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'owner',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'renounceOwnership',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: '_minter',
+            type: 'address',
+            description: 'The address of the minter.',
+          },
+          {
+            internalType: 'bool',
+            name: '_allowed',
+            type: 'bool',
+            tags: ['decimals'],
+            description: 'If the address is allowed to mint or not.',
+          },
+        ],
+        name: 'setMinter',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Sets the minting rights of an address.',
+      },
+      {
+        inputs: [],
+        name: 'symbol',
+        outputs: [{ internalType: 'string', name: '_0', type: 'string' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'totalSupply',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'to', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'value',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'transfer',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'from', type: 'address' },
+          { internalType: 'address', name: 'to', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'value',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'transferFrom',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'newOwner', type: 'address' },
+        ],
+        name: 'transferOwnership',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+    ],
+  },
+  {
     name: 'TransactionForwarder_v1',
     description:
       'This contract enables users to interact with smart contracts indirectly through a trusted forwarder. It supports meta transactions, allowing transactions to be sent by one party but signed and paid for by another. It also handles batch transactions (multi-call), facilitating complex, multi-step interactions within a single transaction.',
     moduleType: 'external',
     deploymentInputs: { configData: [] },
     abi: [
-      {
-        inputs: [{ internalType: 'string', name: 'name', type: 'string' }],
-        stateMutability: 'nonpayable',
-        type: 'constructor',
-      },
+      { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
       {
         inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
         name: 'AddressInsufficientBalance',
@@ -348,7 +748,7 @@ export const data = [
             internalType: 'struct ERC2771Forwarder.ForwardRequestData',
             name: 'req',
             type: 'tuple',
-            description: 'The ForwardRequest you want to get the digest from',
+            description: 'The ForwardRequest you want to get the digest from.',
           },
         ],
         name: 'createDigest',
@@ -358,12 +758,12 @@ export const data = [
             name: 'digest',
             type: 'bytes32',
             description:
-              'The digest needed to create a signature for the request',
+              'The digest needed to create a signature for the request.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Creates a digest for the given ForwardRequestData',
+        description: 'Creates a digest for the given `ForwardRequestData`.',
       },
       {
         inputs: [],
@@ -445,7 +845,7 @@ export const data = [
             name: 'calls',
             type: 'tuple[]',
             description:
-              'Array of call structs that should be executed in the multicall',
+              'Array of call structs that should be executed in the multicall.',
           },
         ],
         name: 'executeMulticall',
@@ -458,13 +858,13 @@ export const data = [
             internalType: 'struct ITransactionForwarder_v1.Result[]',
             name: 'results',
             type: 'tuple[]',
-            description: 'The return data of the calls that were executed',
+            description: 'The return data of the calls that were executed.',
           },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Enables the execution of multiple calls in a single transaction',
+          'Enables the execution of multiple calls in a single transaction.',
       },
       {
         inputs: [{ internalType: 'address', name: 'owner', type: 'address' }],
@@ -500,7 +900,7 @@ export const data = [
   {
     name: 'OrchestratorFactory_v1',
     description:
-      '{OrchestratorFactory_v1} facilitates the deployment of orchestrators and their associated modules for the Inverter Network, ensuring seamless creation and configuration of various components in a single transaction.',
+      '{OrchestratorFactory_v1} facilitates the deployment of {Orchestrator_v1}s and their associated modules for the Inverter Network, ensuring seamless creation and configuration of various components in a single transaction.',
     moduleType: 'factories',
     deploymentInputs: { configData: [] },
     abi: [
@@ -561,20 +961,45 @@ export const data = [
             internalType: 'uint256',
             name: 'orchestratorId',
             type: 'uint256',
-            description: 'The id of the orchestrator.',
+            description: 'The id of the {Orchestrator_v1}.',
           },
           {
             indexed: true,
             internalType: 'address',
             name: 'orchestratorAddress',
             type: 'address',
-            description: 'The address of the orchestrator.',
+            description: 'The address of the {Orchestrator.',
           },
         ],
         name: 'OrchestratorCreated',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when a new orchestrator_v1 is created.',
+        description: 'Event emitted when a new {Orchestrator_v1} is created.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'beacon',
+            type: 'address',
+            description:
+              'The address of the {IInverterBeacon_v1} associated with the factory.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'moduleFactory',
+            type: 'address',
+            description: 'The address of the {ModuleFactory_v1}.',
+          },
+        ],
+        name: 'OrchestratorFactoryInitialized',
+        type: 'event',
+        outputs: [],
+        description:
+          'Event emitted when a new {OrchestratorFactory_v1} is initialized.',
       },
       {
         anonymous: false,
@@ -635,7 +1060,8 @@ export const data = [
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the {IOrchestrator_v1} beacon address.',
+        description:
+          'Returns the {IOrchestrator_v1} {IInverterBeacon_v1} address.',
       },
       {
         inputs: [
@@ -671,6 +1097,11 @@ export const data = [
                     name: 'minorVersion',
                     type: 'uint256',
                   },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
+                    type: 'uint256',
+                  },
                   { internalType: 'string', name: 'url', type: 'string' },
                   { internalType: 'string', name: 'title', type: 'string' },
                 ],
@@ -683,6 +1114,8 @@ export const data = [
             internalType: 'struct IOrchestratorFactory_v1.ModuleConfig',
             name: 'fundingManagerConfig',
             type: 'tuple',
+            description:
+              "The config data for the orchestrator's {IFundingManager_v1} instance.",
           },
           {
             components: [
@@ -696,6 +1129,11 @@ export const data = [
                   {
                     internalType: 'uint256',
                     name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
                     type: 'uint256',
                   },
                   { internalType: 'string', name: 'url', type: 'string' },
@@ -711,7 +1149,7 @@ export const data = [
             name: 'authorizerConfig',
             type: 'tuple',
             description:
-              "The config data for the orchestrator's {IAuthorizer_v1} instance.",
+              "The config data for the {Orchestrator_v1}'s {IAuthorizer_v1} instance.",
           },
           {
             components: [
@@ -725,6 +1163,11 @@ export const data = [
                   {
                     internalType: 'uint256',
                     name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
                     type: 'uint256',
                   },
                   { internalType: 'string', name: 'url', type: 'string' },
@@ -756,6 +1199,11 @@ export const data = [
                     name: 'minorVersion',
                     type: 'uint256',
                   },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
+                    type: 'uint256',
+                  },
                   { internalType: 'string', name: 'url', type: 'string' },
                   { internalType: 'string', name: 'title', type: 'string' },
                 ],
@@ -778,11 +1226,13 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: '_0',
             type: 'address',
+            description:
+              'CreatedOrchestrator Returns the created orchestrator instance',
           },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Creates a new orchestrator_v1.',
+        description: 'Creates a new {Orchestrator_v1}.',
       },
       {
         inputs: [
@@ -794,7 +1244,15 @@ export const data = [
           },
         ],
         name: 'getOrchestratorByID',
-        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        outputs: [
+          {
+            internalType: 'address',
+            name: '_0',
+            type: 'address',
+            description:
+              'orchestratorAddress The address of the corresponding {Orchestrator_v1}.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
@@ -803,10 +1261,17 @@ export const data = [
       {
         inputs: [],
         name: 'getOrchestratorIDCounter',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: 'id The id of the next created {Orchestrator_v1}.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the counter of the current orchestrator id',
+        description: 'Returns the counter of the current {Orchestrator_v1} id.',
       },
       {
         inputs: [
@@ -814,20 +1279,20 @@ export const data = [
             internalType: 'address',
             name: 'governor_',
             type: 'address',
-            description: 'The address of the governor contract.',
+            description: 'The address of the {Governor_v1} contract.',
           },
           {
             internalType: 'contract IInverterBeacon_v1',
             name: 'beacon_',
             type: 'address',
             description:
-              'The address of the beacon containing the orchestrator implementation.',
+              'The address of the {IInverterBeacon_v1} containing the {Orchestrator_v1} implementation.',
           },
           {
             internalType: 'address',
             name: 'moduleFactory_',
             type: 'address',
-            description: 'The address of the module factory contract.',
+            description: 'The address of the {ModuleFactory_v1} contract.',
           },
         ],
         name: 'init',
@@ -904,7 +1369,7 @@ export const data = [
   {
     name: 'InverterProxyAdmin_v1',
     description:
-      'Acts as the admin of the Inverter Transparent Upgradeable Proxies and is responsible for upgrading the proxies to the newest version.',
+      'Acts as the admin of the {InverterTransparentUpgradeableProxy_v1}s and is responsible for upgrading the proxies to the newest version.',
     moduleType: 'factories',
     deploymentInputs: { configData: [] },
     abi: [
@@ -1016,7 +1481,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Upgrades the corresponding proxy to the newest version of the implementation.',
+          'Upgrades the corresponding {InverterTransparentUpgradeableProxy_v1} to the newest version of the implementation.',
       },
       {
         inputs: [
@@ -1032,7 +1497,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Upgrades multiple proxies to the newest version of the implementation.',
+          'Upgrades multiple {InverterTransparentUpgradeableProxy_v1}s to the newest version of the implementation.',
       },
     ],
   },
@@ -1045,12 +1510,18 @@ export const data = [
     abi: [
       {
         inputs: [
+          { internalType: 'address', name: 'reverter', type: 'address' },
           { internalType: 'address', name: 'owner', type: 'address' },
           { internalType: 'uint256', name: '_majorVersion', type: 'uint256' },
           { internalType: 'address', name: '_implementation', type: 'address' },
           {
             internalType: 'uint256',
             name: '_newMinorVersion',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: '_newPatchVersion',
             type: 'uint256',
           },
         ],
@@ -1064,7 +1535,7 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'InverterBeacon__InvalidImplementationMinorVersion',
+        name: 'InverterBeacon__InvalidImplementationMinorOrPatchVersion',
         type: 'error',
       },
       {
@@ -1085,13 +1556,13 @@ export const data = [
             internalType: 'uint256',
             name: 'majorVersion',
             type: 'uint256',
-            description: 'The majorVersion of the implementation contract',
+            description: 'The majorVersion of the implementation contract.',
           },
         ],
         name: 'Constructed',
         type: 'event',
         outputs: [],
-        description: 'The Beacon was constructed.',
+        description: 'The {InverterBeacon_v1} was constructed.',
       },
       {
         anonymous: false,
@@ -1139,7 +1610,7 @@ export const data = [
         name: 'ShutdownInitiated',
         type: 'event',
         outputs: [],
-        description: 'The Beacon shutdown was initiated.',
+        description: 'The {InverterBeacon_v1} shutdown was initiated.',
       },
       {
         anonymous: false,
@@ -1147,7 +1618,7 @@ export const data = [
         name: 'ShutdownReversed',
         type: 'event',
         outputs: [],
-        description: 'The Beacon shutdown was reversed.',
+        description: 'The {InverterBeacon_v1} shutdown was reversed.',
       },
       {
         anonymous: false,
@@ -1167,11 +1638,20 @@ export const data = [
             description:
               'The new minor version of the implementation contract.',
           },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'newPatchVersion',
+            type: 'uint256',
+            description:
+              'The new patch version of the implementation contract.',
+          },
         ],
         name: 'Upgraded',
         type: 'event',
         outputs: [],
-        description: 'The Beacon was upgraded to a new implementation address.',
+        description:
+          'The {InverterBeacon_v1} was upgraded to a new implementation address.',
       },
       {
         inputs: [],
@@ -1188,12 +1668,13 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'Is the beacon in emergency mode.',
+            description: 'emergencyModeActive Is the beacon in emergency mode.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns wether the beacon is in emergency mode or not.',
+        description:
+          'Returns wether the {InverterBeacon_v1} is in emergency mode or not.',
       },
       {
         inputs: [],
@@ -1203,12 +1684,31 @@ export const data = [
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'The address of the implementation.',
+            description:
+              'ImplementationAddress The address of the implementation.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the implementation address of the beacon.',
+        description:
+          'Returns the implementation address of the {InverterBeacon_v1}.',
+      },
+      {
+        inputs: [],
+        name: 'getReverterAddress',
+        outputs: [
+          {
+            internalType: 'address',
+            name: '_0',
+            type: 'address',
+            description:
+              'ReverterAddress The address of the reverter contract.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Returns the {InverterReverter_v1} of the {InverterBeacon_v1}.',
       },
       {
         inputs: [],
@@ -1244,7 +1744,7 @@ export const data = [
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Restarts the beacon and the system',
+        description: 'Restarts the {InverterBeacon_v1} and the system.',
       },
       {
         inputs: [],
@@ -1252,7 +1752,7 @@ export const data = [
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Shuts down the beacon and stops the system',
+        description: 'Shuts down the {InverterBeacon_v1} and stops the system.',
       },
       {
         inputs: [
@@ -1280,7 +1780,20 @@ export const data = [
             type: 'address',
             description: 'The new implementation address.',
           },
-          { internalType: 'uint256', name: 'newMinorVersion', type: 'uint256' },
+          {
+            internalType: 'uint256',
+            name: 'newMinorVersion',
+            type: 'uint256',
+            description:
+              'The new minor version of the implementation contract.',
+          },
+          {
+            internalType: 'uint256',
+            name: 'newPatchVersion',
+            type: 'uint256',
+            description:
+              'The new patch version of the implementation contract.',
+          },
           {
             internalType: 'bool',
             name: 'overrideShutdown',
@@ -1293,7 +1806,8 @@ export const data = [
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Upgrades the beacon to a new implementation address.',
+        description:
+          'Upgrades the {InverterBeacon_v1} to a new implementation address.',
       },
       {
         inputs: [],
@@ -1303,18 +1817,291 @@ export const data = [
             internalType: 'uint256',
             name: '_0',
             type: 'uint256',
-            description: 'The major version.',
+            description: 'Major version.',
           },
           {
             internalType: 'uint256',
             name: '_1',
             type: 'uint256',
-            description: 'The minor version.',
+            description: 'Minor version.',
+          },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: 'Patch version.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description: 'Returns the version of the linked implementation.',
+      },
+    ],
+  },
+  {
+    name: 'Restricted_PIM_Factory_v1',
+    description: '',
+    moduleType: 'factories',
+    deploymentInputs: { configData: [] },
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: '_orchestratorFactory',
+            type: 'address',
+          },
+          {
+            internalType: 'address',
+            name: '_trustedForwarder',
+            type: 'address',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'constructor',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'orchestrator',
+            type: 'address',
+            description: 'The address of the orchestrator.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'issuanceToken',
+            type: 'address',
+            description: 'The address of the issuance token.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'deployer',
+            type: 'address',
+            description: 'The address of the deployer.',
+          },
+        ],
+        name: 'PIMWorkflowCreated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a new PIM workflow is created.',
+      },
+      {
+        inputs: [
+          {
+            components: [
+              {
+                internalType: 'bool',
+                name: 'independentUpdates',
+                type: 'bool',
+              },
+              {
+                internalType: 'address',
+                name: 'independentUpdateAdmin',
+                type: 'address',
+              },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.WorkflowConfig',
+            name: 'workflowConfig',
+            type: 'tuple',
+            description: "The workflow's config data.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule_v1.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.ModuleConfig',
+            name: 'fundingManagerConfig',
+            type: 'tuple',
+            description:
+              "The config data for the orchestrator's {IFundingManager_v1} instance.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule_v1.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.ModuleConfig',
+            name: 'authorizerConfig',
+            type: 'tuple',
+            description:
+              "The config data for the orchestrator's {IAuthorizer_v1} instance.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule_v1.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.ModuleConfig',
+            name: 'paymentProcessorConfig',
+            type: 'tuple',
+            description:
+              "The config data for the orchestrator's {IPaymentProcessor_v1} instance.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule_v1.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.ModuleConfig[]',
+            name: 'moduleConfigs',
+            type: 'tuple[]',
+            description:
+              "Variable length set of optional module's config data.",
+          },
+          {
+            components: [
+              { internalType: 'string', name: 'name', type: 'string' },
+              { internalType: 'string', name: 'symbol', type: 'string' },
+              { internalType: 'uint8', name: 'decimals', type: 'uint8' },
+              { internalType: 'uint256', name: 'maxSupply', type: 'uint256' },
+            ],
+            internalType: 'struct IBondingCurveBase_v1.IssuanceToken',
+            name: 'issuanceTokenParams',
+            type: 'tuple',
+            description:
+              "The issuance token's parameters (name, symbol, decimals, maxSupply).",
+          },
+        ],
+        name: 'createPIMWorkflow',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator_v1',
+            name: 'orchestrator',
+            type: 'address',
+            description:
+              'CreatedOrchestrator Returns the created orchestrator instance.',
+          },
+          {
+            internalType: 'contract ERC20Issuance_v1',
+            name: 'issuanceToken',
+            type: 'address',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Deploys a new issuance token and uses that to deploy a workflow with restricted bonding curve.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'forwarder', type: 'address' },
+        ],
+        name: 'isTrustedForwarder',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'orchestratorFactory',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'trustedForwarder',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
       },
     ],
   },
@@ -1327,6 +2114,7 @@ export const data = [
     abi: [
       {
         inputs: [
+          { internalType: 'address', name: '_reverter', type: 'address' },
           {
             internalType: 'address',
             name: '_trustedForwarder',
@@ -1353,6 +2141,7 @@ export const data = [
         name: 'ModuleFactory__MetadataAlreadyRegistered',
         type: 'error',
       },
+      { inputs: [], name: 'ModuleFactory__ModuleIsSunset', type: 'error' },
       {
         inputs: [],
         name: 'ModuleFactory__UnregisteredMetadata',
@@ -1368,6 +2157,22 @@ export const data = [
         inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
         name: 'OwnableUnauthorizedAccount',
         type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'governor',
+            type: 'address',
+            description: 'The address of the {Governor_v1}.',
+          },
+        ],
+        name: 'GovernorSet',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when {Governor_v1} is set.',
       },
       {
         anonymous: false,
@@ -1398,21 +2203,26 @@ export const data = [
                 name: 'minorVersion',
                 type: 'uint256',
               },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
               { internalType: 'string', name: 'url', type: 'string' },
               { internalType: 'string', name: 'title', type: 'string' },
             ],
-            indexed: true,
+            indexed: false,
             internalType: 'struct IModule_v1.Metadata',
             name: 'metadata',
             type: 'tuple',
-            description: 'The registered Metadata',
+            description: 'The registered Metadata.',
           },
           {
             indexed: true,
             internalType: 'contract IInverterBeacon_v1',
             name: 'beacon',
             type: 'address',
-            description: 'The registered Beacon',
+            description: 'The registered Beacon.',
           },
         ],
         name: 'MetadataRegistered',
@@ -1428,7 +2238,7 @@ export const data = [
             internalType: 'address',
             name: 'orchestrator',
             type: 'address',
-            description: 'The corresponding orchestrator.',
+            description: 'The corresponding {Orchestrator_v1}.',
           },
           {
             indexed: true,
@@ -1438,18 +2248,37 @@ export const data = [
             description: 'The created module instance.',
           },
           {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
             indexed: false,
-            internalType: 'bytes32',
-            name: 'identifier',
-            type: 'bytes32',
-            description: "The module's identifier.",
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The registered metadata.',
           },
         ],
         name: 'ModuleCreated',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when new module created for a orchestrator_v1.',
+          'Event emitted when new module created for an {Orchestrator_v1}.',
       },
       {
         anonymous: false,
@@ -1512,25 +2341,30 @@ export const data = [
                 name: 'minorVersion',
                 type: 'uint256',
               },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
               { internalType: 'string', name: 'url', type: 'string' },
               { internalType: 'string', name: 'title', type: 'string' },
             ],
             internalType: 'struct IModule_v1.Metadata',
             name: 'metadata',
             type: 'tuple',
-            description: "The module's metadata.",
+            description: "The module's `metadata`.",
           },
           {
             internalType: 'contract IOrchestrator_v1',
             name: 'orchestrator',
             type: 'address',
-            description: "The orchestrator's instance of the module.",
+            description: 'The {Orchestrator_v1} instance of the module.',
           },
           {
             internalType: 'bytes',
             name: 'configData',
             type: 'bytes',
-            description: 'The configData of the module',
+            description: 'The configData of the module.',
           },
           {
             components: [
@@ -1548,21 +2382,23 @@ export const data = [
             internalType: 'struct IOrchestratorFactory_v1.WorkflowConfig',
             name: 'workflowConfig',
             type: 'tuple',
-            description: 'The configData of the workflow',
+            description: 'The configData of the workflow.',
           },
         ],
-        name: 'createModule',
+        name: 'createAndInitModule',
         outputs: [
           {
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'Returns the address of the created module proxy',
+            description:
+              'moduleProxyAddress Returns the address of the created module proxy.',
           },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Creates a module instance identified by given metadata.',
+        description:
+          'Creates a module instance identified by given `metadata` and initiates it.',
       },
       {
         inputs: [
@@ -1576,6 +2412,77 @@ export const data = [
               {
                 internalType: 'uint256',
                 name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: "The module's metadata.",
+          },
+          {
+            internalType: 'contract IOrchestrator_v1',
+            name: 'orchestrator',
+            type: 'address',
+            description: 'The {Orchestrator_v1} instance of the module.',
+          },
+          {
+            components: [
+              {
+                internalType: 'bool',
+                name: 'independentUpdates',
+                type: 'bool',
+              },
+              {
+                internalType: 'address',
+                name: 'independentUpdateAdmin',
+                type: 'address',
+              },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.WorkflowConfig',
+            name: 'workflowConfig',
+            type: 'tuple',
+            description: 'The configData of the workflow.',
+          },
+        ],
+        name: 'createModuleProxy',
+        outputs: [
+          {
+            internalType: 'address',
+            name: '_0',
+            type: 'address',
+            description: 'Returns the address of the created module proxy.',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Creates a module proxy instance identified by given `metadata`.',
+      },
+      {
+        inputs: [
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
                 type: 'uint256',
               },
               { internalType: 'string', name: 'url', type: 'string' },
@@ -1594,19 +2501,19 @@ export const data = [
             name: '_0',
             type: 'address',
             description:
-              "The module's {IInverterBeacon_v1} instance registered.",
+              "beacon The module's {IInverterBeacon_v1} instance registered.",
           },
           {
             internalType: 'bytes32',
             name: '_1',
             type: 'bytes32',
-            description: "The metadata's id.",
+            description: "id The metadata's id.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Returns the {IInverterBeacon_v1} instance registered and the id for given metadata.',
+          'Returns the {IInverterBeacon_v1} instance registered and the `id` for given `metadata`.',
       },
       {
         inputs: [
@@ -1624,12 +2531,12 @@ export const data = [
             name: '_0',
             type: 'address',
             description:
-              'The corresponding orchestrator address for the provided proxy.',
+              'orchestratorAddress The corresponding {Orchestrator_v1} address for the provided proxy.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the orchestrator address of a beacon proxy.',
+        description: 'Returns the {Orchestrator_v1} address of a beacon proxy.',
       },
       {
         inputs: [],
@@ -1637,7 +2544,7 @@ export const data = [
         outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the governor_v1 contract address',
+        description: 'Returns the {Governor_v1} contract address.',
       },
       {
         inputs: [
@@ -1645,7 +2552,7 @@ export const data = [
             internalType: 'address',
             name: '_governor',
             type: 'address',
-            description: 'The address of the governor contract.',
+            description: 'The address of the {Governor_v1} contract.',
           },
           {
             components: [
@@ -1659,6 +2566,11 @@ export const data = [
                 name: 'minorVersion',
                 type: 'uint256',
               },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
               { internalType: 'string', name: 'url', type: 'string' },
               { internalType: 'string', name: 'title', type: 'string' },
             ],
@@ -1666,7 +2578,7 @@ export const data = [
             name: 'initialMetadataRegistration',
             type: 'tuple[]',
             description:
-              'List of beacon addresses that will be registered during the initialization.',
+              'List of {IInverterBeacon_v1}s addresses that will be registered during the initialization.',
           },
           {
             internalType: 'contract IInverterBeacon_v1[]',
@@ -1717,6 +2629,11 @@ export const data = [
                 name: 'minorVersion',
                 type: 'uint256',
               },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
               { internalType: 'string', name: 'url', type: 'string' },
               { internalType: 'string', name: 'title', type: 'string' },
             ],
@@ -1745,6 +2662,15 @@ export const data = [
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'reverter',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Returns the address of the {InverterReverter_v1} contract.',
       },
       {
         inputs: [
@@ -1814,9 +2740,15 @@ export const data = [
         name: 'Module__CallerNotAuthorized',
         type: 'error',
       },
+      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
       { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
       { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
       { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OnlyCallableByPaymentClient',
+        type: 'error',
+      },
       {
         inputs: [],
         name: 'Module__VotingRoleManager__AttemptedDoubleVote',
@@ -1840,6 +2772,11 @@ export const data = [
       {
         inputs: [],
         name: 'Module__VotingRoleManager__InvalidSupport',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__VotingRoleManager__InvalidThreshold',
         type: 'error',
       },
       {
@@ -1877,11 +2814,6 @@ export const data = [
         name: 'Module__VotingRoleManager__ThresholdNotReached',
         type: 'error',
       },
-      {
-        inputs: [],
-        name: 'Module__VotingRoleManager__UnreachableThreshold',
-        type: 'error',
-      },
       { inputs: [], name: 'NotInitializing', type: 'error' },
       {
         anonymous: false,
@@ -1906,28 +2838,33 @@ export const data = [
             name: 'parentOrchestrator',
             type: 'address',
             description:
-              'The address of the orchestrator the module is linked to.',
+              'The address of the {Orchestrator_v1} the module is linked to.',
           },
           {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
             indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The metadata of the module.',
           },
         ],
         name: 'ModuleInitialized',
@@ -1940,25 +2877,25 @@ export const data = [
         inputs: [
           {
             indexed: true,
-            internalType: 'uint256',
+            internalType: 'bytes32',
             name: 'motionId',
-            type: 'uint256',
+            type: 'bytes32',
             description: 'The motion ID.',
           },
         ],
         name: 'MotionCreated',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when a motion is created',
+        description: 'Event emitted when a motion is created.',
       },
       {
         anonymous: false,
         inputs: [
           {
             indexed: true,
-            internalType: 'uint256',
+            internalType: 'bytes32',
             name: 'motionId',
-            type: 'uint256',
+            type: 'bytes32',
             description: 'The motion ID.',
           },
         ],
@@ -1989,6 +2926,36 @@ export const data = [
         type: 'event',
         outputs: [],
         description: 'Event emitted when the required threshold changes.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'bytes32',
+            name: 'motionId',
+            type: 'bytes32',
+            description:
+              'Value that indicates how the voter supports the motion.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'voter',
+            type: 'address',
+            description: 'The address of a voter.',
+          },
+          {
+            indexed: true,
+            internalType: 'uint8',
+            name: 'support',
+            type: 'uint8',
+          },
+        ],
+        name: 'VoteCast',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a vote is cast for a motion.',
       },
       {
         anonymous: false,
@@ -2051,6 +3018,7 @@ export const data = [
         outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
         stateMutability: 'view',
         type: 'function',
+        description: 'The maximum voting duration.',
       },
       {
         inputs: [],
@@ -2058,47 +3026,124 @@ export const data = [
         outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
         stateMutability: 'view',
         type: 'function',
+        description: 'The minimum voting duration.',
       },
       {
-        inputs: [{ internalType: 'address', name: 'who', type: 'address' }],
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'who',
+            type: 'address',
+            description: 'The address to add.',
+          },
+        ],
         name: 'addVoter',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Adds a voter.',
       },
       {
         inputs: [
-          { internalType: 'uint256', name: 'motionId', type: 'uint256' },
-          { internalType: 'uint8', name: 'support', type: 'uint8' },
+          {
+            internalType: 'address',
+            name: 'who',
+            type: 'address',
+            description: 'The address to add.',
+          },
+          {
+            internalType: 'uint256',
+            name: 'newThreshold',
+            type: 'uint256',
+            description: 'The new threshold.',
+          },
+        ],
+        name: 'addVoterAndUpdateThreshold',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Adds a voter and updates the threshold.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'bytes32',
+            name: 'motionId',
+            type: 'bytes32',
+            description: 'The ID of the motion.',
+          },
+          {
+            internalType: 'uint8',
+            name: 'support',
+            type: 'uint8',
+            description:
+              'The value that indicates wether the voter supports the motion.',
+          },
         ],
         name: 'castVote',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Casts a vote for a motion.',
       },
       {
         inputs: [
-          { internalType: 'address', name: 'target', type: 'address' },
-          { internalType: 'bytes', name: 'action', type: 'bytes' },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description:
+              'The address of the contract to execute the action on.',
+          },
+          {
+            internalType: 'bytes',
+            name: 'action',
+            type: 'bytes',
+            description: 'The action data to execute on the target contract.',
+          },
         ],
         name: 'createMotion',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'bytes32',
+            name: '_0',
+            type: 'bytes32',
+            description: 'The ID of the created motion.',
+          },
+        ],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Creates a motion.',
       },
       {
         inputs: [
-          { internalType: 'uint256', name: 'motionId', type: 'uint256' },
+          {
+            internalType: 'bytes32',
+            name: 'motionId',
+            type: 'bytes32',
+            description: 'The ID of the motion.',
+          },
         ],
         name: 'executeMotion',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Executes a motion.',
       },
       {
         inputs: [
-          { internalType: 'uint256', name: '_ID', type: 'uint256' },
-          { internalType: 'address', name: 'voter', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: '_ID',
+            type: 'bytes32',
+            description: 'The ID of the motion.',
+          },
+          {
+            internalType: 'address',
+            name: 'voter',
+            type: 'address',
+            description: 'The address of the voter.',
+          },
         ],
         name: 'getReceipt',
         outputs: [
@@ -2110,30 +3155,54 @@ export const data = [
             internalType: 'struct IAUT_EXT_VotingRoles_v1.Receipt',
             name: '_0',
             type: 'tuple',
+            description: 'The receipt of the voter.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
+        description: 'Gets the receipt of a voter for a motion.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to grant the role to.',
+          },
         ],
         name: 'grantModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to grant the role to.',
+          },
         ],
         name: 'grantModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to multiple target addresses.',
       },
       {
         inputs: [],
@@ -2167,6 +3236,11 @@ export const data = [
               {
                 internalType: 'uint256',
                 name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
                 type: 'uint256',
               },
               { internalType: 'string', name: 'url', type: 'string' },
@@ -2206,12 +3280,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
+            description: 'bool Is the given address the trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
+        description: 'Checks if the provided address is the trusted forwarder.',
       },
       {
         inputs: [{ internalType: 'address', name: '', type: 'address' }],
@@ -2219,6 +3293,7 @@ export const data = [
         outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
         stateMutability: 'view',
         type: 'function',
+        description: 'Checks whether an address is a voter.',
       },
       {
         inputs: [],
@@ -2226,9 +3301,10 @@ export const data = [
         outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
         stateMutability: 'view',
         type: 'function',
+        description: 'Gets the number of motions.',
       },
       {
-        inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+        inputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
         name: 'motions',
         outputs: [
           { internalType: 'address', name: 'target', type: 'address' },
@@ -2249,6 +3325,7 @@ export const data = [
         ],
         stateMutability: 'view',
         type: 'function',
+        description: 'Gets the motion data.',
       },
       {
         inputs: [],
@@ -2258,58 +3335,121 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: '_0',
             type: 'address',
-            description: "The module's orchestrator.",
+            description: "The module's {Orchestrator_1}.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
       },
       {
-        inputs: [{ internalType: 'address', name: 'who', type: 'address' }],
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'who',
+            type: 'address',
+            description: 'The address to remove.',
+          },
+        ],
         name: 'removeVoter',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Removes a voter.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'address',
+            name: 'who',
+            type: 'address',
+            description: 'The address to remove.',
+          },
+          {
+            internalType: 'uint256',
+            name: 'newThreshold',
+            type: 'uint256',
+            description: 'The new threshold.',
+          },
+        ],
+        name: 'removeVoterAndUpdateThreshold',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Removes a voter and updates the threshold.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from multiple target addresses.',
       },
       {
         inputs: [
-          { internalType: 'uint256', name: 'newThreshold', type: 'uint256' },
+          {
+            internalType: 'uint256',
+            name: 'newThreshold',
+            type: 'uint256',
+            description: 'The new threshold.',
+          },
         ],
         name: 'setThreshold',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Sets the threshold.',
       },
       {
         inputs: [
-          { internalType: 'uint256', name: 'newVoteDuration', type: 'uint256' },
+          {
+            internalType: 'uint256',
+            name: 'newVoteDuration',
+            type: 'uint256',
+            description: 'The new voting duration.',
+          },
         ],
         name: 'setVotingDuration',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Sets the voting duration.',
       },
       {
         inputs: [
@@ -2326,6 +3466,7 @@ export const data = [
         outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
         stateMutability: 'view',
         type: 'function',
+        description: 'Gets the threshold.',
       },
       {
         inputs: [],
@@ -2350,12 +3491,12 @@ export const data = [
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'address The trusted forwarder',
+            description: 'address The trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the trusted forwarder',
+        description: 'Returns the trusted forwarder.',
       },
       {
         inputs: [],
@@ -2388,6 +3529,12 @@ export const data = [
             type: 'uint256',
             description: "The module's minor version.",
           },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: "The module's patch version.",
+          },
         ],
         stateMutability: 'view',
         type: 'function',
@@ -2399,6 +3546,7 @@ export const data = [
         outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
         stateMutability: 'view',
         type: 'function',
+        description: 'Gets the voting duration.',
       },
       {
         inputs: [],
@@ -2406,6 +3554,7 @@ export const data = [
         outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
         stateMutability: 'view',
         type: 'function',
+        description: 'Gets the number of voters.',
       },
     ],
   },
@@ -2488,6 +3637,11 @@ export const data = [
       },
       {
         inputs: [],
+        name: 'Module__ERC20PaymentClientBase__InvalidPaymentOrder',
+        type: 'error',
+      },
+      {
+        inputs: [],
         name: 'Module__ERC20PaymentClientBase__InvalidRecipient',
         type: 'error',
       },
@@ -2506,6 +3660,7 @@ export const data = [
         name: 'Module__ERC20PaymentClientBase__TokenTransferFailed',
         type: 'error',
       },
+      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
       { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
       { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
       {
@@ -2529,11 +3684,32 @@ export const data = [
         type: 'error',
       },
       { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OnlyCallableByPaymentClient',
+        type: 'error',
+      },
       { inputs: [], name: 'NotInitializing', type: 'error' },
       {
         inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
         name: 'SafeERC20FailedOperation',
         type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'epochLength',
+            type: 'uint256',
+            description: 'The epoch length.',
+          },
+        ],
+        name: 'EpochLengthSet',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when the epoch length is set.',
       },
       {
         anonymous: false,
@@ -2558,28 +3734,33 @@ export const data = [
             name: 'parentOrchestrator',
             type: 'address',
             description:
-              'The address of the orchestrator the module is linked to.',
+              'The address of the {Orchestrator_v1} the module is linked to.',
           },
           {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
             indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The metadata of the module.',
           },
         ],
         name: 'ModuleInitialized',
@@ -2602,6 +3783,7 @@ export const data = [
             internalType: 'address',
             name: 'token',
             type: 'address',
+            description: 'The token in which to pay.',
           },
           {
             indexed: false,
@@ -2702,20 +3884,20 @@ export const data = [
             name: 'amount',
             type: 'uint256',
             tags: ['decimals'],
-            description: ': amount of tokens send to the recipient address',
+            description: 'Amount of tokens send to the recipient address.',
           },
           {
             internalType: 'uint256',
             name: 'startEpoch',
             type: 'uint256',
             description:
-              ': epoch in which the payment starts. Use getEpochFromTimestamp() or getCurrentEpoch() to get the appropriate epoch',
+              'Epoch in which the payment starts. Use getEpochFromTimestamp() or getCurrentEpoch() to get the appropriate epoch.',
           },
           {
             internalType: 'address',
             name: 'recipient',
             type: 'address',
-            description: ': recipient address that should receive tokens',
+            description: 'Recipient address that should receive tokens.',
           },
         ],
         name: 'addRecurringPayment',
@@ -2724,22 +3906,27 @@ export const data = [
             internalType: 'uint256',
             name: 'id',
             type: 'uint256',
-            description: ': id of the newly created recurring payment',
+            description: 'Id of the newly created recurring payment.',
           },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Adds a recurring payment to the manager',
+        description: 'Adds a recurring payment to the manager.',
       },
       {
         inputs: [
-          { internalType: 'address', name: 'token', type: 'address' },
+          {
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description: 'The token in which the payment was made.',
+          },
           {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'amount of tokens that have been paid out',
+            description: 'amount of tokens that have been paid out.',
           },
         ],
         name: 'amountPaid',
@@ -2747,7 +3934,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Notifies the PaymentClient, that tokens have been paid out accordingly',
+          'Notifies the PaymentClient, that tokens have been paid out accordingly.',
       },
       {
         inputs: [],
@@ -2774,15 +3961,20 @@ export const data = [
             internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder[]',
             name: '_0',
             type: 'tuple[]',
-            description: 'list of payment orders',
+            description: 'list of payment orders.',
           },
           {
             internalType: 'address[]',
             name: '_1',
             type: 'address[]',
-            description: 'total amount of token to pay',
+            description: 'list of token addresses.',
           },
-          { internalType: 'uint256[]', name: '_2', type: 'uint256[]' },
+          {
+            internalType: 'uint256[]',
+            name: '_2',
+            type: 'uint256[]',
+            description: 'list of amounts.',
+          },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
@@ -2797,12 +3989,12 @@ export const data = [
             name: 'epoch',
             type: 'uint256',
             description:
-              ': epoch in which current timestamp (block.timestamp) belongs to',
+              'Epoch in which current timestamp (block.timestamp) belongs to.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Calculates the current epoch',
+        description: 'Calculates the current epoch.',
       },
       {
         inputs: [
@@ -2810,7 +4002,7 @@ export const data = [
             internalType: 'uint256',
             name: 'timestamp',
             type: 'uint256',
-            description: ': a timestamp in a uint format',
+            description: 'A timestamp in a uint format.',
           },
         ],
         name: 'getEpochFromTimestamp',
@@ -2819,12 +4011,12 @@ export const data = [
             internalType: 'uint256',
             name: 'epoch',
             type: 'uint256',
-            description: ': epoch in which timestamp belongs to',
+            description: 'Epoch in which timestamp belongs to.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Calculates the epoch from a given uint timestamp',
+        description: 'Calculates the epoch from a given uint timestamp.',
       },
       {
         inputs: [],
@@ -2834,12 +4026,12 @@ export const data = [
             internalType: 'uint256',
             name: '_0',
             type: 'uint256',
-            description: 'Length of an epoch in a uint timestamp',
+            description: 'Length of an epoch in a uint timestamp.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the length of an epoch',
+        description: 'Returns the length of an epoch.',
       },
       {
         inputs: [
@@ -2847,7 +4039,7 @@ export const data = [
             internalType: 'uint256',
             name: 'xEpochsInTheFuture',
             type: 'uint256',
-            description: ': how many epochs from the current epoch',
+            description: 'How many epochs from the current epoch.',
           },
         ],
         name: 'getFutureEpoch',
@@ -2856,12 +4048,12 @@ export const data = [
             internalType: 'uint256',
             name: 'futureEpoch',
             type: 'uint256',
-            description: ': epoch in the future',
+            description: 'Epoch in the future.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Calculates a future epoch x epochs from now',
+        description: 'Calculates a future epoch x epochs from now.',
       },
       {
         inputs: [
@@ -2924,23 +4116,45 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to grant the role to.',
+          },
         ],
         name: 'grantModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to grant the role to.',
+          },
         ],
         name: 'grantModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to multiple target addresses.',
       },
       {
         inputs: [],
@@ -2976,6 +4190,11 @@ export const data = [
                 name: 'minorVersion',
                 type: 'uint256',
               },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
               { internalType: 'string', name: 'url', type: 'string' },
               { internalType: 'string', name: 'title', type: 'string' },
             ],
@@ -2999,7 +4218,14 @@ export const data = [
         description: "The module's initializer function.",
       },
       {
-        inputs: [{ internalType: 'uint256', name: 'id', type: 'uint256' }],
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'id',
+            type: 'uint256',
+            description: 'The id of the RecurringPayment to test.',
+          },
+        ],
         name: 'isExistingRecurringPaymentId',
         outputs: [
           {
@@ -3029,12 +4255,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
+            description: 'bool Is the given address the trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
+        description: 'Checks if the provided address is the trusted forwarder.',
       },
       {
         inputs: [],
@@ -3059,13 +4285,13 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: '_0',
             type: 'address',
-            description: "The module's orchestrator.",
+            description: "The module's {Orchestrator_1}.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
       },
       {
         inputs: [{ internalType: 'address', name: '_token', type: 'address' }],
@@ -3076,6 +4302,7 @@ export const data = [
             name: '_0',
             type: 'uint256',
             tags: ['decimals'],
+            description: 'total amount of token to pay.',
           },
         ],
         stateMutability: 'view',
@@ -3107,6 +4334,7 @@ export const data = [
             internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder[]',
             name: '_0',
             type: 'tuple[]',
+            description: 'list of payment orders.',
           },
         ],
         stateMutability: 'view',
@@ -3120,40 +4348,62 @@ export const data = [
             name: 'prevId',
             type: 'uint256',
             description:
-              ': id of the previous recurring payment in the payment list',
+              'Id of the previous recurring payment in the payment list.',
           },
           {
             internalType: 'uint256',
             name: 'id',
             type: 'uint256',
-            description: ': id of the recurring payment that is to be removed',
+            description: 'Id of the recurring payment that is to be removed.',
           },
         ],
         name: 'removeRecurringPayment',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Removes a recurring Payment',
+        description: 'Removes a recurring Payment.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from multiple target addresses.',
       },
       {
         inputs: [
@@ -3186,7 +4436,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Triggers the start of the due payments for all recurring payment orders',
+          'Triggers the start of the due payments for all recurring payment orders.',
       },
       {
         inputs: [
@@ -3195,14 +4445,14 @@ export const data = [
             name: 'startId',
             type: 'uint256',
             description:
-              ': id of start position of the recurring payments that should be triggered',
+              ': id of start position of the recurring payments that should be triggered.',
           },
           {
             internalType: 'uint256',
             name: 'endId',
             type: 'uint256',
             description:
-              ': id of end position of the recurring payments that should be triggered',
+              ': id of end position of the recurring payments that should be triggered.',
           },
         ],
         name: 'triggerFor',
@@ -3210,7 +4460,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'See trigger() but enables you to determine which ids you want to trigger payment ordes for',
+          'See trigger() but enables you to determine which ids you want to trigger payment ordes for.',
       },
       {
         inputs: [],
@@ -3220,12 +4470,12 @@ export const data = [
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'address The trusted forwarder',
+            description: 'address The trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the trusted forwarder',
+        description: 'Returns the trusted forwarder.',
       },
       {
         inputs: [],
@@ -3257,6 +4507,12 @@ export const data = [
             name: '_1',
             type: 'uint256',
             description: "The module's minor version.",
+          },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: "The module's patch version.",
           },
         ],
         stateMutability: 'view',
@@ -3324,6 +4580,11 @@ export const data = [
       },
       {
         inputs: [],
+        name: 'Module__ERC20PaymentClientBase__InvalidPaymentOrder',
+        type: 'error',
+      },
+      {
+        inputs: [],
         name: 'Module__ERC20PaymentClientBase__InvalidRecipient',
         type: 'error',
       },
@@ -3342,6 +4603,7 @@ export const data = [
         name: 'Module__ERC20PaymentClientBase__TokenTransferFailed',
         type: 'error',
       },
+      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
       { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
       { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
       {
@@ -3358,6 +4620,11 @@ export const data = [
       {
         inputs: [],
         name: 'Module__LM_PC_Bounty__ContributorsChanged',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__LM_PC_Bounty__InvalidArrayLengths',
         type: 'error',
       },
       {
@@ -3396,6 +4663,11 @@ export const data = [
         type: 'error',
       },
       { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OnlyCallableByPaymentClient',
+        type: 'error',
+      },
       { inputs: [], name: 'NotInitializing', type: 'error' },
       {
         inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
@@ -3419,7 +4691,7 @@ export const data = [
             type: 'uint256',
             tags: ['decimals'],
             description:
-              'The minimum amount of tokens the Bounty will pay out upon being claimed',
+              'The minimum amount of tokens the Bounty will pay out upon being claimed.',
           },
           {
             indexed: false,
@@ -3428,7 +4700,7 @@ export const data = [
             type: 'uint256',
             tags: ['decimals'],
             description:
-              'The maximum amount of tokens the Bounty will pay out upon being claimed',
+              'The maximum amount of tokens the Bounty will pay out upon being claimed.',
           },
           {
             indexed: false,
@@ -3471,7 +4743,7 @@ export const data = [
             description: 'The id of the updated Bounty.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'bytes',
             name: 'details',
             type: 'bytes',
@@ -3511,7 +4783,7 @@ export const data = [
                 tags: ['decimals'],
               },
             ],
-            indexed: true,
+            indexed: false,
             internalType: 'struct ILM_PC_Bounties_v1.Contributor[]',
             name: 'contributors',
             type: 'tuple[]',
@@ -3551,7 +4823,7 @@ export const data = [
                 tags: ['decimals'],
               },
             ],
-            indexed: true,
+            indexed: false,
             internalType: 'struct ILM_PC_Bounties_v1.Contributor[]',
             name: 'contributors',
             type: 'tuple[]',
@@ -3626,28 +4898,33 @@ export const data = [
             name: 'parentOrchestrator',
             type: 'address',
             description:
-              'The address of the orchestrator the module is linked to.',
+              'The address of the {Orchestrator_v1} the module is linked to.',
           },
           {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
             indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The metadata of the module.',
           },
         ],
         name: 'ModuleInitialized',
@@ -3670,6 +4947,7 @@ export const data = [
             internalType: 'address',
             name: 'token',
             type: 'address',
+            description: 'The token in which to pay.',
           },
           {
             indexed: false,
@@ -3714,7 +4992,7 @@ export const data = [
             type: 'uint256',
             tags: ['decimals'],
             description:
-              'The minimum amount of tokens the Bounty will pay out upon being claimed',
+              'The minimum amount of tokens the Bounty will pay out upon being claimed.',
           },
           {
             internalType: 'uint256',
@@ -3722,7 +5000,7 @@ export const data = [
             type: 'uint256',
             tags: ['decimals'],
             description:
-              'The maximum amount of tokens the Bounty will pay out upon being claimed',
+              'The maximum amount of tokens the Bounty will pay out upon being claimed.',
           },
           {
             internalType: 'bytes',
@@ -3738,7 +5016,7 @@ export const data = [
             internalType: 'uint256',
             name: 'id',
             type: 'uint256',
-            description: "The newly added Bounty's id.",
+            description: 'The newly added Bounty id.',
           },
         ],
         stateMutability: 'nonpayable',
@@ -3747,7 +5025,48 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'uint256', name: 'bountyId', type: 'uint256' },
+          {
+            internalType: 'uint256[]',
+            name: 'minimumPayoutAmounts',
+            type: 'uint256[]',
+            description:
+              'The array of minimum amount of tokens the Bounty will pay out upon being claimed',
+          },
+          {
+            internalType: 'uint256[]',
+            name: 'maximumPayoutAmounts',
+            type: 'uint256[]',
+            description:
+              'The array of maximum amount of tokens the Bounty will pay out upon being claimed',
+          },
+          {
+            internalType: 'bytes[]',
+            name: 'detailArray',
+            type: 'bytes[]',
+            description: "The array of Bounty's details.",
+          },
+        ],
+        name: 'addBountyBatch',
+        outputs: [
+          {
+            internalType: 'uint256[]',
+            name: 'ids',
+            type: 'uint256[]',
+            description: 'The newly added array of Bounty ids.',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Adds a new array of Bounties.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'bountyId',
+            type: 'uint256',
+            description: 'The id of the bounty this claim belongs to.',
+          },
           {
             components: [
               { internalType: 'address', name: 'addr', type: 'address' },
@@ -3761,7 +5080,7 @@ export const data = [
             internalType: 'struct ILM_PC_Bounties_v1.Contributor[]',
             name: 'contributors',
             type: 'tuple[]',
-            description: 'The contributor information for the Claim',
+            description: 'The contributor information for the Claim.',
           },
           {
             internalType: 'bytes',
@@ -3786,13 +5105,18 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'address', name: 'token', type: 'address' },
+          {
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description: 'The token in which the payment was made.',
+          },
           {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'amount of tokens that have been paid out',
+            description: 'amount of tokens that have been paid out.',
           },
         ],
         name: 'amountPaid',
@@ -3800,7 +5124,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Notifies the PaymentClient, that tokens have been paid out accordingly',
+          'Notifies the PaymentClient, that tokens have been paid out accordingly.',
       },
       {
         inputs: [],
@@ -3827,15 +5151,20 @@ export const data = [
             internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder[]',
             name: '_0',
             type: 'tuple[]',
-            description: 'list of payment orders',
+            description: 'list of payment orders.',
           },
           {
             internalType: 'address[]',
             name: '_1',
             type: 'address[]',
-            description: 'total amount of token to pay',
+            description: 'list of token addresses.',
           },
-          { internalType: 'uint256[]', name: '_2', type: 'uint256[]' },
+          {
+            internalType: 'uint256[]',
+            name: '_2',
+            type: 'uint256[]',
+            description: 'list of amounts.',
+          },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
@@ -3932,23 +5261,45 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to grant the role to.',
+          },
         ],
         name: 'grantModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to grant the role to.',
+          },
         ],
         name: 'grantModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to multiple target addresses.',
       },
       {
         inputs: [],
@@ -3982,6 +5333,11 @@ export const data = [
               {
                 internalType: 'uint256',
                 name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
                 type: 'uint256',
               },
               { internalType: 'string', name: 'url', type: 'string' },
@@ -4059,12 +5415,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
+            description: 'bool Is the given address the trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
+        description: 'Checks if the provided address is the trusted forwarder.',
       },
       {
         inputs: [],
@@ -4102,7 +5458,7 @@ export const data = [
             internalType: 'address',
             name: 'contributorAddrs',
             type: 'address',
-            description: 'claim ids are filtered by the contributor address',
+            description: 'claim ids are filtered by the contributor address.',
           },
         ],
         name: 'listClaimIdsForContributorAddress',
@@ -4142,13 +5498,13 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: '_0',
             type: 'address',
-            description: "The module's orchestrator.",
+            description: "The module's {Orchestrator_1}.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
       },
       {
         inputs: [{ internalType: 'address', name: '_token', type: 'address' }],
@@ -4159,6 +5515,7 @@ export const data = [
             name: '_0',
             type: 'uint256',
             tags: ['decimals'],
+            description: 'total amount of token to pay.',
           },
         ],
         stateMutability: 'view',
@@ -4190,6 +5547,7 @@ export const data = [
             internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder[]',
             name: '_0',
             type: 'tuple[]',
+            description: 'list of payment orders.',
           },
         ],
         stateMutability: 'view',
@@ -4198,23 +5556,45 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from multiple target addresses.',
       },
       {
         inputs: [
@@ -4248,12 +5628,12 @@ export const data = [
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'address The trusted forwarder',
+            description: 'address The trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the trusted forwarder',
+        description: 'Returns the trusted forwarder.',
       },
       {
         inputs: [
@@ -4390,6 +5770,12 @@ export const data = [
             type: 'uint256',
             description: "The module's minor version.",
           },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: "The module's patch version.",
+          },
         ],
         stateMutability: 'view',
         type: 'function',
@@ -4451,6 +5837,11 @@ export const data = [
       },
       {
         inputs: [],
+        name: 'Module__ERC20PaymentClientBase__InvalidPaymentOrder',
+        type: 'error',
+      },
+      {
+        inputs: [],
         name: 'Module__ERC20PaymentClientBase__InvalidRecipient',
         type: 'error',
       },
@@ -4469,9 +5860,15 @@ export const data = [
         name: 'Module__ERC20PaymentClientBase__TokenTransferFailed',
         type: 'error',
       },
+      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
       { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
       { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
       { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OnlyCallableByPaymentClient',
+        type: 'error',
+      },
       { inputs: [], name: 'NotInitializing', type: 'error' },
       {
         inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
@@ -4501,28 +5898,33 @@ export const data = [
             name: 'parentOrchestrator',
             type: 'address',
             description:
-              'The address of the orchestrator the module is linked to.',
+              'The address of the {Orchestrator_v1} the module is linked to.',
           },
           {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
             indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The metadata of the module.',
           },
         ],
         name: 'ModuleInitialized',
@@ -4545,6 +5947,7 @@ export const data = [
             internalType: 'address',
             name: 'token',
             type: 'address',
+            description: 'The token in which to pay.',
           },
           {
             indexed: false,
@@ -4568,12 +5971,17 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'address', name: 'token', type: 'address' },
+          {
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description: 'The token in which the payment was made.',
+          },
           {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            description: 'amount of tokens that have been paid out',
+            description: 'amount of tokens that have been paid out.',
           },
         ],
         name: 'amountPaid',
@@ -4581,7 +5989,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Notifies the PaymentClient, that tokens have been paid out accordingly',
+          'Notifies the PaymentClient, that tokens have been paid out accordingly.',
       },
       {
         inputs: [],
@@ -4603,15 +6011,20 @@ export const data = [
             internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder[]',
             name: '_0',
             type: 'tuple[]',
-            description: 'list of payment orders',
+            description: 'list of payment orders.',
           },
           {
             internalType: 'address[]',
             name: '_1',
             type: 'address[]',
-            description: 'total amount of token to pay',
+            description: 'list of token addresses.',
           },
-          { internalType: 'uint256[]', name: '_2', type: 'uint256[]' },
+          {
+            internalType: 'uint256[]',
+            name: '_2',
+            type: 'uint256[]',
+            description: 'list of amounts.',
+          },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
@@ -4619,23 +6032,45 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to grant the role to.',
+          },
         ],
         name: 'grantModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to grant the role to.',
+          },
         ],
         name: 'grantModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to multiple target addresses.',
       },
       {
         inputs: [],
@@ -4671,6 +6106,11 @@ export const data = [
                 name: 'minorVersion',
                 type: 'uint256',
               },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
               { internalType: 'string', name: 'url', type: 'string' },
               { internalType: 'string', name: 'title', type: 'string' },
             ],
@@ -4702,12 +6142,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
+            description: 'bool Is the given address the trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
+        description: 'Checks if the provided address is the trusted forwarder.',
       },
       {
         inputs: [],
@@ -4717,18 +6157,25 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: '_0',
             type: 'address',
-            description: "The module's orchestrator.",
+            description: "The module's {Orchestrator_1}.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
       },
       {
         inputs: [{ internalType: 'address', name: '_token', type: 'address' }],
         name: 'outstandingTokenAmount',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: 'total amount of token to pay.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description: 'Returns the total outstanding token payment amount.',
@@ -4753,6 +6200,7 @@ export const data = [
             internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder[]',
             name: '_0',
             type: 'tuple[]',
+            description: 'list of payment orders.',
           },
         ],
         stateMutability: 'view',
@@ -4779,8 +6227,19 @@ export const data = [
             type: 'uint256',
             description: 'The amount of tokens the payment consists of.',
           },
-          { internalType: 'uint256', name: 'start', type: 'uint256' },
-          { internalType: 'uint256', name: 'cliff', type: 'uint256' },
+          {
+            internalType: 'uint256',
+            name: 'start',
+            type: 'uint256',
+            description:
+              'The timestamp at which the payment SHOULD be fulfilled.',
+          },
+          {
+            internalType: 'uint256',
+            name: 'cliff',
+            type: 'uint256',
+            description: 'The duration of the payment cliff.',
+          },
           {
             internalType: 'uint256',
             name: 'end',
@@ -4850,23 +6309,45 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from multiple target addresses.',
       },
       {
         inputs: [
@@ -4900,12 +6381,12 @@ export const data = [
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'address The trusted forwarder',
+            description: 'address The trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the trusted forwarder',
+        description: 'Returns the trusted forwarder.',
       },
       {
         inputs: [],
@@ -4937,6 +6418,12 @@ export const data = [
             name: '_1',
             type: 'uint256',
             description: "The module's minor version.",
+          },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: "The module's patch version.",
           },
         ],
         stateMutability: 'view',
@@ -5007,6 +6494,11 @@ export const data = [
       },
       {
         inputs: [],
+        name: 'Module__ERC20PaymentClientBase__InvalidPaymentOrder',
+        type: 'error',
+      },
+      {
+        inputs: [],
         name: 'Module__ERC20PaymentClientBase__InvalidRecipient',
         type: 'error',
       },
@@ -5025,6 +6517,7 @@ export const data = [
         name: 'Module__ERC20PaymentClientBase__TokenTransferFailed',
         type: 'error',
       },
+      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
       { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
       { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
       {
@@ -5043,6 +6536,11 @@ export const data = [
         type: 'error',
       },
       { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OnlyCallableByPaymentClient',
+        type: 'error',
+      },
       { inputs: [], name: 'NotInitializing', type: 'error' },
       { inputs: [], name: 'ReentrancyGuardReentrantCall', type: 'error' },
       {
@@ -5073,28 +6571,33 @@ export const data = [
             name: 'parentOrchestrator',
             type: 'address',
             description:
-              'The address of the orchestrator the module is linked to.',
+              'The address of the {Orchestrator_v1} the module is linked to.',
           },
           {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
             indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The metadata of the module.',
           },
         ],
         name: 'ModuleInitialized',
@@ -5117,6 +6620,7 @@ export const data = [
             internalType: 'address',
             name: 'token',
             type: 'address',
+            description: 'The token in which to pay.',
           },
           {
             indexed: false,
@@ -5139,24 +6643,28 @@ export const data = [
             internalType: 'uint256',
             name: 'rewardAmount',
             type: 'uint256',
+            description: 'The amount of tokens to distribute.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'duration',
             type: 'uint256',
+            description: 'The duration of the reward period.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'newRewardRate',
             type: 'uint256',
+            description: 'The new reward rate.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'newRewardsEnd',
             type: 'uint256',
+            description: 'The new timestamp of when the rewards will end.',
           },
         ],
         name: 'RewardSet',
@@ -5172,12 +6680,14 @@ export const data = [
             internalType: 'address',
             name: 'user',
             type: 'address',
+            description: 'The address of the user.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
+            description: 'The amount of tokens earned.',
           },
         ],
         name: 'RewardsDistributed',
@@ -5193,12 +6703,14 @@ export const data = [
             internalType: 'address',
             name: 'user',
             type: 'address',
+            description: 'The address of the user.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
+            description: 'The amount of tokens staked.',
           },
         ],
         name: 'Staked',
@@ -5212,14 +6724,32 @@ export const data = [
           {
             indexed: true,
             internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description: 'Address of token that can be staked.',
+          },
+        ],
+        name: 'StakingTokenSet',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when staking token is set.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
             name: 'user',
             type: 'address',
+            description: 'The address of the user.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
+            description: 'The amount of tokens unstaked.',
           },
         ],
         name: 'Unstaked',
@@ -5228,14 +6758,58 @@ export const data = [
         description: 'Event emitted when a user unstakes an amount.',
       },
       {
+        anonymous: false,
         inputs: [
-          { internalType: 'address', name: 'token', type: 'address' },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'triggerAddress',
+            type: 'address',
+            description:
+              'Address of user if state change was triggered by a staking action. Else can be zero.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'rewardValue',
+            type: 'uint256',
+            description:
+              'Variable necessary to calculate how much rewards a staker is eligible for.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'lastUpdate',
+            type: 'uint256',
+            description: 'Timestamp of last state change.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'earnedRewards',
+            type: 'uint256',
+            description: 'How much a user earned up to point of state change.',
+          },
+        ],
+        name: 'Updated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted for each major change of state.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description: 'The token in which the payment was made.',
+          },
           {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
             tags: ['decimals:params:indirect:token'],
-            description: 'amount of tokens that have been paid out',
+            description: 'amount of tokens that have been paid out.',
           },
         ],
         name: 'amountPaid',
@@ -5243,7 +6817,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Notifies the PaymentClient, that tokens have been paid out accordingly',
+          'Notifies the PaymentClient, that tokens have been paid out accordingly.',
       },
       {
         inputs: [
@@ -5251,7 +6825,7 @@ export const data = [
             internalType: 'address',
             name: 'user',
             type: 'address',
-            description: 'The address of a user that staked',
+            description: 'The address of a user that staked.',
           },
         ],
         name: 'balanceOf',
@@ -5266,7 +6840,7 @@ export const data = [
         stateMutability: 'view',
         type: 'function',
         description:
-          'Returns the amount of tokens a user staked in this contract',
+          'Returns the amount of tokens a user staked in this contract.',
       },
       {
         inputs: [],
@@ -5274,7 +6848,7 @@ export const data = [
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Collects the rewards that are earned up until now',
+        description: 'Collects the rewards that are earned up until now.',
       },
       {
         inputs: [],
@@ -5301,15 +6875,20 @@ export const data = [
             internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder[]',
             name: '_0',
             type: 'tuple[]',
-            description: 'list of payment orders',
+            description: 'list of payment orders.',
           },
           {
             internalType: 'address[]',
             name: '_1',
             type: 'address[]',
-            description: 'total amount of token to pay',
+            description: 'list of token addresses.',
           },
-          { internalType: 'uint256[]', name: '_2', type: 'uint256[]' },
+          {
+            internalType: 'uint256[]',
+            name: '_2',
+            type: 'uint256[]',
+            description: 'list of amounts.',
+          },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
@@ -5321,7 +6900,7 @@ export const data = [
             internalType: 'address',
             name: 'user',
             type: 'address',
-            description: 'The address of a user that staked',
+            description: 'The address of a user that staked.',
           },
         ],
         name: 'earned',
@@ -5331,12 +6910,13 @@ export const data = [
             name: '_0',
             type: 'uint256',
             tags: ['decimals'],
+            description: 'The amount of tokens earned.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Returns the amount of tokens earned up until now by the current stake of a user',
+          'Returns the amount of tokens earned up until now by the current stake of a user.',
       },
       {
         inputs: [
@@ -5345,13 +6925,13 @@ export const data = [
             name: 'amount',
             type: 'uint256',
             tags: ['decimals'],
-            description: ': how much token are staked',
+            description: 'How much token are staked.',
           },
           {
             internalType: 'uint256',
             name: 'duration',
             type: 'uint256',
-            description: ': how long the tokens will be staked',
+            description: 'How long the tokens will be staked.',
           },
         ],
         name: 'estimateReward',
@@ -5361,32 +6941,55 @@ export const data = [
             name: '_0',
             type: 'uint256',
             tags: ['decimals'],
+            description: 'The estimated amount of tokens earned.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Returns a estimation of how much rewards will be earned with the current state of the staking contract',
+          'Returns a estimation of how much rewards will be earned with the current state of the staking contract.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to grant the role to.',
+          },
         ],
         name: 'grantModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to grant the role to.',
+          },
         ],
         name: 'grantModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to multiple target addresses.',
       },
       {
         inputs: [],
@@ -5420,6 +7023,11 @@ export const data = [
               {
                 internalType: 'uint256',
                 name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
                 type: 'uint256',
               },
               { internalType: 'string', name: 'url', type: 'string' },
@@ -5459,12 +7067,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
+            description: 'bool Is the given address the trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
+        description: 'Checks if the provided address is the trusted forwarder.',
       },
       {
         inputs: [],
@@ -5474,13 +7082,13 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: '_0',
             type: 'address',
-            description: "The module's orchestrator.",
+            description: "The module's {Orchestrator_1}.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
       },
       {
         inputs: [{ internalType: 'address', name: '_token', type: 'address' }],
@@ -5491,6 +7099,7 @@ export const data = [
             name: '_0',
             type: 'uint256',
             tags: ['decimals:params:indirect:_token'],
+            description: 'total amount of token to pay.',
           },
         ],
         stateMutability: 'view',
@@ -5522,6 +7131,7 @@ export const data = [
             internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder[]',
             name: '_0',
             type: 'tuple[]',
+            description: 'list of payment orders.',
           },
         ],
         stateMutability: 'view',
@@ -5530,23 +7140,45 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from multiple target addresses.',
       },
       {
         inputs: [],
@@ -5569,20 +7201,20 @@ export const data = [
             name: 'amount',
             type: 'uint256',
             tags: ['decimals'],
-            description: ': how much token should be distributed',
+            description: 'How much token should be distributed.',
           },
           {
             internalType: 'uint256',
             name: 'duration',
             type: 'uint256',
-            description: ': how much time it will take to distribute the token',
+            description: 'How much time it will take to distribute the token.',
           },
         ],
         name: 'setRewards',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Sets the rewards that are to be distributed',
+        description: 'Sets the rewards that are to be distributed.',
       },
       {
         inputs: [
@@ -5591,14 +7223,14 @@ export const data = [
             name: 'amount',
             type: 'uint256',
             tags: ['decimals:contract:indirect:stakingToken', 'approval'],
-            description: ': how much token should be staked',
+            description: 'How much token should be staked.',
           },
         ],
         name: 'stake',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Stake a specified amount of tokens to earn rewards',
+        description: 'Stake a specified amount of tokens to earn rewards.',
       },
       {
         inputs: [],
@@ -5653,12 +7285,12 @@ export const data = [
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'address The trusted forwarder',
+            description: 'address The trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the trusted forwarder',
+        description: 'Returns the trusted forwarder.',
       },
       {
         inputs: [
@@ -5667,14 +7299,15 @@ export const data = [
             name: 'amount',
             type: 'uint256',
             tags: ['decimals:contract:indirect:stakingToken'],
-            description: ': how much token should be unstaked',
+            description: 'How much token should be unstaked.',
           },
         ],
         name: 'unstake',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Unstake a specified amount of tokens and collect rewards',
+        description:
+          'Unstake a specified amount of tokens and collect rewards.',
       },
       {
         inputs: [],
@@ -5707,6 +7340,12 @@ export const data = [
             type: 'uint256',
             description: "The module's minor version.",
           },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: "The module's patch version.",
+          },
         ],
         stateMutability: 'view',
         type: 'function',
@@ -5731,6 +7370,11 @@ export const data = [
           type: 'address',
           description:
             'The token the Optimistic Oracle will charge its fee in.',
+        },
+        {
+          name: 'defaultBond',
+          type: 'uint256',
+          description: 'The default bond amount for assertions.',
         },
         {
           name: 'ooAddr',
@@ -5793,6 +7437,11 @@ export const data = [
       },
       {
         inputs: [],
+        name: 'Module__ERC20PaymentClientBase__InvalidPaymentOrder',
+        type: 'error',
+      },
+      {
+        inputs: [],
         name: 'Module__ERC20PaymentClientBase__InvalidRecipient',
         type: 'error',
       },
@@ -5811,8 +7460,21 @@ export const data = [
         name: 'Module__ERC20PaymentClientBase__TokenTransferFailed',
         type: 'error',
       },
+      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
       { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
       { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'assertionId', type: 'bytes32' },
+        ],
+        name: 'Module__LM_PC_KPIRewarder_v1__AssertionNotStuck',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__LM_PC_KPIRewarder_v1__CannotStakeWhenAssertionPending',
+        type: 'error',
+      },
       {
         inputs: [],
         name: 'Module__LM_PC_KPIRewarder_v1__InvalidKPINumber',
@@ -5830,11 +7492,6 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'Module__LM_PC_KPIRewarder_v1__InvalidStakeAmount',
-        type: 'error',
-      },
-      {
-        inputs: [],
         name: 'Module__LM_PC_KPIRewarder_v1__InvalidTrancheNumber',
         type: 'error',
       },
@@ -5844,8 +7501,10 @@ export const data = [
         type: 'error',
       },
       {
-        inputs: [],
-        name: 'Module__LM_PC_KPIRewarder_v1__StakingQueueIsFull',
+        inputs: [
+          { internalType: 'bytes32', name: 'assertionId', type: 'bytes32' },
+        ],
+        name: 'Module__LM_PC_KPIRewarder_v1__NonExistentAssertionId',
         type: 'error',
       },
       {
@@ -5869,6 +7528,16 @@ export const data = [
         type: 'error',
       },
       { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OnlyCallableByPaymentClient',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__OptimisticOracleIntegrator_InsufficientFundsToPayForBond',
+        type: 'error',
+      },
       {
         inputs: [],
         name: 'Module__OptimisticOracleIntegrator__CallerNotOO',
@@ -5909,29 +7578,34 @@ export const data = [
             internalType: 'bytes32',
             name: 'dataId',
             type: 'bytes32',
+            description: 'The dataId that was asserted.',
           },
           {
             indexed: false,
             internalType: 'bytes32',
             name: 'data',
             type: 'bytes32',
+            description: 'The data that was asserted.',
           },
           {
             indexed: true,
             internalType: 'address',
             name: 'asserter',
             type: 'address',
+            description: 'The address of the asserter.',
           },
           {
             indexed: true,
             internalType: 'bytes32',
             name: 'assertionId',
             type: 'bytes32',
+            description: 'The assertionId that was asserted.',
           },
         ],
         name: 'DataAsserted',
         type: 'event',
         outputs: [],
+        description: 'Event emitted when data is asserted.',
       },
       {
         anonymous: false,
@@ -5941,25 +7615,45 @@ export const data = [
             internalType: 'bool',
             name: 'assertedTruthfully',
             type: 'bool',
+            description: 'Whether the assertion was resolved as true or false.',
           },
           {
             indexed: true,
             internalType: 'bytes32',
             name: 'dataId',
             type: 'bytes32',
+            description: 'The dataId that was asserted.',
           },
           {
             indexed: false,
             internalType: 'bytes32',
             name: 'data',
             type: 'bytes32',
+            description: 'The data that was asserted.',
           },
           {
             indexed: true,
             internalType: 'address',
             name: 'asserter',
             type: 'address',
+            description: 'The address of the asserter.',
           },
+          {
+            indexed: true,
+            internalType: 'bytes32',
+            name: 'assertionId',
+            type: 'bytes32',
+            description: 'The assertionId that was asserted.',
+          },
+        ],
+        name: 'DataAssertionResolved',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when dataAssetiong is resolved.',
+      },
+      {
+        anonymous: false,
+        inputs: [
           {
             indexed: true,
             internalType: 'bytes32',
@@ -5967,9 +7661,10 @@ export const data = [
             type: 'bytes32',
           },
         ],
-        name: 'DataAssertionResolved',
+        name: 'DeletedStuckAssertion',
         type: 'event',
         outputs: [],
+        description: 'Event emitted when a stuck assertion gets deleted.',
       },
       {
         anonymous: false,
@@ -5979,19 +7674,21 @@ export const data = [
             internalType: 'address',
             name: 'token',
             type: 'address',
+            description: 'The token used for the deposit.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
+            description: 'The amount deposited.',
           },
         ],
         name: 'FeeFundsDeposited',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when funds for paying the bonding fee are deposited into the contract',
+          'Event emitted when funds for paying the bonding fee are deposited into the contract.',
       },
       {
         anonymous: false,
@@ -6015,42 +7712,49 @@ export const data = [
             internalType: 'uint256',
             name: 'KPI_Id',
             type: 'uint256',
+            description: 'The id of the KPI.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'numOfTranches',
             type: 'uint256',
+            description: 'The number of tranches in the KPI.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'totalKPIRewards',
             type: 'uint256',
+            description: 'The total rewards for the KPI.',
           },
           {
             indexed: false,
             internalType: 'bool',
             name: 'continuous',
             type: 'bool',
+            description: 'Whether the KPI is continuous or not.',
           },
           {
             indexed: false,
             internalType: 'uint256[]',
             name: 'trancheValues',
             type: 'uint256[]',
+            description: 'The values at which each tranche ends.',
           },
           {
             indexed: false,
             internalType: 'uint256[]',
             name: 'trancheRewards',
             type: 'uint256[]',
+            description:
+              'The rewards to be distributed at completion of each tranche.',
           },
         ],
         name: 'KPICreated',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when a KPI is created',
+        description: 'Event emitted when a KPI is created.',
       },
       {
         anonymous: false,
@@ -6061,28 +7765,33 @@ export const data = [
             name: 'parentOrchestrator',
             type: 'address',
             description:
-              'The address of the orchestrator the module is linked to.',
+              'The address of the {Orchestrator_v1} the module is linked to.',
           },
           {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
             indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The metadata of the module.',
           },
         ],
         name: 'ModuleInitialized',
@@ -6105,6 +7814,7 @@ export const data = [
             internalType: 'address',
             name: 'token',
             type: 'address',
+            description: 'The token in which to pay.',
           },
           {
             indexed: false,
@@ -6127,29 +7837,35 @@ export const data = [
             internalType: 'bytes32',
             name: 'assertionId',
             type: 'bytes32',
+            description: 'The id of the assertion.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'creationTime',
             type: 'uint256',
+            description: 'The timestamp the assertion was created.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'assertedValue',
             type: 'uint256',
+            description: 'The value that was asserted.',
           },
           {
             indexed: true,
             internalType: 'uint256',
             name: 'KpiToUse',
             type: 'uint256',
+            description:
+              'The KPI to be used for distribution once the assertion confirms.',
           },
         ],
         name: 'RewardRoundConfigured',
         type: 'event',
         outputs: [],
+        description: 'Event emitted when a reward round is configured.',
       },
       {
         anonymous: false,
@@ -6159,24 +7875,28 @@ export const data = [
             internalType: 'uint256',
             name: 'rewardAmount',
             type: 'uint256',
+            description: 'The amount of tokens to distribute.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'duration',
             type: 'uint256',
+            description: 'The duration of the reward period.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'newRewardRate',
             type: 'uint256',
+            description: 'The new reward rate.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'newRewardsEnd',
             type: 'uint256',
+            description: 'The new timestamp of when the rewards will end.',
           },
         ],
         name: 'RewardSet',
@@ -6192,12 +7912,14 @@ export const data = [
             internalType: 'address',
             name: 'user',
             type: 'address',
+            description: 'The address of the user.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
+            description: 'The amount of tokens earned.',
           },
         ],
         name: 'RewardsDistributed',
@@ -6213,55 +7935,14 @@ export const data = [
             internalType: 'address',
             name: 'user',
             type: 'address',
+            description: 'The address of the user.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-          },
-        ],
-        name: 'StakeDequeued',
-        type: 'event',
-        outputs: [],
-        description:
-          'Event emitted when a user stake is dequeued before staking',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'user',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-          },
-        ],
-        name: 'StakeEnqueued',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a user stake is enqueued',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'user',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
+            description: 'The amount of tokens staked.',
           },
         ],
         name: 'Staked',
@@ -6275,20 +7956,77 @@ export const data = [
           {
             indexed: true,
             internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description: 'Address of token that can be staked.',
+          },
+        ],
+        name: 'StakingTokenSet',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when staking token is set.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
             name: 'user',
             type: 'address',
+            description: 'The address of the user.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
+            description: 'The amount of tokens unstaked.',
           },
         ],
         name: 'Unstaked',
         type: 'event',
         outputs: [],
         description: 'Event emitted when a user unstakes an amount.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'triggerAddress',
+            type: 'address',
+            description:
+              'Address of user if state change was triggered by a staking action. Else can be zero.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'rewardValue',
+            type: 'uint256',
+            description:
+              'Variable necessary to calculate how much rewards a staker is eligible for.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'lastUpdate',
+            type: 'uint256',
+            description: 'Timestamp of last state change.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'earnedRewards',
+            type: 'uint256',
+            description: 'How much a user earned up to point of state change.',
+          },
+        ],
+        name: 'Updated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted for each major change of state.',
       },
       {
         inputs: [],
@@ -6305,21 +8043,19 @@ export const data = [
         type: 'function',
       },
       {
-        inputs: [],
-        name: 'MAX_QUEUE_LENGTH',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
         inputs: [
-          { internalType: 'address', name: 'token', type: 'address' },
+          {
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description: 'The token in which the payment was made.',
+          },
           {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
             tags: ['decimals:params:indirect:token'],
-            description: 'amount of tokens that have been paid out',
+            description: 'amount of tokens that have been paid out.',
           },
         ],
         name: 'amountPaid',
@@ -6327,7 +8063,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Notifies the PaymentClient, that tokens have been paid out accordingly',
+          'Notifies the PaymentClient, that tokens have been paid out accordingly.',
       },
       {
         inputs: [
@@ -6337,12 +8073,7 @@ export const data = [
             type: 'bytes32',
             description: 'The id of the data to assert.',
           },
-          {
-            internalType: 'bytes32',
-            name: 'data',
-            type: 'bytes32',
-            description: 'The data to assert.',
-          },
+          { internalType: 'bytes32', name: 'data_', type: 'bytes32' },
           {
             internalType: 'address',
             name: 'asserter',
@@ -6448,7 +8179,7 @@ export const data = [
             internalType: 'address',
             name: 'user',
             type: 'address',
-            description: 'The address of a user that staked',
+            description: 'The address of a user that staked.',
           },
         ],
         name: 'balanceOf',
@@ -6463,7 +8194,7 @@ export const data = [
         stateMutability: 'view',
         type: 'function',
         description:
-          'Returns the amount of tokens a user staked in this contract',
+          'Returns the amount of tokens a user staked in this contract.',
       },
       {
         inputs: [],
@@ -6471,7 +8202,7 @@ export const data = [
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Collects the rewards that are earned up until now',
+        description: 'Collects the rewards that are earned up until now.',
       },
       {
         inputs: [],
@@ -6498,15 +8229,20 @@ export const data = [
             internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder[]',
             name: '_0',
             type: 'tuple[]',
-            description: 'list of payment orders',
+            description: 'list of payment orders.',
           },
           {
             internalType: 'address[]',
             name: '_1',
             type: 'address[]',
-            description: 'total amount of token to pay',
+            description: 'list of token addresses.',
           },
-          { internalType: 'uint256[]', name: '_2', type: 'uint256[]' },
+          {
+            internalType: 'uint256[]',
+            name: '_2',
+            type: 'uint256[]',
+            description: 'list of amounts.',
+          },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
@@ -6519,27 +8255,34 @@ export const data = [
             name: '_continuous',
             type: 'bool',
             description:
-              'Should the tranche rewards be distributed continuously or in steps',
+              'Should the tranche rewards be distributed continuously or in steps.',
           },
           {
             internalType: 'uint256[]',
             name: '_trancheValues',
             type: 'uint256[]',
-            description: 'The value at which the tranches end',
+            description: 'The value at which the tranches end.',
           },
           {
             internalType: 'uint256[]',
             name: '_trancheRewards',
             type: 'uint256[]',
             description:
-              'The rewards to be distributed at completion of each tranche',
+              'The rewards to be distributed at completion of each tranche.',
           },
         ],
         name: 'createKPI',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: 'The KPI id.',
+          },
+        ],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Creates a KPI for the Rewarder',
+        description: 'Creates a KPI for the Rewarder.',
       },
       {
         inputs: [],
@@ -6567,11 +8310,26 @@ export const data = [
       {
         inputs: [
           {
+            internalType: 'bytes32',
+            name: 'assertionId',
+            type: 'bytes32',
+            description: 'The id of the assertion to delete.',
+          },
+        ],
+        name: 'deleteStuckAssertion',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Deletes a stuck assertion.',
+      },
+      {
+        inputs: [
+          {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
             tags: ['decimals:contract:indirect:defaultCurrency', 'approval'],
-            description: 'The amount to deposit',
+            description: 'The amount to deposit.',
           },
         ],
         name: 'depositFeeFunds',
@@ -6579,15 +8337,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Deposits funds into the contract so it can pay for the oracle bond and fee itself',
-      },
-      {
-        inputs: [],
-        name: 'dequeueStake',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Remove a users funds from the staking queue',
+          'Deposits funds into the contract so it can pay for the oracle bond and fee itself.',
       },
       {
         inputs: [
@@ -6595,7 +8345,7 @@ export const data = [
             internalType: 'address',
             name: 'user',
             type: 'address',
-            description: 'The address of a user that staked',
+            description: 'The address of a user that staked.',
           },
         ],
         name: 'earned',
@@ -6605,12 +8355,13 @@ export const data = [
             name: '_0',
             type: 'uint256',
             tags: ['decimals'],
+            description: 'The amount of tokens earned.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Returns the amount of tokens earned up until now by the current stake of a user',
+          'Returns the amount of tokens earned up until now by the current stake of a user.',
       },
       {
         inputs: [
@@ -6618,22 +8369,29 @@ export const data = [
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            description: ': how much token are staked',
+            description: 'How much token are staked.',
           },
           {
             internalType: 'uint256',
             name: 'duration',
             type: 'uint256',
             tags: ['decimals'],
-            description: ': how long the tokens will be staked',
+            description: 'How long the tokens will be staked.',
           },
         ],
         name: 'estimateReward',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: 'The estimated amount of tokens earned.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Returns a estimation of how much rewards will be earned with the current state of the staking contract',
+          'Returns a estimation of how much rewards will be earned with the current state of the staking contract.',
       },
       {
         inputs: [
@@ -6669,7 +8427,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'assertionId',
             type: 'bytes32',
-            description: 'The id of the Assertion to return',
+            description: 'The id of the Assertion to return.',
           },
         ],
         name: 'getAssertionConfig',
@@ -6693,12 +8451,13 @@ export const data = [
               'struct ILM_PC_KPIRewarder_v1.RewardRoundConfiguration',
             name: '_0',
             type: 'tuple',
+            description: 'The Assertion Configuration.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Returns the Assertion Configuration for a given assertionId',
+          'Returns the Assertion Configuration for a given assertionId.',
       },
       {
         inputs: [
@@ -6735,7 +8494,7 @@ export const data = [
             internalType: 'uint256',
             name: 'KPInum',
             type: 'uint256',
-            description: 'The number of the KPI to return',
+            description: 'The number of the KPI to return.',
           },
         ],
         name: 'getKPI',
@@ -6768,39 +8527,54 @@ export const data = [
             internalType: 'struct ILM_PC_KPIRewarder_v1.KPI',
             name: '_0',
             type: 'tuple',
+            description: 'The KPI.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the KPI with the given number',
-      },
-      {
-        inputs: [],
-        name: 'getStakingQueue',
-        outputs: [{ internalType: 'address[]', name: '_0', type: 'address[]' }],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the current queue to stake in the contract',
+        description: 'Returns the KPI with the given number.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to grant the role to.',
+          },
         ],
         name: 'grantModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to grant the role to.',
+          },
         ],
         name: 'grantModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to multiple target addresses.',
       },
       {
         inputs: [],
@@ -6834,6 +8608,11 @@ export const data = [
               {
                 internalType: 'uint256',
                 name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
                 type: 'uint256',
               },
               { internalType: 'string', name: 'url', type: 'string' },
@@ -6873,12 +8652,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
+            description: 'bool Is the given address the trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
+        description: 'Checks if the provided address is the trusted forwarder.',
       },
       {
         inputs: [],
@@ -6901,18 +8680,25 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: '_0',
             type: 'address',
-            description: "The module's orchestrator.",
+            description: "The module's {Orchestrator_1}.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
       },
       {
         inputs: [{ internalType: 'address', name: '_token', type: 'address' }],
         name: 'outstandingTokenAmount',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: 'total amount of token to pay.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description: 'Returns the total outstanding token payment amount.',
@@ -6942,6 +8728,7 @@ export const data = [
             internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder[]',
             name: '_0',
             type: 'tuple[]',
+            description: 'list of payment orders.',
           },
         ],
         stateMutability: 'view',
@@ -6954,27 +8741,27 @@ export const data = [
             internalType: 'bytes32',
             name: 'dataId',
             type: 'bytes32',
-            description: 'The dataId to be posted',
+            description: 'The dataId to be posted.',
           },
           {
             internalType: 'uint256',
             name: 'assertedValue',
             type: 'uint256',
             description:
-              'The target value that will be asserted and posted as data to the oracle',
+              'The target value that will be asserted and posted as data to the oracle.',
           },
           {
             internalType: 'address',
             name: 'asserter',
             type: 'address',
-            description: 'The address of the asserter',
+            description: 'The address of the asserter.',
           },
           {
             internalType: 'uint256',
             name: 'targetKPI',
             type: 'uint256',
             description:
-              'The KPI to be used for distribution once the assertion confirms',
+              'The KPI to be used for distribution once the assertion confirms.',
           },
         ],
         name: 'postAssertion',
@@ -6983,13 +8770,13 @@ export const data = [
             internalType: 'bytes32',
             name: 'assertionId',
             type: 'bytes32',
-            description: 'The assertionId received for the posted assertion',
+            description: 'The assertionId received for the posted assertion.',
           },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Posts an assertion to the Optimistic Oracle, specifying the KPI to use and the asserted value',
+          'Posts an assertion to the Optimistic Oracle, specifying the KPI to use and the asserted value.',
       },
       {
         inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
@@ -7009,23 +8796,45 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from multiple target addresses.',
       },
       {
         inputs: [],
@@ -7081,21 +8890,6 @@ export const data = [
       {
         inputs: [
           {
-            internalType: 'uint256',
-            name: '_minimumStake',
-            type: 'uint256',
-            description: 'The minimum amount',
-          },
-        ],
-        name: 'setMinimumStake',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Sets the minimum amount a user must stake',
-      },
-      {
-        inputs: [
-          {
             internalType: 'address',
             name: '_newOO',
             type: 'address',
@@ -7116,20 +8910,20 @@ export const data = [
             name: 'amount',
             type: 'uint256',
             tags: ['decimals'],
-            description: ': how much token should be distributed',
+            description: 'How much token should be distributed.',
           },
           {
             internalType: 'uint256',
             name: 'duration',
             type: 'uint256',
-            description: ': how much time it will take to distribute the token',
+            description: 'How much time it will take to distribute the token.',
           },
         ],
         name: 'setRewards',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Sets the rewards that are to be distributed',
+        description: 'Sets the rewards that are to be distributed.',
       },
       {
         inputs: [
@@ -7138,35 +8932,14 @@ export const data = [
             name: 'amount',
             type: 'uint256',
             tags: ['decimals:contract:indirect:stakingToken', 'approval'],
-            description: ': how much token should be staked',
+            description: 'How much token should be staked.',
           },
         ],
         name: 'stake',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Stake a specified amount of tokens to earn rewards',
-      },
-      {
-        inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-        name: 'stakingQueue',
-        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [{ internalType: 'address', name: '', type: 'address' }],
-        name: 'stakingQueueAmounts',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            tags: ['decimals:contract:indirect:stakingToken'],
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
+        description: 'Stake a specified amount of tokens to earn rewards.',
       },
       {
         inputs: [],
@@ -7201,13 +8974,6 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'totalQueuedFunds',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
         name: 'totalSupply',
         outputs: [
           {
@@ -7228,12 +8994,12 @@ export const data = [
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'address The trusted forwarder',
+            description: 'address The trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the trusted forwarder',
+        description: 'Returns the trusted forwarder.',
       },
       {
         inputs: [
@@ -7242,14 +9008,15 @@ export const data = [
             name: 'amount',
             type: 'uint256',
             tags: ['decimals:contract:indirect:stakingToken'],
-            description: ': how much token should be unstaked',
+            description: 'How much token should be unstaked.',
           },
         ],
         name: 'unstake',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Unstake a specified amount of tokens and collect rewards',
+        description:
+          'Unstake a specified amount of tokens and collect rewards.',
       },
       {
         inputs: [],
@@ -7282,6 +9049,12 @@ export const data = [
             type: 'uint256',
             description: "The module's minor version.",
           },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: "The module's patch version.",
+          },
         ],
         stateMutability: 'view',
         type: 'function',
@@ -7309,9 +9082,15 @@ export const data = [
         name: 'Module__CallerNotAuthorized',
         type: 'error',
       },
+      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
       { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
       { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
       { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OnlyCallableByPaymentClient',
+        type: 'error',
+      },
       { inputs: [], name: 'NotInitializing', type: 'error' },
       {
         anonymous: false,
@@ -7336,28 +9115,33 @@ export const data = [
             name: 'parentOrchestrator',
             type: 'address',
             description:
-              'The address of the orchestrator the module is linked to.',
+              'The address of the {Orchestrator_v1} the module is linked to.',
           },
           {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
             indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The metadata of the module.',
           },
         ],
         name: 'ModuleInitialized',
@@ -7367,23 +9151,45 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to grant the role to.',
+          },
         ],
         name: 'grantModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to grant the role to.',
+          },
         ],
         name: 'grantModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to multiple target addresses.',
       },
       {
         inputs: [],
@@ -7419,6 +9225,11 @@ export const data = [
                 name: 'minorVersion',
                 type: 'uint256',
               },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
               { internalType: 'string', name: 'url', type: 'string' },
               { internalType: 'string', name: 'title', type: 'string' },
             ],
@@ -7450,12 +9261,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
+            description: 'bool Is the given address the trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
+        description: 'Checks if the provided address is the trusted forwarder.',
       },
       {
         inputs: [],
@@ -7465,33 +9276,55 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: '_0',
             type: 'address',
-            description: "The module's orchestrator.",
+            description: "The module's {Orchestrator_1}.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from multiple target addresses.',
       },
       {
         inputs: [
@@ -7525,12 +9358,12 @@ export const data = [
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'address The trusted forwarder',
+            description: 'address The trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the trusted forwarder',
+        description: 'Returns the trusted forwarder.',
       },
       {
         inputs: [],
@@ -7563,6 +9396,12 @@ export const data = [
             type: 'uint256',
             description: "The module's minor version.",
           },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: "The module's patch version.",
+          },
         ],
         stateMutability: 'view',
         type: 'function',
@@ -7578,37 +9417,9 @@ export const data = [
     deploymentInputs: {
       configData: [
         {
-          components: [
-            {
-              name: 'name',
-              type: 'string',
-              description: 'The name of the issuance token',
-            },
-            {
-              name: 'symbol',
-              type: 'string',
-              description: 'The symbol of the issuance token',
-            },
-            {
-              name: 'decimals',
-              type: 'uint8',
-              description:
-                'The decimals used within the issuance token ( should be bigger or equal to 7 and bigger or equel to the collateral token decimals )',
-            },
-            {
-              name: 'maxSupply',
-              type: 'uint256',
-              description: 'The max total supply of the token',
-              tags: ['decimals:params:exact:decimals'],
-            },
-          ],
           name: 'issuanceToken',
-          type: 'tuple',
-        },
-        {
-          name: 'tokenAdmin',
           type: 'address',
-          description: 'The admin of the token',
+          description: 'The address of the token that will be issued',
         },
         {
           components: [
@@ -7719,12 +9530,22 @@ export const data = [
       },
       {
         inputs: [],
+        name: 'Module__BondingCurveBase__InvalidMinAmountOut',
+        type: 'error',
+      },
+      {
+        inputs: [],
         name: 'Module__BondingCurveBase__InvalidRecipient',
         type: 'error',
       },
       {
         inputs: [],
         name: 'Module__BondingCurveBase__InvalidWithdrawAmount',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__BondingCurveBase__TradeAmountTooLow',
         type: 'error',
       },
       {
@@ -7737,7 +9558,17 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'Module__FM_BC_Bancor_Redeeming_VirtualSupply__InvalidDepositAmount',
+        name: 'Module__FM_BC_Bancor_Redeeming_VirtualSupply__CurveInteractionsMustBeClosed',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__FM_BC_Bancor_Redeeming_VirtualSupply__InvalidBancorFormula',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__FM_BC_Bancor_Redeeming_VirtualSupply__InvalidOrchestratorTokenWithdrawAmount',
         type: 'error',
       },
       {
@@ -7755,24 +9586,15 @@ export const data = [
         name: 'Module__FM_BC_Restricted_Bancor_Redeeming_VirtualSupply__FeatureDeactivated',
         type: 'error',
       },
-      {
-        inputs: [],
-        name: 'Module__FundingManager__CannotSelfDeposit',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__FundingManager__DepositCapReached',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__FundingManager__InvalidAddress',
-        type: 'error',
-      },
+      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
       { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
       { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
       { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OnlyCallableByPaymentClient',
+        type: 'error',
+      },
       {
         inputs: [],
         name: 'Module__RedeemingBondingCurveBase__InsufficientCollateralForRedemption',
@@ -7838,31 +9660,31 @@ export const data = [
         name: 'BuyFeeUpdated',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when buy fee is updated',
+        description: 'Event emitted when buy fee is updated.',
       },
       {
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint32',
             name: 'newBuyReserveRatio',
             type: 'uint32',
-            description: 'The new reserve ratio for buying',
+            description: 'The new reserve ratio for buying.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint32',
             name: 'oldBuyReserveRatio',
             type: 'uint32',
-            description: 'The old reserve ratio for buying',
+            description: 'The old reserve ratio for buying.',
           },
         ],
         name: 'BuyReserveRatioSet',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when the reserve ratio for buying is updated',
+          'Event emitted when the reserve ratio for buying is updated.',
       },
       {
         anonymous: false,
@@ -7870,7 +9692,7 @@ export const data = [
         name: 'BuyingDisabled',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when buying is closed',
+        description: 'Event emitted when buying is closed.',
       },
       {
         anonymous: false,
@@ -7878,38 +9700,7 @@ export const data = [
         name: 'BuyingEnabled',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when buying is opened',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: '_from',
-            type: 'address',
-            description: 'The address depositing tokens.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: '_for',
-            type: 'address',
-            description: 'The address that will receive the receipt tokens.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: '_amount',
-            type: 'uint256',
-            tags: ['decimals'],
-            description: 'The amount of tokens deposited.',
-          },
-        ],
-        name: 'Deposit',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a deposit takes place.',
+        description: 'Event emitted when buying is opened.',
       },
       {
         anonymous: false,
@@ -7931,20 +9722,20 @@ export const data = [
           {
             indexed: true,
             internalType: 'address',
-            name: 'oldToken',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
             name: 'issuanceToken',
             type: 'address',
           },
+          {
+            indexed: false,
+            internalType: 'uint8',
+            name: 'decimals',
+            type: 'uint8',
+          },
         ],
-        name: 'IssuanceTokenUpdated',
+        name: 'IssuanceTokenSet',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when the issuance token is updated',
+        description: 'Event emitted when the issuance token is updated.',
       },
       {
         anonymous: false,
@@ -7955,34 +9746,62 @@ export const data = [
             name: 'parentOrchestrator',
             type: 'address',
             description:
-              'The address of the orchestrator the module is linked to.',
+              'The address of the {Orchestrator_v1} the module is linked to.',
           },
           {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
             indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The metadata of the module.',
           },
         ],
         name: 'ModuleInitialized',
         type: 'event',
         outputs: [],
         description: 'Module has been initialized.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description:
+              "The token that serves as collateral token making up the curve's reserve.",
+          },
+          {
+            indexed: false,
+            internalType: 'uint8',
+            name: 'decimals',
+            type: 'uint8',
+          },
+        ],
+        name: 'OrchestratorTokenSet',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when collateral token has been set.',
       },
       {
         anonymous: false,
@@ -8004,7 +9823,7 @@ export const data = [
         name: 'ProjectCollateralFeeWithdrawn',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when project collateral fee is withdrawn',
+        description: 'Event emitted when project collateral fee is withdrawn.',
       },
       {
         anonymous: false,
@@ -8014,7 +9833,7 @@ export const data = [
             internalType: 'address',
             name: 'token',
             type: 'address',
-            description: 'The token minted as protocol fee',
+            description: 'The token minted as protocol fee.',
           },
           {
             indexed: true,
@@ -8022,7 +9841,7 @@ export const data = [
             name: 'treasury',
             type: 'address',
             description:
-              'The protocol treasury address receiving the token fee amount',
+              'The protocol treasury address receiving the token fee amount.',
           },
           {
             indexed: false,
@@ -8030,14 +9849,14 @@ export const data = [
             name: 'feeAmount',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The fee amount minted to the treasury',
+            description: 'The fee amount minted to the treasury.',
           },
         ],
         name: 'ProtocolFeeMinted',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when protocol fee has been minted to the treasury',
+          'Event emitted when protocol fee has been minted to the treasury.',
       },
       {
         anonymous: false,
@@ -8047,7 +9866,7 @@ export const data = [
             internalType: 'address',
             name: 'token',
             type: 'address',
-            description: 'The token received as protocol fee',
+            description: 'The token received as protocol fee.',
           },
           {
             indexed: true,
@@ -8055,7 +9874,7 @@ export const data = [
             name: 'treasury',
             type: 'address',
             description:
-              'The protocol treasury address receiving the token fee amount',
+              'The protocol treasury address receiving the token fee amount.',
           },
           {
             indexed: false,
@@ -8063,14 +9882,14 @@ export const data = [
             name: 'feeAmount',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The fee amount transferred to the treasury',
+            description: 'The fee amount transferred to the treasury.',
           },
         ],
         name: 'ProtocolFeeTransferred',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when protocol fee has been transferred to the treasury',
+          'Event emitted when protocol fee has been transferred to the treasury.',
       },
       {
         anonymous: false,
@@ -8080,44 +9899,44 @@ export const data = [
             internalType: 'uint256',
             name: 'newSellFee',
             type: 'uint256',
-            description: 'The new sell fee',
+            description: 'The new sell fee.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'oldSellFee',
             type: 'uint256',
-            description: 'The old sell fee',
+            description: 'The old sell fee.',
           },
         ],
         name: 'SellFeeUpdated',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when sell fee is updated',
+        description: 'Event emitted when sell fee is updated.',
       },
       {
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint32',
             name: 'newSellReserveRatio',
             type: 'uint32',
-            description: 'The new reserve ratio for selling',
+            description: 'The new reserve ratio for selling.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint32',
             name: 'oldSellReserveRatio',
             type: 'uint32',
-            description: 'The old reserve ratio for selling',
+            description: 'The old reserve ratio for selling.',
           },
         ],
         name: 'SellReserveRatioSet',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when the reserve ratio for selling is updated',
+          'Event emitted when the reserve ratio for selling is updated.',
       },
       {
         anonymous: false,
@@ -8125,7 +9944,7 @@ export const data = [
         name: 'SellingDisabled',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when selling is closed',
+        description: 'Event emitted when selling is closed.',
       },
       {
         anonymous: false,
@@ -8133,31 +9952,31 @@ export const data = [
         name: 'SellingEnabled',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when selling is opened',
+        description: 'Event emitted when selling is opened.',
       },
       {
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint8',
             name: 'oldDecimals',
             type: 'uint8',
-            description: 'The old decimals of the issuance token',
+            description: 'The old decimals of the issuance token.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint8',
             name: 'newDecimals',
             type: 'uint8',
-            description: 'The new decimals of the issuance token',
+            description: 'The new decimals of the issuance token.',
           },
         ],
         name: 'TokenDecimalsUpdated',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when the decimals of the issuance token are updated',
+          'Event emitted when the decimals of the issuance token are updated.',
       },
       {
         anonymous: false,
@@ -8196,7 +10015,7 @@ export const data = [
         name: 'TokensBought',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when tokens have been succesfully issued',
+        description: 'Event emitted when tokens have been succesfully issued.',
       },
       {
         anonymous: false,
@@ -8235,7 +10054,8 @@ export const data = [
         name: 'TokensSold',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when tokens have been succesfully redeemed',
+        description:
+          'Event emitted when tokens have been succesfully redeemed.',
       },
       {
         anonymous: false,
@@ -8284,7 +10104,7 @@ export const data = [
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when virtual collateral amount has been added',
+          'Event emitted when virtual collateral amount has been added.',
       },
       {
         anonymous: false,
@@ -8308,7 +10128,7 @@ export const data = [
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when virtual collateral amount has been subtracted',
+          'Event emitted when virtual collateral amount has been subtracted.',
       },
       {
         anonymous: false,
@@ -8332,7 +10152,7 @@ export const data = [
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when virtual collateral supply has been set',
+          'Event emitted when virtual collateral supply has been set.',
       },
       {
         anonymous: false,
@@ -8343,7 +10163,7 @@ export const data = [
             name: 'amountAdded',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The amount added to the virtual issuance supply',
+            description: 'The amount added to the virtual issuance supply.',
           },
           {
             indexed: false,
@@ -8351,14 +10171,14 @@ export const data = [
             name: 'newSupply',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The new virtual issuance supply',
+            description: 'The new virtual issuance supply.',
           },
         ],
         name: 'VirtualIssuanceAmountAdded',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when virtual issuance amount has been added',
+          'Event emitted when virtual issuance amount has been added.',
       },
       {
         anonymous: false,
@@ -8370,7 +10190,7 @@ export const data = [
             type: 'uint256',
             tags: ['decimals'],
             description:
-              'The amount subtracted from the virtual issuance supply',
+              'The amount subtracted from the virtual issuance supply.',
           },
           {
             indexed: false,
@@ -8378,14 +10198,14 @@ export const data = [
             name: 'newSupply',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The new virtual issuance supply',
+            description: 'The new virtual issuance supply.',
           },
         ],
         name: 'VirtualIssuanceAmountSubtracted',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when virtual issuance amount has ben subtracted',
+          'Event emitted when virtual issuance amount has ben subtracted.',
       },
       {
         anonymous: false,
@@ -8396,7 +10216,7 @@ export const data = [
             name: 'newSupply',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The new virtual issuance supply',
+            description: 'The new virtual issuance supply.',
           },
           {
             indexed: false,
@@ -8404,44 +10224,13 @@ export const data = [
             name: 'oldSupply',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The old virtual issuance supply',
+            description: 'The old virtual issuance supply.',
           },
         ],
         name: 'VirtualIssuanceSupplySet',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when virtual issuance supply has been set',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: '_from',
-            type: 'address',
-            description: 'The address supplying the receipt tokens.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: '_for',
-            type: 'address',
-            description: 'The address that will receive the underlying tokens.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: '_amount',
-            type: 'uint256',
-            tags: ['decimals'],
-            description: 'The amount of underlying tokens withdrawn.',
-          },
-        ],
-        name: 'Withdrawal',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a withdrawal takes place.',
+        description: 'Event emitted when virtual issuance supply has been set.',
       },
       {
         inputs: [],
@@ -8526,6 +10315,7 @@ export const data = [
             internalType: 'uint256',
             name: '_depositAmount',
             type: 'uint256',
+            tags: ['decimals'],
             description: 'The amount of tokens deposited by the user.',
           },
         ],
@@ -8551,6 +10341,7 @@ export const data = [
             internalType: 'uint256',
             name: '_depositAmount',
             type: 'uint256',
+            tags: ['decimals:contract:indirect:getIssuanceToken'],
             description: 'The amount of tokens deposited by the user.',
           },
         ],
@@ -8605,7 +10396,7 @@ export const data = [
         outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the address of the issuance token',
+        description: 'Returns the address of the issuance token.',
       },
       {
         inputs: [],
@@ -8615,13 +10406,13 @@ export const data = [
             internalType: 'uint32',
             name: '_0',
             type: 'uint32',
-            description: 'Reserve Ratio for buying',
+            description: 'Reserve Ratio for buying.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Returns reserve ratio set for buying, used in the Bancor Formula contract',
+          'Returns reserve ratio set for buying, used in the {BancorFormula} contract.',
       },
       {
         inputs: [],
@@ -8631,13 +10422,13 @@ export const data = [
             internalType: 'uint32',
             name: '_0',
             type: 'uint32',
-            description: 'Reserve Ratio for selling',
+            description: 'Reserve Ratio for selling.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Returns reserve ratio set for selling, used in the Bancor Formula contract',
+          'Returns reserve ratio set for selling, used in the {BancorFormula} contract.',
       },
       {
         inputs: [],
@@ -8647,7 +10438,7 @@ export const data = [
             internalType: 'uint256',
             name: '_0',
             type: 'uint256',
-            description: 'uint The static price for buying the issuance token',
+            description: 'uint The static price for buying the issuance token.',
           },
         ],
         stateMutability: 'view',
@@ -8663,7 +10454,8 @@ export const data = [
             internalType: 'uint256',
             name: '_0',
             type: 'uint256',
-            description: 'uint The static price for selling the issuance token',
+            description:
+              'uint The static price for selling the issuance token.',
           },
         ],
         stateMutability: 'view',
@@ -8703,23 +10495,45 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to grant the role to.',
+          },
         ],
         name: 'grantModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to grant the role to.',
+          },
         ],
         name: 'grantModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to multiple target addresses.',
       },
       {
         inputs: [],
@@ -8753,6 +10567,11 @@ export const data = [
               {
                 internalType: 'uint256',
                 name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
                 type: 'uint256',
               },
               { internalType: 'string', name: 'url', type: 'string' },
@@ -8792,24 +10611,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
+            description: 'bool Is the given address the trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: '', type: 'address' },
-          { internalType: 'uint256', name: '', type: 'uint256' },
-        ],
-        name: 'mintIssuanceTokenTo',
-        outputs: [],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Mints a specified amount of Issuance Tokens to a designated receiver address. Deactivated in this implementation..',
+        description: 'Checks if the provided address is the trusted forwarder.',
       },
       {
         inputs: [],
@@ -8835,42 +10642,71 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: '_0',
             type: 'address',
-            description: "The module's orchestrator.",
+            description: "The module's {Orchestrator_1}.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
       },
       {
         inputs: [],
         name: 'projectCollateralFeeCollected',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Accumulated project trading fees collected from deposits made by users when engaging with the bonding curve-based funding manager. Collected in collateral',
+          'Accumulated project trading fees collected from deposits made by users when engaging with the bonding curve-based funding manager. Collected in collateral.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from multiple target addresses.',
       },
       {
         inputs: [
@@ -8895,12 +10731,19 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          "Sell collateral for the sender's address. This function is subject to a transactional limit, determined by the issuing token's decimal precision and the underlying bonding curve algorithm.",
+          "Redeem collateral for the sender's address. This function is subject to a transactional limit, determined by the issuing token's decimal precision and the underlying bonding curve algorithm.",
       },
       {
         inputs: [],
         name: 'sellFee',
         outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'sellIsOpen',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
         stateMutability: 'view',
         type: 'function',
       },
@@ -8916,7 +10759,6 @@ export const data = [
             internalType: 'uint256',
             name: '_depositAmount',
             type: 'uint256',
-            tags: ['decimals:contract:indirect:getIssuanceToken', 'approval'],
             description: 'The amount of issued token to deposited.',
           },
           {
@@ -8927,19 +10769,12 @@ export const data = [
               'The minimum acceptable amount the user expects to receive from the transaction.',
           },
         ],
-        name: 'sellFor',
+        name: 'sellTo',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          "Redeem tokens on behalf of a specified receiver address. This function is subject to a transactional limit, determined by the issuing token's decimal precision and the underlying bonding curve algorithm.",
-      },
-      {
-        inputs: [],
-        name: 'sellIsOpen',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
+          "Redeem tokens and direct the proceeds to a specified receiver address. This function is subject to a transactional limit, determined by the issuing token's decimal precision and the underlying bonding curve algorithm.",
       },
       {
         inputs: [
@@ -8955,7 +10790,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Sets the fee percentage for buying tokens, payed in collateral',
+          'Sets the fee percentage for buying tokens, payed in collateral.',
       },
       {
         inputs: [
@@ -9003,7 +10838,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Sets the fee percentage for selling collateral, payed in collateral',
+          'Sets the fee percentage for selling collateral, payed in collateral.',
       },
       {
         inputs: [
@@ -9065,22 +10900,39 @@ export const data = [
         inputs: [],
         name: 'token',
         outputs: [
-          { internalType: 'contract IERC20', name: '_0', type: 'address' },
+          {
+            internalType: 'contract IERC20',
+            name: '_0',
+            type: 'address',
+            description: 'The token.',
+          },
         ],
         stateMutability: 'view',
         type: 'function',
+        description: 'Returns the token.',
       },
       {
         inputs: [
-          { internalType: 'address', name: '', type: 'address' },
-          { internalType: 'uint256', name: '', type: 'uint256' },
+          {
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+            description: 'The address that will receive the tokens.',
+          },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'The amount of tokens to be transfered.',
+          },
         ],
         name: 'transferOrchestratorToken',
         outputs: [],
-        stateMutability: 'view',
+        stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Transfer a specified amount of Tokens to a designated receiver address. Deactivated in this implementation.',
+          'Transfer a specified amount of Tokens to a designated receiver address.',
       },
       {
         inputs: [],
@@ -9090,12 +10942,12 @@ export const data = [
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'address The trusted forwarder',
+            description: 'address The trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the trusted forwarder',
+        description: 'Returns the trusted forwarder.',
       },
       {
         inputs: [],
@@ -9128,6 +10980,12 @@ export const data = [
             type: 'uint256',
             description: "The module's minor version.",
           },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: "The module's patch version.",
+          },
         ],
         stateMutability: 'view',
         type: 'function',
@@ -9135,34 +10993,39 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'address', name: '_receiver', type: 'address' },
+          {
+            internalType: 'address',
+            name: '_receiver',
+            type: 'address',
+            description: 'The address that will receive the fee.',
+          },
           {
             internalType: 'uint256',
             name: '_amount',
             type: 'uint256',
             tags: ['decimals'],
+            description: 'The amount of fee to withdraw.',
           },
         ],
         name: 'withdrawProjectCollateralFee',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Withdraw project collateral fee to the receiver address',
+        description: 'Withdraw project collateral fee to the receiver address.',
       },
     ],
   },
   {
-    name: 'FM_Rebasing_v1',
+    name: 'FM_DepositVault_v1',
     description:
-      'This contract manages the issuance and redemption of rebasable funding tokens within the Inverter Network. It supports operations like deposits and withdrawals, implementing dynamic supply adjustments to maintain proportional ownership.',
+      'This contract allows users to deposit tokens to fund the workflow.',
     moduleType: 'fundingManager',
     deploymentInputs: {
       configData: [
         {
           name: 'orchestratorTokenAddress',
-          description:
-            'The address of the token that will be deposited to the funding manager',
           type: 'address',
+          description: 'The distribution token of the funding manager',
         },
       ],
     },
@@ -9178,10 +11041,7 @@ export const data = [
         type: 'error',
       },
       { inputs: [], name: 'FailedInnerCall', type: 'error' },
-      { inputs: [], name: 'InvalidAmount', type: 'error' },
       { inputs: [], name: 'InvalidInitialization', type: 'error' },
-      { inputs: [], name: 'InvalidRecipient', type: 'error' },
-      { inputs: [], name: 'MaxSupplyReached', type: 'error' },
       {
         inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
         name: 'Module_OrchestratorCallbackFailed',
@@ -9195,24 +11055,15 @@ export const data = [
         name: 'Module__CallerNotAuthorized',
         type: 'error',
       },
-      {
-        inputs: [],
-        name: 'Module__FundingManager__CannotSelfDeposit',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__FundingManager__DepositCapReached',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__FundingManager__InvalidAddress',
-        type: 'error',
-      },
+      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
       { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
       { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
       { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OnlyCallableByPaymentClient',
+        type: 'error',
+      },
       { inputs: [], name: 'NotInitializing', type: 'error' },
       {
         inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
@@ -9225,43 +11076,9 @@ export const data = [
           {
             indexed: true,
             internalType: 'address',
-            name: 'owner',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'spender',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'value',
-            type: 'uint256',
-            tags: ['decimals'],
-          },
-        ],
-        name: 'Approval',
-        type: 'event',
-        outputs: [],
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
             name: '_from',
             type: 'address',
             description: 'The address depositing tokens.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: '_for',
-            type: 'address',
-            description: 'The address that will receive the receipt tokens.',
           },
           {
             indexed: false,
@@ -9300,28 +11117,33 @@ export const data = [
             name: 'parentOrchestrator',
             type: 'address',
             description:
-              'The address of the orchestrator the module is linked to.',
+              'The address of the {Orchestrator_v1} the module is linked to.',
           },
           {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
             indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The metadata of the module.',
           },
         ],
         name: 'ModuleInitialized',
@@ -9334,50 +11156,23 @@ export const data = [
         inputs: [
           {
             indexed: true,
-            internalType: 'uint256',
-            name: 'epoch',
-            type: 'uint256',
-            description: 'The number of rebases since inception.',
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description:
+              "The token that serves as collateral token making up the curve's reserve.",
           },
           {
             indexed: false,
-            internalType: 'uint256',
-            name: 'newScalar',
-            type: 'uint256',
-            description: 'The new scalar.',
+            internalType: 'uint8',
+            name: 'decimals',
+            type: 'uint8',
           },
         ],
-        name: 'Rebase',
+        name: 'OrchestratorTokenSet',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when the balance scalar is updated.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'from',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'to',
-            type: 'address',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'value',
-            type: 'uint256',
-            tags: ['decimals'],
-          },
-        ],
-        name: 'Transfer',
-        type: 'event',
-        outputs: [],
+        description: 'Event emitted when collateral token has been set.',
       },
       {
         anonymous: false,
@@ -9405,206 +11200,63 @@ export const data = [
           'Event emitted when a transferal of orchestrator tokens takes place.',
       },
       {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: '_from',
-            type: 'address',
-            description: 'The address supplying the receipt tokens.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: '_for',
-            type: 'address',
-            description: 'The address that will receive the underlying tokens.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: '_amount',
-            type: 'uint256',
-            tags: ['decimals'],
-            description: 'The amount of underlying tokens withdrawn.',
-          },
-        ],
-        name: 'Withdrawal',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a withdrawal takes place.',
-      },
-      {
-        inputs: [],
-        name: 'DOMAIN_SEPARATOR',
-        outputs: [
-          {
-            internalType: 'bytes32',
-            name: '_0',
-            type: 'bytes32',
-            description: 'The EIP-712 domain separator hash.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the EIP-712 domain separator hash.',
-      },
-      {
-        inputs: [],
-        name: 'EIP712_DOMAIN',
-        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'The EIP-712 domain hash.',
-      },
-      {
-        inputs: [],
-        name: 'EIP712_REVISION',
-        outputs: [{ internalType: 'string', name: '_0', type: 'string' }],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'The EIP-712 version.',
-      },
-      {
-        inputs: [],
-        name: 'PERMIT_TYPEHASH',
-        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'The EIP-2612 permit hash.',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'owner_', type: 'address' },
-          { internalType: 'address', name: 'spender', type: 'address' },
-        ],
-        name: 'allowance',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            tags: ['decimals'],
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'spender', type: 'address' },
-          {
-            internalType: 'uint256',
-            name: 'tokens',
-            type: 'uint256',
-            tags: ['decimals'],
-          },
-        ],
-        name: 'approve',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [{ internalType: 'address', name: 'who', type: 'address' }],
-        name: 'balanceOf',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            tags: ['decimals'],
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'decimals',
-        outputs: [{ internalType: 'uint8', name: '_0', type: 'uint8' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'spender',
-            type: 'address',
-            description: 'The address of the spender.',
-          },
-          {
-            internalType: 'uint256',
-            name: 'tokens',
-            type: 'uint256',
-            tags: ['decimals'],
-            description: 'The amount of tokens to decrease allowance by.',
-          },
-        ],
-        name: 'decreaseAllowance',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'True if successful.',
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Decreases the amount of tokens that msg.sender has allowed to spender.',
-      },
-      {
         inputs: [
           {
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            tags: ['decimals', 'approval'],
+            tags: ['decimals'],
+            description: 'The number of tokens to deposit.',
           },
         ],
         name: 'deposit',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description:
+          "Deposits a specified amount of tokens into the contract from the sender's account.",
       },
       {
         inputs: [
-          { internalType: 'address', name: 'to', type: 'address' },
           {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tags: ['decimals', 'approval'],
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
           },
-        ],
-        name: 'depositFor',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to grant the role to.',
+          },
         ],
         name: 'grantModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to grant the role to.',
+          },
         ],
         name: 'grantModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to multiple target addresses.',
       },
       {
         inputs: [],
@@ -9624,36 +11276,6 @@ export const data = [
       {
         inputs: [
           {
-            internalType: 'address',
-            name: 'spender',
-            type: 'address',
-            description: 'The address of the spender.',
-          },
-          {
-            internalType: 'uint256',
-            name: 'tokens',
-            type: 'uint256',
-            tags: ['decimals'],
-            description: 'The amount of tokens to increase allowance by.',
-          },
-        ],
-        name: 'increaseAllowance',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'True if successful.',
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Increases the amount of tokens that msg.sender has allowed to spender.',
-      },
-      {
-        inputs: [
-          {
             internalType: 'contract IOrchestrator_v1',
             name: 'orchestrator_',
             type: 'address',
@@ -9668,6 +11290,11 @@ export const data = [
               {
                 internalType: 'uint256',
                 name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
                 type: 'uint256',
               },
               { internalType: 'string', name: 'url', type: 'string' },
@@ -9707,41 +11334,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
+            description: 'bool Is the given address the trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
-      },
-      {
-        inputs: [],
-        name: 'name',
-        outputs: [{ internalType: 'string', name: '_0', type: 'string' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'who',
-            type: 'address',
-            description: 'The address to check the number of permits for.',
-          },
-        ],
-        name: 'nonces',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            description: 'The number of successful permits.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the number of successful permits for an address.',
+        description: 'Checks if the provided address is the trusted forwarder.',
       },
       {
         inputs: [],
@@ -9751,100 +11349,55 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: '_0',
             type: 'address',
-            description: "The module's orchestrator.",
+            description: "The module's {Orchestrator_1}.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
       },
       {
         inputs: [
-          { internalType: 'address', name: 'owner', type: 'address' },
-          { internalType: 'address', name: 'spender', type: 'address' },
           {
-            internalType: 'uint256',
-            name: 'value',
-            type: 'uint256',
-            tags: ['decimals'],
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
           },
-          { internalType: 'uint256', name: 'deadline', type: 'uint256' },
-          { internalType: 'uint8', name: 'v', type: 'uint8' },
-          { internalType: 'bytes32', name: 'r', type: 'bytes32' },
-          { internalType: 'bytes32', name: 's', type: 'bytes32' },
-        ],
-        name: 'permit',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Sets the amount of tokens that owner has allowed to spender.',
-      },
-      {
-        inputs: [],
-        name: 'rebase',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Triggers the next rebase, if applicable.',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'who',
-            type: 'address',
-            description: 'The address to query.',
-          },
-        ],
-        name: 'scaledBalanceOf',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            tags: ['decimals'],
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the fixed balance of the specified address.',
-      },
-      {
-        inputs: [],
-        name: 'scaledTotalSupply',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            tags: ['decimals'],
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the total fixed supply.',
+        description: 'Revokes a module role from multiple target addresses.',
       },
       {
         inputs: [
@@ -9852,13 +11405,6 @@ export const data = [
         ],
         name: 'supportsInterface',
         outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'symbol',
-        outputs: [{ internalType: 'string', name: '_0', type: 'string' }],
         stateMutability: 'view',
         type: 'function',
       },
@@ -9881,99 +11427,16 @@ export const data = [
         inputs: [],
         name: 'token',
         outputs: [
-          { internalType: 'contract IERC20', name: '_0', type: 'address' },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'totalSupply',
-        outputs: [
           {
-            internalType: 'uint256',
+            internalType: 'contract IERC20',
             name: '_0',
-            type: 'uint256',
-            tags: ['decimals'],
+            type: 'address',
+            description: 'The token.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'to', type: 'address' },
-          {
-            internalType: 'uint256',
-            name: 'tokens',
-            type: 'uint256',
-            tags: ['decimals'],
-          },
-        ],
-        name: 'transfer',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'to',
-            type: 'address',
-            description: 'The address to transfer to.',
-          },
-        ],
-        name: 'transferAll',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'True on success, false otherwise.',
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          "Transfer all of the sender's balance to a specified address.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'from',
-            type: 'address',
-            description: 'The address to send tokens from.',
-          },
-          {
-            internalType: 'address',
-            name: 'to',
-            type: 'address',
-            description: 'The address to transfer to.',
-          },
-        ],
-        name: 'transferAllFrom',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Transfer all balance tokens from one address to another.',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'from', type: 'address' },
-          { internalType: 'address', name: 'to', type: 'address' },
-          {
-            internalType: 'uint256',
-            name: 'tokens',
-            type: 'uint256',
-            tags: ['decimals'],
-          },
-        ],
-        name: 'transferFrom',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'nonpayable',
-        type: 'function',
+        description: 'Returns the token.',
       },
       {
         inputs: [
@@ -10006,12 +11469,12 @@ export const data = [
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'address The trusted forwarder',
+            description: 'address The trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the trusted forwarder',
+        description: 'Returns the trusted forwarder.',
       },
       {
         inputs: [],
@@ -10044,81 +11507,30 @@ export const data = [
             type: 'uint256',
             description: "The module's minor version.",
           },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: "The module's patch version.",
+          },
         ],
         stateMutability: 'view',
         type: 'function',
         description: "Returns the module's version.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tags: ['decimals'],
-          },
-        ],
-        name: 'withdraw',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'to', type: 'address' },
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tags: ['decimals'],
-          },
-        ],
-        name: 'withdrawTo',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
       },
     ],
   },
   {
     name: 'FM_BC_Bancor_Redeeming_VirtualSupply_v1',
     description:
-      "This contract enables the issuance and redeeming of tokens on a bonding curve, using a virtual supply for both the issuance and the collateral as input. It integrates Aragon's Bancor Formula to manage the calculations for token issuance and redemption rates based on specified reserve ratios.",
+      "This contract enables the issuance and redeeming of tokens on a bonding curve, using a virtual supply for both the issuance and the collateral as input. It integrates Aragon's {BancorFormula} to manage the calculations for token issuance and redemption rates based on specified reserve ratios.",
     moduleType: 'fundingManager',
     deploymentInputs: {
       configData: [
         {
-          components: [
-            {
-              name: 'name',
-              type: 'string',
-              description: 'The name of the issuance token',
-            },
-            {
-              name: 'symbol',
-              type: 'string',
-              description: 'The symbol of the issuance token',
-            },
-            {
-              name: 'decimals',
-              type: 'uint8',
-              description:
-                'The decimals used within the issuance token ( should be bigger or equal to 7 and bigger or equel to the collateral token decimals )',
-            },
-            {
-              name: 'maxSupply',
-              type: 'uint256',
-              description: 'The max total supply of the token',
-              tags: ['decimals:params:exact:decimals'],
-            },
-          ],
           name: 'issuanceToken',
-          type: 'tuple',
-        },
-        {
-          name: 'tokenAdmin',
           type: 'address',
-          description: 'The admin of the token',
+          description: 'The address of the token that will be issued',
         },
         {
           components: [
@@ -10229,12 +11641,22 @@ export const data = [
       },
       {
         inputs: [],
+        name: 'Module__BondingCurveBase__InvalidMinAmountOut',
+        type: 'error',
+      },
+      {
+        inputs: [],
         name: 'Module__BondingCurveBase__InvalidRecipient',
         type: 'error',
       },
       {
         inputs: [],
         name: 'Module__BondingCurveBase__InvalidWithdrawAmount',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__BondingCurveBase__TradeAmountTooLow',
         type: 'error',
       },
       {
@@ -10247,7 +11669,17 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'Module__FM_BC_Bancor_Redeeming_VirtualSupply__InvalidDepositAmount',
+        name: 'Module__FM_BC_Bancor_Redeeming_VirtualSupply__CurveInteractionsMustBeClosed',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__FM_BC_Bancor_Redeeming_VirtualSupply__InvalidBancorFormula',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__FM_BC_Bancor_Redeeming_VirtualSupply__InvalidOrchestratorTokenWithdrawAmount',
         type: 'error',
       },
       {
@@ -10260,24 +11692,15 @@ export const data = [
         name: 'Module__FM_BC_Bancor_Redeeming_VirtualSupply__InvalidTokenDecimal',
         type: 'error',
       },
-      {
-        inputs: [],
-        name: 'Module__FundingManager__CannotSelfDeposit',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__FundingManager__DepositCapReached',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__FundingManager__InvalidAddress',
-        type: 'error',
-      },
+      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
       { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
       { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
       { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OnlyCallableByPaymentClient',
+        type: 'error',
+      },
       {
         inputs: [],
         name: 'Module__RedeemingBondingCurveBase__InsufficientCollateralForRedemption',
@@ -10343,31 +11766,31 @@ export const data = [
         name: 'BuyFeeUpdated',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when buy fee is updated',
+        description: 'Event emitted when buy fee is updated.',
       },
       {
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint32',
             name: 'newBuyReserveRatio',
             type: 'uint32',
-            description: 'The new reserve ratio for buying',
+            description: 'The new reserve ratio for buying.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint32',
             name: 'oldBuyReserveRatio',
             type: 'uint32',
-            description: 'The old reserve ratio for buying',
+            description: 'The old reserve ratio for buying.',
           },
         ],
         name: 'BuyReserveRatioSet',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when the reserve ratio for buying is updated',
+          'Event emitted when the reserve ratio for buying is updated.',
       },
       {
         anonymous: false,
@@ -10375,7 +11798,7 @@ export const data = [
         name: 'BuyingDisabled',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when buying is closed',
+        description: 'Event emitted when buying is closed.',
       },
       {
         anonymous: false,
@@ -10383,38 +11806,7 @@ export const data = [
         name: 'BuyingEnabled',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when buying is opened',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: '_from',
-            type: 'address',
-            description: 'The address depositing tokens.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: '_for',
-            type: 'address',
-            description: 'The address that will receive the receipt tokens.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: '_amount',
-            type: 'uint256',
-            tags: ['decimals'],
-            description: 'The amount of tokens deposited.',
-          },
-        ],
-        name: 'Deposit',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a deposit takes place.',
+        description: 'Event emitted when buying is opened.',
       },
       {
         anonymous: false,
@@ -10436,20 +11828,20 @@ export const data = [
           {
             indexed: true,
             internalType: 'address',
-            name: 'oldToken',
-            type: 'address',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
             name: 'issuanceToken',
             type: 'address',
           },
+          {
+            indexed: false,
+            internalType: 'uint8',
+            name: 'decimals',
+            type: 'uint8',
+          },
         ],
-        name: 'IssuanceTokenUpdated',
+        name: 'IssuanceTokenSet',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when the issuance token is updated',
+        description: 'Event emitted when the issuance token is updated.',
       },
       {
         anonymous: false,
@@ -10460,34 +11852,62 @@ export const data = [
             name: 'parentOrchestrator',
             type: 'address',
             description:
-              'The address of the orchestrator the module is linked to.',
+              'The address of the {Orchestrator_v1} the module is linked to.',
           },
           {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
             indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The metadata of the module.',
           },
         ],
         name: 'ModuleInitialized',
         type: 'event',
         outputs: [],
         description: 'Module has been initialized.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description:
+              "The token that serves as collateral token making up the curve's reserve.",
+          },
+          {
+            indexed: false,
+            internalType: 'uint8',
+            name: 'decimals',
+            type: 'uint8',
+          },
+        ],
+        name: 'OrchestratorTokenSet',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when collateral token has been set.',
       },
       {
         anonymous: false,
@@ -10509,7 +11929,7 @@ export const data = [
         name: 'ProjectCollateralFeeWithdrawn',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when project collateral fee is withdrawn',
+        description: 'Event emitted when project collateral fee is withdrawn.',
       },
       {
         anonymous: false,
@@ -10519,7 +11939,7 @@ export const data = [
             internalType: 'address',
             name: 'token',
             type: 'address',
-            description: 'The token minted as protocol fee',
+            description: 'The token minted as protocol fee.',
           },
           {
             indexed: true,
@@ -10527,7 +11947,7 @@ export const data = [
             name: 'treasury',
             type: 'address',
             description:
-              'The protocol treasury address receiving the token fee amount',
+              'The protocol treasury address receiving the token fee amount.',
           },
           {
             indexed: false,
@@ -10535,14 +11955,14 @@ export const data = [
             name: 'feeAmount',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The fee amount minted to the treasury',
+            description: 'The fee amount minted to the treasury.',
           },
         ],
         name: 'ProtocolFeeMinted',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when protocol fee has been minted to the treasury',
+          'Event emitted when protocol fee has been minted to the treasury.',
       },
       {
         anonymous: false,
@@ -10552,7 +11972,7 @@ export const data = [
             internalType: 'address',
             name: 'token',
             type: 'address',
-            description: 'The token received as protocol fee',
+            description: 'The token received as protocol fee.',
           },
           {
             indexed: true,
@@ -10560,7 +11980,7 @@ export const data = [
             name: 'treasury',
             type: 'address',
             description:
-              'The protocol treasury address receiving the token fee amount',
+              'The protocol treasury address receiving the token fee amount.',
           },
           {
             indexed: false,
@@ -10568,14 +11988,14 @@ export const data = [
             name: 'feeAmount',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The fee amount transferred to the treasury',
+            description: 'The fee amount transferred to the treasury.',
           },
         ],
         name: 'ProtocolFeeTransferred',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when protocol fee has been transferred to the treasury',
+          'Event emitted when protocol fee has been transferred to the treasury.',
       },
       {
         anonymous: false,
@@ -10585,44 +12005,44 @@ export const data = [
             internalType: 'uint256',
             name: 'newSellFee',
             type: 'uint256',
-            description: 'The new sell fee',
+            description: 'The new sell fee.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'oldSellFee',
             type: 'uint256',
-            description: 'The old sell fee',
+            description: 'The old sell fee.',
           },
         ],
         name: 'SellFeeUpdated',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when sell fee is updated',
+        description: 'Event emitted when sell fee is updated.',
       },
       {
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint32',
             name: 'newSellReserveRatio',
             type: 'uint32',
-            description: 'The new reserve ratio for selling',
+            description: 'The new reserve ratio for selling.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint32',
             name: 'oldSellReserveRatio',
             type: 'uint32',
-            description: 'The old reserve ratio for selling',
+            description: 'The old reserve ratio for selling.',
           },
         ],
         name: 'SellReserveRatioSet',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when the reserve ratio for selling is updated',
+          'Event emitted when the reserve ratio for selling is updated.',
       },
       {
         anonymous: false,
@@ -10630,7 +12050,7 @@ export const data = [
         name: 'SellingDisabled',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when selling is closed',
+        description: 'Event emitted when selling is closed.',
       },
       {
         anonymous: false,
@@ -10638,31 +12058,31 @@ export const data = [
         name: 'SellingEnabled',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when selling is opened',
+        description: 'Event emitted when selling is opened.',
       },
       {
         anonymous: false,
         inputs: [
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint8',
             name: 'oldDecimals',
             type: 'uint8',
-            description: 'The old decimals of the issuance token',
+            description: 'The old decimals of the issuance token.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'uint8',
             name: 'newDecimals',
             type: 'uint8',
-            description: 'The new decimals of the issuance token',
+            description: 'The new decimals of the issuance token.',
           },
         ],
         name: 'TokenDecimalsUpdated',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when the decimals of the issuance token are updated',
+          'Event emitted when the decimals of the issuance token are updated.',
       },
       {
         anonymous: false,
@@ -10701,7 +12121,7 @@ export const data = [
         name: 'TokensBought',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when tokens have been succesfully issued',
+        description: 'Event emitted when tokens have been succesfully issued.',
       },
       {
         anonymous: false,
@@ -10740,7 +12160,8 @@ export const data = [
         name: 'TokensSold',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when tokens have been succesfully redeemed',
+        description:
+          'Event emitted when tokens have been succesfully redeemed.',
       },
       {
         anonymous: false,
@@ -10789,7 +12210,7 @@ export const data = [
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when virtual collateral amount has been added',
+          'Event emitted when virtual collateral amount has been added.',
       },
       {
         anonymous: false,
@@ -10813,7 +12234,7 @@ export const data = [
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when virtual collateral amount has been subtracted',
+          'Event emitted when virtual collateral amount has been subtracted.',
       },
       {
         anonymous: false,
@@ -10837,7 +12258,7 @@ export const data = [
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when virtual collateral supply has been set',
+          'Event emitted when virtual collateral supply has been set.',
       },
       {
         anonymous: false,
@@ -10848,7 +12269,7 @@ export const data = [
             name: 'amountAdded',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The amount added to the virtual issuance supply',
+            description: 'The amount added to the virtual issuance supply.',
           },
           {
             indexed: false,
@@ -10856,14 +12277,14 @@ export const data = [
             name: 'newSupply',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The new virtual issuance supply',
+            description: 'The new virtual issuance supply.',
           },
         ],
         name: 'VirtualIssuanceAmountAdded',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when virtual issuance amount has been added',
+          'Event emitted when virtual issuance amount has been added.',
       },
       {
         anonymous: false,
@@ -10875,7 +12296,7 @@ export const data = [
             type: 'uint256',
             tags: ['decimals'],
             description:
-              'The amount subtracted from the virtual issuance supply',
+              'The amount subtracted from the virtual issuance supply.',
           },
           {
             indexed: false,
@@ -10883,14 +12304,14 @@ export const data = [
             name: 'newSupply',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The new virtual issuance supply',
+            description: 'The new virtual issuance supply.',
           },
         ],
         name: 'VirtualIssuanceAmountSubtracted',
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when virtual issuance amount has ben subtracted',
+          'Event emitted when virtual issuance amount has ben subtracted.',
       },
       {
         anonymous: false,
@@ -10901,7 +12322,7 @@ export const data = [
             name: 'newSupply',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The new virtual issuance supply',
+            description: 'The new virtual issuance supply.',
           },
           {
             indexed: false,
@@ -10909,44 +12330,13 @@ export const data = [
             name: 'oldSupply',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The old virtual issuance supply',
+            description: 'The old virtual issuance supply.',
           },
         ],
         name: 'VirtualIssuanceSupplySet',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when virtual issuance supply has been set',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: '_from',
-            type: 'address',
-            description: 'The address supplying the receipt tokens.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: '_for',
-            type: 'address',
-            description: 'The address that will receive the underlying tokens.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: '_amount',
-            type: 'uint256',
-            tags: ['decimals'],
-            description: 'The amount of underlying tokens withdrawn.',
-          },
-        ],
-        name: 'Withdrawal',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a withdrawal takes place.',
+        description: 'Event emitted when virtual issuance supply has been set.',
       },
       {
         inputs: [
@@ -10954,14 +12344,14 @@ export const data = [
             internalType: 'uint256',
             name: '_depositAmount',
             type: 'uint256',
-            tags: ['decimals'],
+            tags: ['decimals', 'approval'],
             description: 'The amount of collateral token depoisited.',
           },
           {
             internalType: 'uint256',
             name: '_minAmountOut',
             type: 'uint256',
-            tags: ['decimals:contract:indirect:getIssuanceToken', 'approval'],
+            tags: ['decimals:contract:indirect:getIssuanceToken'],
             description:
               'The minimum acceptable amount the user expects to receive from the transaction.',
           },
@@ -10992,14 +12382,14 @@ export const data = [
             internalType: 'uint256',
             name: '_depositAmount',
             type: 'uint256',
-            tags: ['decimals'],
+            tags: ['decimals', 'approval'],
             description: 'The amount of collateral token depoisited.',
           },
           {
             internalType: 'uint256',
             name: '_minAmountOut',
             type: 'uint256',
-            tags: ['decimals:contract:indirect:getIssuanceToken', 'approval'],
+            tags: ['decimals:contract:indirect:getIssuanceToken'],
             description:
               'The minimum acceptable amount the user expects to receive from the transaction.',
           },
@@ -11024,6 +12414,7 @@ export const data = [
             internalType: 'uint256',
             name: '_depositAmount',
             type: 'uint256',
+            tags: ['decimals'],
             description: 'The amount of tokens deposited by the user.',
           },
         ],
@@ -11049,6 +12440,7 @@ export const data = [
             internalType: 'uint256',
             name: '_depositAmount',
             type: 'uint256',
+            tags: ['decimals:contract:indirect:getIssuanceToken'],
             description: 'The amount of tokens deposited by the user.',
           },
         ],
@@ -11103,7 +12495,7 @@ export const data = [
         outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the address of the issuance token',
+        description: 'Returns the address of the issuance token.',
       },
       {
         inputs: [],
@@ -11113,13 +12505,13 @@ export const data = [
             internalType: 'uint32',
             name: '_0',
             type: 'uint32',
-            description: 'Reserve Ratio for buying',
+            description: 'Reserve Ratio for buying.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Returns reserve ratio set for buying, used in the Bancor Formula contract',
+          'Returns reserve ratio set for buying, used in the {BancorFormula} contract.',
       },
       {
         inputs: [],
@@ -11129,13 +12521,13 @@ export const data = [
             internalType: 'uint32',
             name: '_0',
             type: 'uint32',
-            description: 'Reserve Ratio for selling',
+            description: 'Reserve Ratio for selling.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Returns reserve ratio set for selling, used in the Bancor Formula contract',
+          'Returns reserve ratio set for selling, used in the {BancorFormula} contract.',
       },
       {
         inputs: [],
@@ -11145,7 +12537,7 @@ export const data = [
             internalType: 'uint256',
             name: '_0',
             type: 'uint256',
-            description: 'uint The static price for buying the issuance token',
+            description: 'uint The static price for buying the issuance token.',
           },
         ],
         stateMutability: 'view',
@@ -11161,7 +12553,8 @@ export const data = [
             internalType: 'uint256',
             name: '_0',
             type: 'uint256',
-            description: 'uint The static price for selling the issuance token',
+            description:
+              'uint The static price for selling the issuance token.',
           },
         ],
         stateMutability: 'view',
@@ -11201,23 +12594,45 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to grant the role to.',
+          },
         ],
         name: 'grantModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to grant the role to.',
+          },
         ],
         name: 'grantModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to multiple target addresses.',
       },
       {
         inputs: [],
@@ -11251,6 +12666,11 @@ export const data = [
               {
                 internalType: 'uint256',
                 name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
                 type: 'uint256',
               },
               { internalType: 'string', name: 'url', type: 'string' },
@@ -11290,35 +12710,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
+            description: 'bool Is the given address the trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: '_receiver',
-            type: 'address',
-            description:
-              'The address that will receive the newly minted tokens.',
-          },
-          {
-            internalType: 'uint256',
-            name: '_amount',
-            type: 'uint256',
-            description: 'The amount of tokens to be minted.',
-          },
-        ],
-        name: 'mintIssuanceTokenTo',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Mints a specified amount of Issuance Tokens to a designated receiver address.',
+        description: 'Checks if the provided address is the trusted forwarder.',
       },
       {
         inputs: [],
@@ -11344,42 +12741,71 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: '_0',
             type: 'address',
-            description: "The module's orchestrator.",
+            description: "The module's {Orchestrator_1}.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
       },
       {
         inputs: [],
         name: 'projectCollateralFeeCollected',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Accumulated project trading fees collected from deposits made by users when engaging with the bonding curve-based funding manager. Collected in collateral',
+          'Accumulated project trading fees collected from deposits made by users when engaging with the bonding curve-based funding manager. Collected in collateral.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from multiple target addresses.',
       },
       {
         inputs: [
@@ -11404,12 +12830,19 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          "Sell collateral for the sender's address. This function is subject to a transactional limit, determined by the issuing token's decimal precision and the underlying bonding curve algorithm.",
+          "Redeem collateral for the sender's address. This function is subject to a transactional limit, determined by the issuing token's decimal precision and the underlying bonding curve algorithm.",
       },
       {
         inputs: [],
         name: 'sellFee',
         outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'sellIsOpen',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
         stateMutability: 'view',
         type: 'function',
       },
@@ -11425,31 +12858,22 @@ export const data = [
             internalType: 'uint256',
             name: '_depositAmount',
             type: 'uint256',
-            tags: ['decimals:contract:indirect:getIssuanceToken', 'approval'],
             description: 'The amount of issued token to deposited.',
           },
           {
             internalType: 'uint256',
             name: '_minAmountOut',
             type: 'uint256',
-            tags: ['decimals'],
             description:
               'The minimum acceptable amount the user expects to receive from the transaction.',
           },
         ],
-        name: 'sellFor',
+        name: 'sellTo',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          "Redeem tokens on behalf of a specified receiver address. This function is subject to a transactional limit, determined by the issuing token's decimal precision and the underlying bonding curve algorithm.",
-      },
-      {
-        inputs: [],
-        name: 'sellIsOpen',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
+          "Redeem tokens and direct the proceeds to a specified receiver address. This function is subject to a transactional limit, determined by the issuing token's decimal precision and the underlying bonding curve algorithm.",
       },
       {
         inputs: [
@@ -11465,7 +12889,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Sets the fee percentage for buying tokens, payed in collateral',
+          'Sets the fee percentage for buying tokens, payed in collateral.',
       },
       {
         inputs: [
@@ -11513,7 +12937,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Sets the fee percentage for selling collateral, payed in collateral',
+          'Sets the fee percentage for selling collateral, payed in collateral.',
       },
       {
         inputs: [
@@ -11575,10 +12999,16 @@ export const data = [
         inputs: [],
         name: 'token',
         outputs: [
-          { internalType: 'contract IERC20', name: '_0', type: 'address' },
+          {
+            internalType: 'contract IERC20',
+            name: '_0',
+            type: 'address',
+            description: 'The token.',
+          },
         ],
         stateMutability: 'view',
         type: 'function',
+        description: 'Returns the token.',
       },
       {
         inputs: [
@@ -11611,12 +13041,12 @@ export const data = [
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'address The trusted forwarder',
+            description: 'address The trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the trusted forwarder',
+        description: 'Returns the trusted forwarder.',
       },
       {
         inputs: [],
@@ -11649,6 +13079,12 @@ export const data = [
             type: 'uint256',
             description: "The module's minor version.",
           },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: "The module's patch version.",
+          },
         ],
         stateMutability: 'view',
         type: 'function',
@@ -11656,133 +13092,35 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'address', name: '_receiver', type: 'address' },
+          {
+            internalType: 'address',
+            name: '_receiver',
+            type: 'address',
+            description: 'The address that will receive the fee.',
+          },
           {
             internalType: 'uint256',
             name: '_amount',
             type: 'uint256',
             tags: ['decimals'],
+            description: 'The amount of fee to withdraw.',
           },
         ],
         name: 'withdrawProjectCollateralFee',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Withdraw project collateral fee to the receiver address',
+        description: 'Withdraw project collateral fee to the receiver address.',
       },
     ],
   },
   {
     name: 'PP_Simple_v1',
-    description:
-      'Manages ERC20 payment processing for modules within the Inverter Network that are compliant with the {IERC20PaymentClientBase_v1} interface.',
+    description: '',
     moduleType: 'paymentProcessor',
     deploymentInputs: { configData: [] },
     abi: [
-      {
-        inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
-        name: 'AddressEmptyCode',
-        type: 'error',
-      },
-      {
-        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
-        name: 'AddressInsufficientBalance',
-        type: 'error',
-      },
-      { inputs: [], name: 'FailedInnerCall', type: 'error' },
-      { inputs: [], name: 'InvalidInitialization', type: 'error' },
-      {
-        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
-        name: 'Module_OrchestratorCallbackFailed',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'caller', type: 'address' },
-        ],
-        name: 'Module__CallerNotAuthorized',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
-      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
-      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__PaymentProcessor__CannotCallOnOtherClientsOrders',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'paymentClient', type: 'address' },
-          { internalType: 'address', name: 'paymentReceiver', type: 'address' },
-        ],
-        name: 'Module__PaymentProcessor__NothingToClaim',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__PaymentProcessor__OnlyCallableByModule',
-        type: 'error',
-      },
-      { inputs: [], name: 'NotInitializing', type: 'error' },
-      {
-        inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
-        name: 'SafeERC20FailedOperation',
-        type: 'error',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'uint64',
-            name: 'version',
-            type: 'uint64',
-          },
-        ],
-        name: 'Initialized',
-        type: 'event',
-        outputs: [],
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'parentOrchestrator',
-            type: 'address',
-            description:
-              'The address of the orchestrator the module is linked to.',
-          },
-          {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
-          },
-        ],
-        name: 'ModuleInitialized',
-        type: 'event',
-        outputs: [],
-        description: 'Module has been initialized.',
-      },
+      { inputs: [], name: 'ERC1167FailedCreateClone', type: 'error' },
       {
         anonymous: false,
         inputs: [
@@ -11791,22 +13129,18 @@ export const data = [
             internalType: 'address',
             name: 'paymentClient',
             type: 'address',
-            description: 'The payment client that originated the order.',
           },
           {
             indexed: true,
             internalType: 'address',
             name: 'recipient',
             type: 'address',
-            description: 'The address that will receive the payment.',
           },
           {
             indexed: true,
             internalType: 'address',
             name: 'paymentToken',
             type: 'address',
-            description:
-              'The address of the token that will be used for the payment',
           },
           {
             indexed: false,
@@ -11814,36 +13148,29 @@ export const data = [
             name: 'amount',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The amount of tokens the payment consists of.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'start',
             type: 'uint256',
-            description:
-              'Timestamp at which the payment should start being paid out.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'cliff',
             type: 'uint256',
-            description: 'Duration of the cliff period.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'end',
             type: 'uint256',
-            description:
-              'Timestamp at which the payment should finished being paid out.',
           },
         ],
         name: 'PaymentOrderProcessed',
         type: 'event',
         outputs: [],
-        description: 'Emitted when a payment gets processed for execution.',
       },
       {
         anonymous: false,
@@ -11853,7 +13180,6 @@ export const data = [
             internalType: 'address',
             name: 'recipient',
             type: 'address',
-            description: 'The address that will receive the payment.',
           },
           {
             indexed: true,
@@ -11867,14 +13193,11 @@ export const data = [
             name: 'amount',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The amount of tokens the payment consists of.',
           },
         ],
         name: 'TokensReleased',
         type: 'event',
         outputs: [],
-        description:
-          'Emitted when an amount of ERC20 tokens gets sent out of the contract.',
       },
       {
         anonymous: false,
@@ -11884,8 +13207,6 @@ export const data = [
             internalType: 'address',
             name: 'paymentClient',
             type: 'address',
-            description:
-              'The token address in which the payment should have happened.',
           },
           {
             indexed: true,
@@ -11898,316 +13219,639 @@ export const data = [
             internalType: 'address',
             name: 'recipient',
             type: 'address',
-            description: 'The address that should have received the payment.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            description: 'The amount of tokens that were unclaimable.',
           },
         ],
         name: 'UnclaimableAmountAdded',
         type: 'event',
         outputs: [],
-        description:
-          'Emitted when a payment was unclaimable due to a token error.',
       },
       {
+        anonymous: false,
         inputs: [
-          {
-            internalType: 'contract IERC20PaymentClientBase_v1',
-            name: 'client',
-            type: 'address',
-            description:
-              'The {IERC20PaymentClientBase_v1} instance to process its to payments.',
-          },
+          { indexed: false, internalType: 'string', name: '', type: 'string' },
         ],
-        name: 'cancelRunningPayments',
+        name: 'log',
+        type: 'event',
         outputs: [],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Cancels all unfinished payments from an {IERC20PaymentClientBase_v1} instance.',
       },
       {
+        anonymous: false,
         inputs: [
           {
+            indexed: false,
             internalType: 'address',
-            name: 'client',
+            name: '',
             type: 'address',
-            description:
-              'The IERC20PaymentClientBase_v1 instance address that processes all claims from _msgSender',
-          },
-          {
-            internalType: 'address',
-            name: 'token',
-            type: 'address',
-            description: 'address of the payment token',
-          },
-          {
-            internalType: 'address',
-            name: 'receiver',
-            type: 'address',
-            description:
-              'The address that will receive the previously unclaimable amount',
           },
         ],
-        name: 'claimPreviouslyUnclaimable',
+        name: 'log_address',
+        type: 'event',
         outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'claim every unclaimable amount that the paymentClient owes to the _msgSender and send it to a specified receiver',
       },
       {
+        anonymous: false,
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
-        ],
-        name: 'grantModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
-        ],
-        name: 'grantModuleRoleBatched',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'identifier',
-        outputs: [
           {
+            indexed: false,
+            internalType: 'uint256[]',
+            name: 'val',
+            type: 'uint256[]',
+          },
+        ],
+        name: 'log_array',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'int256[]',
+            name: 'val',
+            type: 'int256[]',
+          },
+        ],
+        name: 'log_array',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'address[]',
+            name: 'val',
+            type: 'address[]',
+          },
+        ],
+        name: 'log_array',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          { indexed: false, internalType: 'bytes', name: '', type: 'bytes' },
+        ],
+        name: 'log_bytes',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
             internalType: 'bytes32',
-            name: '_0',
+            name: '',
             type: 'bytes32',
-            description: "The module's identifier.",
           },
         ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's identifier.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IOrchestrator_v1',
-            name: 'orchestrator_',
-            type: 'address',
-          },
-          {
-            components: [
-              {
-                internalType: 'uint256',
-                name: 'majorVersion',
-                type: 'uint256',
-              },
-              {
-                internalType: 'uint256',
-                name: 'minorVersion',
-                type: 'uint256',
-              },
-              { internalType: 'string', name: 'url', type: 'string' },
-              { internalType: 'string', name: 'title', type: 'string' },
-            ],
-            internalType: 'struct IModule_v1.Metadata',
-            name: 'metadata',
-            type: 'tuple',
-            description: "The module's metadata.",
-          },
-          { internalType: 'bytes', name: '', type: 'bytes' },
-        ],
-        name: 'init',
+        name: 'log_bytes32',
+        type: 'event',
         outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: "The module's initializer function.",
       },
       {
+        anonymous: false,
+        inputs: [
+          { indexed: false, internalType: 'int256', name: '', type: 'int256' },
+        ],
+        name: 'log_int',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
         inputs: [
           {
-            internalType: 'address',
-            name: 'forwarder',
-            type: 'address',
-            description: 'The contract address to be verified.',
+            indexed: false,
+            internalType: 'string',
+            name: 'key',
+            type: 'string',
           },
-        ],
-        name: 'isTrustedForwarder',
-        outputs: [
           {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
+            indexed: false,
+            internalType: 'address',
+            name: 'val',
+            type: 'address',
           },
         ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
+        name: 'log_named_address',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'string',
+            name: 'key',
+            type: 'string',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256[]',
+            name: 'val',
+            type: 'uint256[]',
+          },
+        ],
+        name: 'log_named_array',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'string',
+            name: 'key',
+            type: 'string',
+          },
+          {
+            indexed: false,
+            internalType: 'int256[]',
+            name: 'val',
+            type: 'int256[]',
+          },
+        ],
+        name: 'log_named_array',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'string',
+            name: 'key',
+            type: 'string',
+          },
+          {
+            indexed: false,
+            internalType: 'address[]',
+            name: 'val',
+            type: 'address[]',
+          },
+        ],
+        name: 'log_named_array',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'string',
+            name: 'key',
+            type: 'string',
+          },
+          { indexed: false, internalType: 'bytes', name: 'val', type: 'bytes' },
+        ],
+        name: 'log_named_bytes',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'string',
+            name: 'key',
+            type: 'string',
+          },
+          {
+            indexed: false,
+            internalType: 'bytes32',
+            name: 'val',
+            type: 'bytes32',
+          },
+        ],
+        name: 'log_named_bytes32',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'string',
+            name: 'key',
+            type: 'string',
+          },
+          {
+            indexed: false,
+            internalType: 'int256',
+            name: 'val',
+            type: 'int256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'decimals',
+            type: 'uint256',
+          },
+        ],
+        name: 'log_named_decimal_int',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'string',
+            name: 'key',
+            type: 'string',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'val',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'decimals',
+            type: 'uint256',
+          },
+        ],
+        name: 'log_named_decimal_uint',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'string',
+            name: 'key',
+            type: 'string',
+          },
+          {
+            indexed: false,
+            internalType: 'int256',
+            name: 'val',
+            type: 'int256',
+          },
+        ],
+        name: 'log_named_int',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'string',
+            name: 'key',
+            type: 'string',
+          },
+          {
+            indexed: false,
+            internalType: 'string',
+            name: 'val',
+            type: 'string',
+          },
+        ],
+        name: 'log_named_string',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'string',
+            name: 'key',
+            type: 'string',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'val',
+            type: 'uint256',
+          },
+        ],
+        name: 'log_named_uint',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          { indexed: false, internalType: 'string', name: '', type: 'string' },
+        ],
+        name: 'log_string',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: '',
+            type: 'uint256',
+          },
+        ],
+        name: 'log_uint',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          { indexed: false, internalType: 'bytes', name: '', type: 'bytes' },
+        ],
+        name: 'logs',
+        type: 'event',
+        outputs: [],
       },
       {
         inputs: [],
-        name: 'orchestrator',
-        outputs: [
-          {
-            internalType: 'contract IOrchestrator_v1',
-            name: '_0',
-            type: 'address',
-            description: "The module's orchestrator.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IERC20PaymentClientBase_v1',
-            name: 'client',
-            type: 'address',
-            description:
-              'The {IERC20PaymentClientBase_v1} instance to process its to payments.',
-          },
-        ],
-        name: 'processPayments',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Processes all payments from an {IERC20PaymentClientBase_v1} instance. Please note: this function does not support callbacks on transfer of tokens.',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
-        ],
-        name: 'revokeModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
-        ],
-        name: 'revokeModuleRoleBatched',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
-        ],
-        name: 'supportsInterface',
+        name: 'IS_TEST',
         outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
         stateMutability: 'view',
         type: 'function',
       },
       {
         inputs: [],
-        name: 'title',
+        name: 'excludeArtifacts',
         outputs: [
           {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's title.",
+            internalType: 'string[]',
+            name: 'excludedArtifacts_',
+            type: 'string[]',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: "Returns the module's title.",
       },
       {
         inputs: [],
-        name: 'trustedForwarder',
+        name: 'excludeContracts',
         outputs: [
           {
-            internalType: 'address',
-            name: '_0',
-            type: 'address',
-            description: 'address The trusted forwarder',
+            internalType: 'address[]',
+            name: 'excludedContracts_',
+            type: 'address[]',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the trusted forwarder',
+      },
+      {
+        inputs: [],
+        name: 'excludeSenders',
+        outputs: [
+          {
+            internalType: 'address[]',
+            name: 'excludedSenders_',
+            type: 'address[]',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'failed',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'setUp',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'targetArtifactSelectors',
+        outputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'addr', type: 'address' },
+              { internalType: 'bytes4[]', name: 'selectors', type: 'bytes4[]' },
+            ],
+            internalType: 'struct StdInvariant.FuzzSelector[]',
+            name: 'targetedArtifactSelectors_',
+            type: 'tuple[]',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'targetArtifacts',
+        outputs: [
+          {
+            internalType: 'string[]',
+            name: 'targetedArtifacts_',
+            type: 'string[]',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'targetContracts',
+        outputs: [
+          {
+            internalType: 'address[]',
+            name: 'targetedContracts_',
+            type: 'address[]',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'targetSelectors',
+        outputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'addr', type: 'address' },
+              { internalType: 'bytes4[]', name: 'selectors', type: 'bytes4[]' },
+            ],
+            internalType: 'struct StdInvariant.FuzzSelector[]',
+            name: 'targetedSelectors_',
+            type: 'tuple[]',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'targetSenders',
+        outputs: [
+          {
+            internalType: 'address[]',
+            name: 'targetedSenders_',
+            type: 'address[]',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'nonModule', type: 'address' },
+        ],
+        name: 'testCancelPaymentsFailsWhenCalledByNonModule',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'nonModule', type: 'address' },
+        ],
+        name: 'testCancelPaymentsFailsWhenCalledOnOtherClient',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address[]', name: 'recipients', type: 'address[]' },
+        ],
+        name: 'testClaimPreviouslyUnclaimable',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'testClaimPreviouslyUnclaimableFailsIfNothingToClaim',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'testInit',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'recipient', type: 'address' },
+          { internalType: 'uint256', name: 'amount', type: 'uint256' },
+          { internalType: 'bool', name: 'paymentsFail', type: 'bool' },
+        ],
+        name: 'testProcessPayments',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'nonModule', type: 'address' },
+        ],
+        name: 'testProcessPaymentsFailsWhenCalledByNonModule',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'nonModule', type: 'address' },
+        ],
+        name: 'testProcessPaymentsFailsWhenCalledOnOtherClient',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'testReinitFails',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'testSupportsInterface',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
       },
       {
         inputs: [
           {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description: 'address of the payment client',
+            components: [
+              { internalType: 'address', name: 'recipient', type: 'address' },
+              {
+                internalType: 'address',
+                name: 'paymentToken',
+                type: 'address',
+              },
+              { internalType: 'uint256', name: 'amount', type: 'uint256' },
+              { internalType: 'uint256', name: 'start', type: 'uint256' },
+              { internalType: 'uint256', name: 'cliff', type: 'uint256' },
+              { internalType: 'uint256', name: 'end', type: 'uint256' },
+            ],
+            internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder',
+            name: 'order',
+            type: 'tuple',
           },
-          {
-            internalType: 'address',
-            name: 'token',
-            type: 'address',
-            description: 'address of the payment token',
-          },
-          {
-            internalType: 'address',
-            name: 'paymentReceiver',
-            type: 'address',
-            description: "PaymentReceiver's address.",
-          },
+          { internalType: 'address', name: 'sender', type: 'address' },
         ],
-        name: 'unclaimable',
-        outputs: [{ internalType: 'uint256', name: 'amount', type: 'uint256' }],
-        stateMutability: 'view',
+        name: 'test_ValidPaymentOrder',
+        outputs: [],
+        stateMutability: 'nonpayable',
         type: 'function',
-        description:
-          'Getter for the amount of tokens that could not be claimed.',
       },
       {
-        inputs: [],
-        name: 'url',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's URL.",
-          },
+        inputs: [
+          { internalType: 'address', name: 'addr', type: 'address' },
+          { internalType: 'address', name: 'sender', type: 'address' },
         ],
-        stateMutability: 'view',
+        name: 'test__validPaymentReceiver',
+        outputs: [],
+        stateMutability: 'nonpayable',
         type: 'function',
-        description: "Returns the module's URL.",
       },
       {
-        inputs: [],
-        name: 'version',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            description: "The module's major version.",
-          },
-          {
-            internalType: 'uint256',
-            name: '_1',
-            type: 'uint256',
-            description: "The module's minor version.",
-          },
+        inputs: [
+          { internalType: 'address', name: 'randomToken', type: 'address' },
+          { internalType: 'address', name: 'sender', type: 'address' },
         ],
-        stateMutability: 'view',
+        name: 'test__validPaymentToken',
+        outputs: [],
+        stateMutability: 'nonpayable',
         type: 'function',
-        description: "Returns the module's version.",
+      },
+      {
+        inputs: [{ internalType: 'uint256', name: '_total', type: 'uint256' }],
+        name: 'test__validTotal',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
       },
     ],
   },
@@ -12243,9 +13887,23 @@ export const data = [
         name: 'Module__CallerNotAuthorized',
         type: 'error',
       },
+      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
       { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
       { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
       { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OnlyCallableByPaymentClient',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'paymentClient', type: 'address' },
+          { internalType: 'address', name: 'paymentReceiver', type: 'address' },
+        ],
+        name: 'Module__PP_Streaming__In_validPaymentReceiver',
+        type: 'error',
+      },
       {
         inputs: [
           { internalType: 'address', name: 'paymentClient', type: 'address' },
@@ -12258,14 +13916,6 @@ export const data = [
       {
         inputs: [],
         name: 'Module__PP_Streaming__InsufficientTokenBalanceInClient',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'paymentClient', type: 'address' },
-          { internalType: 'address', name: 'paymentReceiver', type: 'address' },
-        ],
-        name: 'Module__PP_Streaming__InvalidPaymentReceiver',
         type: 'error',
       },
       {
@@ -12331,7 +13981,7 @@ export const data = [
             name: 'paymentToken',
             type: 'address',
             description:
-              'The address of the token that will be used for the payment',
+              'The address of the token that will be used for the payment.',
           },
           {
             indexed: false,
@@ -12377,28 +14027,33 @@ export const data = [
             name: 'parentOrchestrator',
             type: 'address',
             description:
-              'The address of the orchestrator the module is linked to.',
+              'The address of the {Orchestrator_v1} the module is linked to.',
           },
           {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
             indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The metadata of the module.',
           },
         ],
         name: 'ModuleInitialized',
@@ -12429,7 +14084,7 @@ export const data = [
             name: 'paymentToken',
             type: 'address',
             description:
-              'The address of the token that will be used for the payment',
+              'The address of the token that will be used for the payment.',
           },
           {
             indexed: false,
@@ -12489,14 +14144,15 @@ export const data = [
             name: 'paymentToken',
             type: 'address',
             description:
-              'The address of the token that will be used for the payment',
+              'The address of the token that will be used for the payment.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'streamId',
             type: 'uint256',
-            description: 'ID of the streaming payment order that was processed',
+            description:
+              'ID of the streaming payment order that was processed.',
           },
           {
             indexed: false,
@@ -12540,6 +14196,30 @@ export const data = [
             internalType: 'address',
             name: 'paymentClient',
             type: 'address',
+            description: 'The address of the payment client.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'paymentReceiver',
+            type: 'address',
+            description: 'The address of the recipient that is removed.',
+          },
+        ],
+        name: 'PaymentReceiverRemoved',
+        type: 'event',
+        outputs: [],
+        description:
+          'Emitted when an address is removed from the list of active payment receiver, eg because all payments have been fulfilled by a client.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'paymentClient',
+            type: 'address',
             description: 'The payment client that originated the order.',
           },
           {
@@ -12555,7 +14235,7 @@ export const data = [
             name: 'paymentToken',
             type: 'address',
             description:
-              'The address of the token that is being used for the payment',
+              'The address of the token that is being used for the payment.',
           },
           {
             indexed: false,
@@ -12644,6 +14324,8 @@ export const data = [
             internalType: 'address',
             name: 'token',
             type: 'address',
+            description:
+              'The token address in which the payment should have happened.',
           },
           {
             indexed: false,
@@ -12721,14 +14403,15 @@ export const data = [
             name: 'paymentToken',
             type: 'address',
             description:
-              'The address of the token that will be used for the payment',
+              'The address of the token that will be used for the payment.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'streamId',
             type: 'uint256',
-            description: 'ID of the streaming payment order that was processed',
+            description:
+              'ID of the streaming payment order that was processed.',
           },
           {
             indexed: false,
@@ -12768,7 +14451,7 @@ export const data = [
             name: 'client',
             type: 'address',
             description:
-              'The IERC20PaymentClientBase_v1 instance address that processes all claims from _msgSender',
+              'The {IERC20PaymentClientBase_v1} instance address that processes all claims from `_msgSender`.',
           },
         ],
         name: 'claimAll',
@@ -12776,7 +14459,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'claim everything that the paymentClient owes to the _msgSender till the current timestamp',
+          'claim everything that the paymentClient owes to the `_msgSender` till the current timestamp.',
       },
       {
         inputs: [
@@ -12785,14 +14468,14 @@ export const data = [
             name: 'client',
             type: 'address',
             description:
-              'The {IERC20PaymentClientBase_v1} instance address that processes the streamId claim from _msgSender',
+              'The {IERC20PaymentClientBase_v1} instance address that processes the `streamId` claim from `_msgSender`.',
           },
           {
             internalType: 'uint256',
             name: 'streamId',
             type: 'uint256',
             description:
-              'The ID of the streaming payment order for which claim is being made',
+              'The ID of the streaming payment order for which claim is being made.',
           },
         ],
         name: 'claimForSpecificStream',
@@ -12800,7 +14483,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'claim the total amount up til block.timestamp from the client for a payment order with id = streamId by _msgSender',
+          'claim the total amount up til block.timestamp from the client for a payment order with id = streamId by _msgSender.',
       },
       {
         inputs: [
@@ -12809,20 +14492,20 @@ export const data = [
             name: 'client',
             type: 'address',
             description:
-              'The IERC20PaymentClientBase_v1 instance address that processes all claims from _msgSender',
+              'The IERC20PaymentClientBase_v1 instance address that processes all claims from _msgSender.',
           },
           {
             internalType: 'address',
             name: 'token',
             type: 'address',
-            description: 'address of the payment token',
+            description: 'address of the payment token.',
           },
           {
             internalType: 'address',
             name: 'receiver',
             type: 'address',
             description:
-              'The address that will receive the previously unclaimable amount',
+              'The address that will receive the previously unclaimable amount.',
           },
         ],
         name: 'claimPreviouslyUnclaimable',
@@ -12830,7 +14513,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'claim every unclaimable amount that the paymentClient owes to the _msgSender and send it to a specified receiver',
+          'claim every unclaimable amount that the paymentClient owes to the _msgSender and send it to a specified receiver.',
       },
       {
         inputs: [
@@ -12838,7 +14521,7 @@ export const data = [
             internalType: 'address',
             name: 'client',
             type: 'address',
-            description: 'address of the payment client',
+            description: 'address of the payment client.',
           },
           {
             internalType: 'address',
@@ -12850,15 +14533,22 @@ export const data = [
             internalType: 'uint256',
             name: 'streamId',
             type: 'uint256',
-            description: 'Id of the wallet for which cliff is fetched',
+            description: 'Id of the wallet for which cliff is fetched.',
           },
         ],
         name: 'cliffForSpecificStream',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: 'cliff duration of the payment order.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Getter for the cliff duration of a particular payment order with id = streamId associated with a particular paymentReceiver',
+          'Getter for the cliff duration of a particular payment order with id = streamId associated with a particular paymentReceiver.',
       },
       {
         inputs: [
@@ -12866,7 +14556,7 @@ export const data = [
             internalType: 'address',
             name: 'client',
             type: 'address',
-            description: 'address of the payment client',
+            description: 'address of the payment client.',
           },
           {
             internalType: 'address',
@@ -12878,35 +14568,64 @@ export const data = [
             internalType: 'uint256',
             name: 'streamId',
             type: 'uint256',
-            description: 'Id of the wallet for which end is fetched',
+            description: 'Id of the wallet for which end is fetched.',
           },
         ],
         name: 'endForSpecificStream',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: 'end timestamp of the payment order.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Getter for the stream end timestamp of a particular payment order with id = streamId associated with a particular paymentReceiver',
+          'Getter for the stream end timestamp of a particular payment order with id = streamId associated with a particular paymentReceiver.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to grant the role to.',
+          },
         ],
         name: 'grantModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to grant the role to.',
+          },
         ],
         name: 'grantModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to multiple target addresses.',
       },
       {
         inputs: [],
@@ -12942,6 +14661,11 @@ export const data = [
                 name: 'minorVersion',
                 type: 'uint256',
               },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
               { internalType: 'string', name: 'url', type: 'string' },
               { internalType: 'string', name: 'title', type: 'string' },
             ],
@@ -12964,21 +14688,29 @@ export const data = [
             internalType: 'address',
             name: 'client',
             type: 'address',
-            description: 'Address of the payment client',
+            description: 'Address of the payment client.',
           },
           {
             internalType: 'address',
             name: 'paymentReceiver',
             type: 'address',
-            description: 'Address of the paymentReceiver',
+            description: 'Address of the paymentReceiver.',
           },
         ],
         name: 'isActivePaymentReceiver',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description:
+              'true if the paymentReceiver is active for the payment client.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'tells whether a paymentReceiver has any pending payments for a particular client',
+          'Tells whether a `paymentReceiver` has any pending payments for a particular client.',
       },
       {
         inputs: [
@@ -12995,12 +14727,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
+            description: 'bool Is the given address the trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
+        description: 'Checks if the provided address is the trusted forwarder.',
       },
       {
         inputs: [
@@ -13011,8 +14743,6 @@ export const data = [
         outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
         stateMutability: 'view',
         type: 'function',
-        description:
-          'provides a unique id for new payment orders added for a specific client & paymentReceiver combo',
       },
       {
         inputs: [],
@@ -13022,13 +14752,13 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: '_0',
             type: 'address',
-            description: "The module's orchestrator.",
+            description: "The module's {Orchestrator_1}.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
       },
       {
         inputs: [
@@ -13049,12 +14779,7 @@ export const data = [
       },
       {
         inputs: [
-          {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description: 'address of the payment client',
-          },
+          { internalType: 'address', name: 'client', type: 'address' },
           {
             internalType: 'address',
             name: 'paymentReceiver',
@@ -13066,11 +14791,18 @@ export const data = [
             name: 'streamId',
             type: 'uint256',
             description:
-              'Id of the wallet for which the releasable amount is fetched',
+              'Id of the wallet for which the releasable amount is fetched.',
           },
         ],
         name: 'releasableForSpecificStream',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: 'releasable amount of the stream with id = streamId.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
@@ -13082,7 +14814,7 @@ export const data = [
             internalType: 'address',
             name: 'client',
             type: 'address',
-            description: 'address of the payment client',
+            description: 'address of the payment client.',
           },
           {
             internalType: 'address',
@@ -13094,15 +14826,22 @@ export const data = [
             internalType: 'uint256',
             name: 'streamId',
             type: 'uint256',
-            description: 'Id of the wallet for which released is fetched',
+            description: 'Id of the wallet for which released is fetched.',
           },
         ],
         name: 'releasedForSpecificStream',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: 'released amount of the payment order.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Getter for the amount of tokens already released for a particular payment order with id = streamId associated with a particular paymentReceiver',
+          'Getter for the amount of tokens already released for a particular payment order with id = streamId associated with a particular paymentReceiver.',
       },
       {
         inputs: [
@@ -13111,7 +14850,7 @@ export const data = [
             name: 'client',
             type: 'address',
             description:
-              'The {IERC20PaymentClientBase_v1} instance address from which we will remove the payments',
+              'The {IERC20PaymentClientBase_v1} instance address from which we will remove the payments.',
           },
           {
             internalType: 'address',
@@ -13125,7 +14864,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Deletes all payments related to a paymentReceiver & leaves currently streaming tokens in the ERC20PaymentClientBase_v1.',
+          'Deletes all payments related to a paymentReceiver & leaves currently streaming tokens in the {IERC20PaymentClientBase_v1}.',
       },
       {
         inputs: [
@@ -13134,21 +14873,21 @@ export const data = [
             name: 'client',
             type: 'address',
             description:
-              'The {IERC20PaymentClientBase_v1} instance address from which we will remove the payment',
+              'The {IERC20PaymentClientBase_v1} instance address from which we will remove the payment.',
           },
           {
             internalType: 'address',
             name: 'paymentReceiver',
             type: 'address',
             description:
-              'address of the paymentReceiver whose payment order is to be removed',
+              'Address of the paymentReceiver whose payment order is to be removed.',
           },
           {
             internalType: 'uint256',
             name: 'streamId',
             type: 'uint256',
             description:
-              "The ID of the paymentReceiver's payment order which is to be removed",
+              "The ID of the paymentReceiver's payment order which is to be removed.",
           },
         ],
         name: 'removePaymentForSpecificStream',
@@ -13156,27 +14895,49 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Deletes a specific payment with id = streamId for a paymentReceiver & leaves currently streaming tokens in the ERC20PaymentClientBase_v1.',
+          'Deletes a specific payment with id = streamId for a paymentReceiver & leaves currently streaming tokens in the {IERC20PaymentClientBase_v1}.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from multiple target addresses.',
       },
       {
         inputs: [
@@ -13184,7 +14945,7 @@ export const data = [
             internalType: 'address',
             name: 'client',
             type: 'address',
-            description: 'address of the payment client',
+            description: 'address of the payment client.',
           },
           {
             internalType: 'address',
@@ -13196,24 +14957,26 @@ export const data = [
             internalType: 'uint256',
             name: 'streamId',
             type: 'uint256',
-            description: 'Id of the wallet for which start is fetched',
+            description: 'Id of the wallet for which start is fetched.',
           },
         ],
         name: 'startForSpecificStream',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: 'start timestamp of the payment order.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Getter for the start timestamp of a particular payment order with id = streamId associated with a particular paymentReceiver',
+          'Getter for the start timestamp of a particular payment order with id = streamId associated with a particular paymentReceiver.',
       },
       {
         inputs: [
-          {
-            internalType: 'address',
-            name: 'client',
-            type: 'address',
-            description: 'address of the payment client',
-          },
+          { internalType: 'address', name: 'client', type: 'address' },
           {
             internalType: 'address',
             name: 'paymentReceiver',
@@ -13225,17 +14988,24 @@ export const data = [
             name: 'streamId',
             type: 'uint256',
             description:
-              'Id of the wallet for which the streamed amount is fetched',
+              'Id of the wallet for which the streamed amount is fetched.',
           },
           {
             internalType: 'uint256',
             name: 'timestamp',
             type: 'uint256',
-            description: 'the time upto which we want the streamed amount',
+            description: 'the time upto which we want the streamed amount.',
           },
         ],
         name: 'streamedAmountForSpecificStream',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: 'streamed amount of the stream with id = streamId.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
@@ -13273,12 +15043,12 @@ export const data = [
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'address The trusted forwarder',
+            description: 'address The trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the trusted forwarder',
+        description: 'Returns the trusted forwarder.',
       },
       {
         inputs: [
@@ -13286,13 +15056,13 @@ export const data = [
             internalType: 'address',
             name: 'client',
             type: 'address',
-            description: 'address of the payment client',
+            description: 'address of the payment client.',
           },
           {
             internalType: 'address',
             name: 'token',
             type: 'address',
-            description: 'address of the payment token',
+            description: 'address of the payment token.',
           },
           {
             internalType: 'address',
@@ -13308,6 +15078,7 @@ export const data = [
             name: 'amount',
             type: 'uint256',
             tags: ['decimals'],
+            description: 'Amount of tokens that could not be claimed.',
           },
         ],
         stateMutability: 'view',
@@ -13331,6 +15102,42 @@ export const data = [
         description: "Returns the module's URL.",
       },
       {
+        inputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'recipient', type: 'address' },
+              {
+                internalType: 'address',
+                name: 'paymentToken',
+                type: 'address',
+              },
+              { internalType: 'uint256', name: 'amount', type: 'uint256' },
+              { internalType: 'uint256', name: 'start', type: 'uint256' },
+              { internalType: 'uint256', name: 'cliff', type: 'uint256' },
+              { internalType: 'uint256', name: 'end', type: 'uint256' },
+            ],
+            internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder',
+            name: 'order',
+            type: 'tuple',
+            description:
+              'The IERC20PaymentClientBase_v1 Order that needs to be checked.',
+          },
+        ],
+        name: 'validPaymentOrder',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'valid Bool if the Payment Order is valid.',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Function that checks if the given PaymentOrder was valid.',
+      },
+      {
         inputs: [],
         name: 'version',
         outputs: [
@@ -13346,6 +15153,12 @@ export const data = [
             type: 'uint256',
             description: "The module's minor version.",
           },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: "The module's patch version.",
+          },
         ],
         stateMutability: 'view',
         type: 'function',
@@ -13357,13 +15170,13 @@ export const data = [
             internalType: 'address',
             name: 'client',
             type: 'address',
-            description: 'Address of the payment client',
+            description: 'Address of the payment client.',
           },
           {
             internalType: 'address',
             name: 'paymentReceiver',
             type: 'address',
-            description: 'Address of the paymentReceiver',
+            description: 'Address of the paymentReceiver.',
           },
         ],
         name: 'viewAllPaymentOrders',
@@ -13385,12 +15198,14 @@ export const data = [
             internalType: 'struct IPP_Streaming_v1.Stream[]',
             name: '_0',
             type: 'tuple[]',
+            description:
+              'all streams for a particular payment client and payment receiver.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'see all active payment orders for a paymentClient associated with a particular paymentReceiver',
+          'See all active payment orders for a paymentClient associated with a particular paymentReceiver.',
       },
     ],
   },
@@ -13457,9 +15272,15 @@ export const data = [
         name: 'Module__CallerNotAuthorized',
         type: 'error',
       },
+      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
       { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
       { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
       { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OnlyCallableByPaymentClient',
+        type: 'error',
+      },
       { inputs: [], name: 'NotInitializing', type: 'error' },
       {
         anonymous: false,
@@ -13484,28 +15305,33 @@ export const data = [
             name: 'parentOrchestrator',
             type: 'address',
             description:
-              'The address of the orchestrator the module is linked to.',
+              'The address of the {Orchestrator_v1} the module is linked to.',
           },
           {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
             indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The metadata of the module.',
           },
         ],
         name: 'ModuleInitialized',
@@ -13597,6 +15423,8 @@ export const data = [
         outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
         stateMutability: 'view',
         type: 'function',
+        description:
+          'The role that is used as a placeholder for a burned admin role.',
       },
       {
         inputs: [],
@@ -13611,7 +15439,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The role to remove admin access from',
+            description: 'The role to remove admin access from.',
           },
         ],
         name: 'burnAdminFromModuleRole',
@@ -13623,24 +15451,60 @@ export const data = [
       {
         inputs: [
           {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The identifier of the role we want to check',
+          },
+          {
+            internalType: 'address',
+            name: 'who',
+            type: 'address',
+            description: 'The address on which to perform the check.',
+          },
+        ],
+        name: 'checkForRole',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'bool Returns if the address holds the role',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Checks whether an address holds the required role to execute the current transaction.',
+      },
+      {
+        inputs: [
+          {
             internalType: 'address',
             name: 'module',
             type: 'address',
-            description: 'The address of the module to generate the hash for',
+            description: 'The address of the module to generate the hash for.',
           },
           {
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The ID number of the role to generate the hash for',
+            description: 'The ID number of the role to generate the hash for.',
           },
         ],
         name: 'generateRoleId',
-        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
+        outputs: [
+          {
+            internalType: 'bytes32',
+            name: '_0',
+            type: 'bytes32',
+            description: 'bytes32 Returns the generated role hash.',
+          },
+        ],
         stateMutability: 'pure',
         type: 'function',
         description:
-          'Helper function to generate a bytes32 role hash for a module role',
+          'Helper function to generate a bytes32 role hash for a module role.',
       },
       {
         inputs: [],
@@ -13650,12 +15514,12 @@ export const data = [
             internalType: 'bytes32',
             name: '_0',
             type: 'bytes32',
-            description: 'The role ID',
+            description: 'The role ID.',
           },
         ],
         stateMutability: 'pure',
         type: 'function',
-        description: 'Returns the role ID of the admin role',
+        description: 'Returns the role ID of the admin role.',
       },
       {
         inputs: [{ internalType: 'bytes32', name: 'role', type: 'bytes32' }],
@@ -13687,20 +15551,20 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The role to grant',
+            description: 'The role to grant.',
           },
           {
             internalType: 'address',
             name: 'target',
             type: 'address',
-            description: 'The address to grant the role to',
+            description: 'The address to grant the role to.',
           },
         ],
         name: 'grantGlobalRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Grants a global role to a target',
+        description: 'Grants a global role to a target.',
       },
       {
         inputs: [
@@ -13708,40 +15572,62 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The role to grant',
+            description: 'The role to grant.',
           },
           {
             internalType: 'address[]',
             name: 'targets',
             type: 'address[]',
-            description: 'The addresses to grant the role to',
+            description: 'The addresses to grant the role to.',
           },
         ],
         name: 'grantGlobalRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Grants a global role to a set of targets',
+        description: 'Grants a global role to a set of targets.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to grant the role to.',
+          },
         ],
         name: 'grantModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to grant the role to.',
+          },
         ],
         name: 'grantModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to multiple target addresses.',
       },
       {
         inputs: [
@@ -13759,7 +15645,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The identifier of the role to grant',
+            description: 'The identifier of the role to grant.',
           },
           {
             internalType: 'address',
@@ -13780,7 +15666,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The identifier of the role to grant',
+            description: 'The identifier of the role to grant.',
           },
           {
             internalType: 'address[]',
@@ -13794,28 +15680,6 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description: 'Used by a Module to grant a role to a set of users.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'bytes32',
-            name: 'role',
-            type: 'bytes32',
-            description: 'The identifier of the role we want to check',
-          },
-          {
-            internalType: 'address',
-            name: 'who',
-            type: 'address',
-            description: 'The address on which to perform the check.',
-          },
-        ],
-        name: 'hasModuleRole',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Asks whether an address holds the required module role to execute the current transaction.',
       },
       {
         inputs: [
@@ -13861,6 +15725,11 @@ export const data = [
                 name: 'minorVersion',
                 type: 'uint256',
               },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
               { internalType: 'string', name: 'url', type: 'string' },
               { internalType: 'string', name: 'title', type: 'string' },
             ],
@@ -13898,12 +15767,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
+            description: 'bool Is the given address the trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
+        description: 'Checks if the provided address is the trusted forwarder.',
       },
       {
         inputs: [],
@@ -13913,13 +15782,13 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: '_0',
             type: 'address',
-            description: "The module's orchestrator.",
+            description: "The module's {Orchestrator_1}.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
       },
       {
         inputs: [
@@ -13941,20 +15810,20 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The role to grant',
+            description: 'The role to grant.',
           },
           {
             internalType: 'address',
             name: 'target',
             type: 'address',
-            description: 'The address to grant the role to',
+            description: 'The address to grant the role to.',
           },
         ],
         name: 'revokeGlobalRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Revokes a global role from a target',
+        description: 'Revokes a global role from a target.',
       },
       {
         inputs: [
@@ -13962,40 +15831,62 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The role to grant',
+            description: 'The role to grant.',
           },
           {
             internalType: 'address[]',
             name: 'targets',
             type: 'address[]',
-            description: 'The addresses to grant the role to',
+            description: 'The addresses to grant the role to.',
           },
         ],
         name: 'revokeGlobalRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Revokes a global role from a set of targets',
+        description: 'Revokes a global role from a set of targets.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from multiple target addresses.',
       },
       {
         inputs: [
@@ -14013,7 +15904,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The identifier of the role to revoke',
+            description: 'The identifier of the role to revoke.',
           },
           {
             internalType: 'address',
@@ -14034,7 +15925,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The identifier of the role to revoke',
+            description: 'The identifier of the role to revoke.',
           },
           {
             internalType: 'address[]',
@@ -14079,13 +15970,13 @@ export const data = [
             internalType: 'bytes32',
             name: 'roleId',
             type: 'bytes32',
-            description: 'The role on which to peform the admin transfer',
+            description: 'The role on which to peform the admin transfer.',
           },
           {
             internalType: 'bytes32',
             name: 'newAdmin',
             type: 'bytes32',
-            description: 'The new role to which to transfer admin access to',
+            description: 'The new role to which to transfer admin access to.',
           },
         ],
         name: 'transferAdminRole',
@@ -14102,12 +15993,12 @@ export const data = [
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'address The trusted forwarder',
+            description: 'address The trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the trusted forwarder',
+        description: 'Returns the trusted forwarder.',
       },
       {
         inputs: [],
@@ -14139,6 +16030,12 @@ export const data = [
             name: '_1',
             type: 'uint256',
             description: "The module's minor version.",
+          },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: "The module's patch version.",
           },
         ],
         stateMutability: 'view',
@@ -14240,9 +16137,15 @@ export const data = [
         name: 'Module__CallerNotAuthorized',
         type: 'error',
       },
+      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
       { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
       { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
       { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OnlyCallableByPaymentClient',
+        type: 'error',
+      },
       { inputs: [], name: 'NotInitializing', type: 'error' },
       {
         anonymous: false,
@@ -14321,28 +16224,33 @@ export const data = [
             name: 'parentOrchestrator',
             type: 'address',
             description:
-              'The address of the orchestrator the module is linked to.',
+              'The address of the {Orchestrator_v1} the module is linked to.',
           },
           {
-            indexed: true,
-            internalType: 'string',
-            name: 'moduleTitle',
-            type: 'string',
-            description: 'The title of the module.',
-          },
-          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
             indexed: false,
-            internalType: 'uint256',
-            name: 'majorVersion',
-            type: 'uint256',
-            description: 'The major version of the module.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'minorVersion',
-            type: 'uint256',
-            description: 'The minor version of the module.',
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The metadata of the module.',
           },
         ],
         name: 'ModuleInitialized',
@@ -14434,6 +16342,8 @@ export const data = [
         outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
         stateMutability: 'view',
         type: 'function',
+        description:
+          'The role that is used as a placeholder for a burned admin role.',
       },
       {
         inputs: [],
@@ -14448,7 +16358,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The role to remove admin access from',
+            description: 'The role to remove admin access from.',
           },
         ],
         name: 'burnAdminFromModuleRole',
@@ -14460,24 +16370,60 @@ export const data = [
       {
         inputs: [
           {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The identifier of the role we want to check',
+          },
+          {
+            internalType: 'address',
+            name: 'who',
+            type: 'address',
+            description: 'The address on which to perform the check.',
+          },
+        ],
+        name: 'checkForRole',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'bool Returns if the address holds the role',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'In case the role is token gated, it will check if {who} holds a balance above the threshold for at least one of the required tokens.',
+      },
+      {
+        inputs: [
+          {
             internalType: 'address',
             name: 'module',
             type: 'address',
-            description: 'The address of the module to generate the hash for',
+            description: 'The address of the module to generate the hash for.',
           },
           {
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The ID number of the role to generate the hash for',
+            description: 'The ID number of the role to generate the hash for.',
           },
         ],
         name: 'generateRoleId',
-        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
+        outputs: [
+          {
+            internalType: 'bytes32',
+            name: '_0',
+            type: 'bytes32',
+            description: 'bytes32 Returns the generated role hash.',
+          },
+        ],
         stateMutability: 'pure',
         type: 'function',
         description:
-          'Helper function to generate a bytes32 role hash for a module role',
+          'Helper function to generate a bytes32 role hash for a module role.',
       },
       {
         inputs: [],
@@ -14487,12 +16433,12 @@ export const data = [
             internalType: 'bytes32',
             name: '_0',
             type: 'bytes32',
-            description: 'The role ID',
+            description: 'The role ID.',
           },
         ],
         stateMutability: 'pure',
         type: 'function',
-        description: 'Returns the role ID of the admin role',
+        description: 'Returns the role ID of the admin role.',
       },
       {
         inputs: [{ internalType: 'bytes32', name: 'role', type: 'bytes32' }],
@@ -14535,11 +16481,19 @@ export const data = [
           },
         ],
         name: 'getThresholdValue',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description:
+              'The threshold amount necessary to qualify for a given token role.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Returns the threshold amount necessary to qualify for a given token role',
+          "Returns the threshold balance for a given token necessary to qualify for a specific role. If the value is 0, the supplied token is not part of the. role's token gating.",
       },
       {
         inputs: [
@@ -14547,20 +16501,20 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The role to grant',
+            description: 'The role to grant.',
           },
           {
             internalType: 'address',
             name: 'target',
             type: 'address',
-            description: 'The address to grant the role to',
+            description: 'The address to grant the role to.',
           },
         ],
         name: 'grantGlobalRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Grants a global role to a target',
+        description: 'Grants a global role to a target.',
       },
       {
         inputs: [
@@ -14568,40 +16522,62 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The role to grant',
+            description: 'The role to grant.',
           },
           {
             internalType: 'address[]',
             name: 'targets',
             type: 'address[]',
-            description: 'The addresses to grant the role to',
+            description: 'The addresses to grant the role to.',
           },
         ],
         name: 'grantGlobalRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Grants a global role to a set of targets',
+        description: 'Grants a global role to a set of targets.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to grant the role to.',
+          },
         ],
         name: 'grantModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to grant the role to.',
+          },
         ],
         name: 'grantModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Grants a module role to multiple target addresses.',
       },
       {
         inputs: [
@@ -14619,7 +16595,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The identifier of the role to grant',
+            description: 'The identifier of the role to grant.',
           },
           {
             internalType: 'address',
@@ -14640,7 +16616,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The identifier of the role to grant',
+            description: 'The identifier of the role to grant.',
           },
           {
             internalType: 'address[]',
@@ -14661,7 +16637,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The role to be made token-gated',
+            description: 'The role to be made token-gated.',
           },
           {
             internalType: 'address',
@@ -14683,34 +16659,12 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'One-step setup for Modules to create a token-gated role and set its threshold. Please be aware that using tokens that are transferable and have active markets could make the token-gated authorization vulnerable to flash loans, potentially bypassing the authorization mechanism.',
+          'One-step setup for Modules to create a token-gated role and set its threshold. Please be aware that using tokens that are transferable and have active markets could make the token-gated authorization vulnerable to flash loans, potentially bypassing. the authorization mechanism.',
       },
       {
         inputs: [
-          {
-            internalType: 'bytes32',
-            name: 'role',
-            type: 'bytes32',
-            description: 'The identifier of the role we want to check',
-          },
-          {
-            internalType: 'address',
-            name: 'who',
-            type: 'address',
-            description: 'The address on which to perform the check.',
-          },
-        ],
-        name: 'hasModuleRole',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          'Asks whether an address holds the required module role to execute the current transaction.',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'roleId', type: 'bytes32' },
-          { internalType: 'address', name: 'who', type: 'address' },
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'account', type: 'address' },
         ],
         name: 'hasRole',
         outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
@@ -14733,7 +16687,14 @@ export const data = [
           },
         ],
         name: 'hasTokenRole',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'True if the account qualifies for the role.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description: 'Checks if an account qualifies for a token-gated role.',
@@ -14770,6 +16731,11 @@ export const data = [
               {
                 internalType: 'uint256',
                 name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
                 type: 'uint256',
               },
               { internalType: 'string', name: 'url', type: 'string' },
@@ -14816,12 +16782,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'bool Is the given address the trusted forwarder',
+            description: 'bool Is the given address the trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder',
+        description: 'Checks if the provided address is the trusted forwarder.',
       },
       {
         inputs: [
@@ -14829,7 +16795,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The role to be made token-gated',
+            description: 'The role to be made token-gated.',
           },
         ],
         name: 'makeRoleTokenGatedFromModule',
@@ -14846,13 +16812,13 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: '_0',
             type: 'address',
-            description: "The module's orchestrator.",
+            description: "The module's {Orchestrator_1}.",
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          "Returns the module's {IOrchestrator_v1} orchestrator instance.",
+          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
       },
       {
         inputs: [
@@ -14874,20 +16840,20 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The role to grant',
+            description: 'The role to grant.',
           },
           {
             internalType: 'address',
             name: 'target',
             type: 'address',
-            description: 'The address to grant the role to',
+            description: 'The address to grant the role to.',
           },
         ],
         name: 'revokeGlobalRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Revokes a global role from a target',
+        description: 'Revokes a global role from a target.',
       },
       {
         inputs: [
@@ -14895,40 +16861,62 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The role to grant',
+            description: 'The role to grant.',
           },
           {
             internalType: 'address[]',
             name: 'targets',
             type: 'address[]',
-            description: 'The addresses to grant the role to',
+            description: 'The addresses to grant the role to.',
           },
         ],
         name: 'revokeGlobalRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Revokes a global role from a set of targets',
+        description: 'Revokes a global role from a set of targets.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'target', type: 'address' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRole',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from a target address.',
       },
       {
         inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address[]', name: 'targets', type: 'address[]' },
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to revoke the role from.',
+          },
         ],
         name: 'revokeModuleRoleBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Revokes a module role from multiple target addresses.',
       },
       {
         inputs: [
@@ -14946,7 +16934,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The identifier of the role to revoke',
+            description: 'The identifier of the role to revoke.',
           },
           {
             internalType: 'address',
@@ -14967,7 +16955,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The identifier of the role to revoke',
+            description: 'The identifier of the role to revoke.',
           },
           {
             internalType: 'address[]',
@@ -14988,7 +16976,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'roleId',
             type: 'bytes32',
-            description: 'The ID of the role to be modified',
+            description: 'The ID of the role to be modified.',
           },
           {
             internalType: 'address',
@@ -15017,7 +17005,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The token-gated role',
+            description: 'The token-gated role.',
           },
           {
             internalType: 'address',
@@ -15039,7 +17027,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          "Allows a Module to set the Threshold of one of it's roles",
+          "Allows a Module to set the threshold of one of it's roles.",
       },
       {
         inputs: [
@@ -15047,7 +17035,7 @@ export const data = [
             internalType: 'bytes32',
             name: 'role',
             type: 'bytes32',
-            description: 'The ID of the role to be modified',
+            description: 'The ID of the role to be modified.',
           },
           {
             internalType: 'bool',
@@ -15099,13 +17087,13 @@ export const data = [
             internalType: 'bytes32',
             name: 'roleId',
             type: 'bytes32',
-            description: 'The role on which to peform the admin transfer',
+            description: 'The role on which to peform the admin transfer.',
           },
           {
             internalType: 'bytes32',
             name: 'newAdmin',
             type: 'bytes32',
-            description: 'The new role to which to transfer admin access to',
+            description: 'The new role to which to transfer admin access to.',
           },
         ],
         name: 'transferAdminRole',
@@ -15122,12 +17110,12 @@ export const data = [
             internalType: 'address',
             name: '_0',
             type: 'address',
-            description: 'address The trusted forwarder',
+            description: 'address The trusted forwarder.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Returns the trusted forwarder',
+        description: 'Returns the trusted forwarder.',
       },
       {
         inputs: [],
@@ -15159,6 +17147,12 @@ export const data = [
             name: '_1',
             type: 'uint256',
             description: "The module's minor version.",
+          },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: "The module's patch version.",
           },
         ],
         stateMutability: 'view',
@@ -15244,7 +17238,6 @@ export const data = [
         name: 'Orchestrator__DependencyInjection__ModuleNotUsedInOrchestrator',
         type: 'error',
       },
-      { inputs: [], name: 'Orchestrator__ExecuteTxFailed', type: 'error' },
       {
         inputs: [{ internalType: 'address', name: 'module', type: 'address' }],
         name: 'Orchestrator__InvalidModuleType',
@@ -15373,7 +17366,7 @@ export const data = [
         type: 'event',
         outputs: [],
         description:
-          'Event emitted when updating a module is initiated, and the timelock starts;',
+          'Event emitted when updating a module is initiated, and the timelock starts;.',
       },
       {
         anonymous: false,
@@ -15389,7 +17382,7 @@ export const data = [
         name: 'ModuleUpdateCanceled',
         type: 'event',
         outputs: [],
-        description: 'Event emitted when a module update is canceled',
+        description: 'Event emitted when a module update is canceled.',
       },
       {
         anonymous: false,
@@ -15399,7 +17392,7 @@ export const data = [
             internalType: 'uint256',
             name: 'orchestratorId_',
             type: 'uint256',
-            description: 'The id of the orchestrator.',
+            description: 'The id of the {Orchestrator_v1}.',
           },
           {
             indexed: false,
@@ -15428,7 +17421,7 @@ export const data = [
             name: 'modules',
             type: 'address[]',
             description:
-              'The addresses of the other modules used in the orchestrator.',
+              'The addresses of the other modules used in the {Orchestrator_v1}.',
           },
           {
             indexed: false,
@@ -15436,14 +17429,14 @@ export const data = [
             name: 'governor',
             type: 'address',
             description:
-              'The address of the governor contract used to reference protocol level interactions',
+              'The address of the {Governor_v1} contract used to reference protocol level interactions.',
           },
         ],
         name: 'OrchestratorInitialized',
         type: 'event',
         outputs: [],
         description:
-          'Orchestrator_v1 has been initialized with the corresponding modules',
+          '{Orchestrator_v1} has been initialized with the corresponding modules.',
       },
       {
         anonymous: false,
@@ -15524,7 +17517,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Cancels an initiated update for a module. Can be adding or removing a module from the Orchestrator',
+          'Cancels an initiated update for a module. Can be adding or removing a module from the {Orchestrator_v1}.',
       },
       {
         inputs: [
@@ -15563,9 +17556,8 @@ export const data = [
         inputs: [
           {
             internalType: 'contract IAuthorizer_v1',
-            name: 'authorizer_',
+            name: 'newAuthorizer',
             type: 'address',
-            description: 'The address of the new authorizer module.',
           },
         ],
         name: 'executeSetAuthorizer',
@@ -15573,15 +17565,14 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Executes replacing the current authorizer with `_authorizer`!!! IMPORTANT !!! When changing the Authorizer the current set of assigned addresses to Roles are lost. Make sure initial owners are set properly.',
+          'Executes replacing the current authorizer with `_authorizer`.!!! IMPORTANT !!! When changing the Authorizer the current set of assigned addresses to Roles are lost. Make sure initial owners are set properly.',
       },
       {
         inputs: [
           {
             internalType: 'contract IFundingManager_v1',
-            name: 'fundingManager_',
+            name: 'newFundingManager',
             type: 'address',
-            description: 'The address of the new funding manager module.',
           },
         ],
         name: 'executeSetFundingManager',
@@ -15589,15 +17580,14 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Executes replaces the current funding manager with `fundingManager_`!!! IMPORTANT !!! When changing the FundingManager the current funds still contained in the module might not be retrievable. Make sure to clean the FundingManager properly beforehand.',
+          'Executes replaces the current funding manager with `fundingManager_`.!!! IMPORTANT !!! When changing the FundingManager the current funds still contained in the module might not be retrievable. Make sure to clean the FundingManager properly beforehand.',
       },
       {
         inputs: [
           {
             internalType: 'contract IPaymentProcessor_v1',
-            name: 'paymentProcessor_',
+            name: 'newPaymentProcessor',
             type: 'address',
-            description: 'The address of the new payment processor module.',
           },
         ],
         name: 'executeSetPaymentProcessor',
@@ -15605,82 +17595,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Executes replaces the current payment processor with `paymentProcessor_`!!! IMPORTANT !!! When changing the PaymentProcessor the current ongoing payment orders are lost. Make sure to resolve those payments properly beforehand.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'target',
-            type: 'address',
-            description: 'The address to call.',
-          },
-          {
-            internalType: 'bytes',
-            name: 'data',
-            type: 'bytes',
-            description: 'The call data.',
-          },
-        ],
-        name: 'executeTx',
-        outputs: [
-          {
-            internalType: 'bytes',
-            name: '_0',
-            type: 'bytes',
-            description: 'The return data of the call.',
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Executes a call on target `target` with call data `data`.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'to',
-            type: 'address',
-            description: 'The address to call.',
-          },
-          {
-            internalType: 'bytes',
-            name: 'data',
-            type: 'bytes',
-            description: 'The call data.',
-          },
-        ],
-        name: 'executeTxFromModule',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'Whether the call succeeded.',
-          },
-          {
-            internalType: 'bytes',
-            name: '_1',
-            type: 'bytes',
-            description: 'The return data of the call.',
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Executes a call to `to` with call data `data` either via call',
-      },
-      {
-        inputs: [
-          { internalType: 'string', name: 'moduleName', type: 'string' },
-        ],
-        name: 'findModuleAddressInOrchestrator',
-        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          "find the address of a given module using it's name in a orchestrator",
+          'Executes replaces the current payment processor with `paymentProcessor_`.!!! IMPORTANT !!! When changing the PaymentProcessor the current ongoing payment orders are lost. Make sure to resolve those payments properly beforehand.',
       },
       {
         inputs: [],
@@ -15710,13 +17625,24 @@ export const data = [
         stateMutability: 'view',
         type: 'function',
         description:
-          'The governor contract implementation used for protocol level interactions.',
+          'The {IGovernor_v1} implementation used for protocol level interactions.',
       },
       {
         inputs: [
           { internalType: 'uint256', name: 'orchestratorId_', type: 'uint256' },
-          { internalType: 'address', name: 'moduleFactory_', type: 'address' },
-          { internalType: 'address[]', name: 'modules', type: 'address[]' },
+          {
+            internalType: 'address',
+            name: 'moduleFactory_',
+            type: 'address',
+            description: 'The address of the module factory.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'modules',
+            type: 'address[]',
+            description:
+              'The addresses of the modules used in the {Orchestrator_v1}.',
+          },
           {
             internalType: 'contract IFundingManager_v1',
             name: 'fundingManager_',
@@ -15751,7 +17677,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Initiates the adding of a module to the Orchestrator on a timelock',
+          'Initiates the adding of a module to the {Orchestrator_v1} on a timelock.',
       },
       {
         inputs: [{ internalType: 'address', name: 'module_', type: 'address' }],
@@ -15760,15 +17686,14 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Initiate the removal of a module from the Orchestrator on a timelock',
+          'Initiate the removal of a module from the {Orchestrator_v1} on a timelock.',
       },
       {
         inputs: [
           {
             internalType: 'contract IAuthorizer_v1',
-            name: 'authorizer_',
+            name: 'newAuthorizer',
             type: 'address',
-            description: 'The address of the new authorizer module.',
           },
         ],
         name: 'initiateSetAuthorizerWithTimelock',
@@ -15782,9 +17707,8 @@ export const data = [
         inputs: [
           {
             internalType: 'contract IFundingManager_v1',
-            name: 'fundingManager_',
+            name: 'newFundingManager',
             type: 'address',
-            description: 'The address of the new funding manager module.',
           },
         ],
         name: 'initiateSetFundingManagerWithTimelock',
@@ -15798,9 +17722,8 @@ export const data = [
         inputs: [
           {
             internalType: 'contract IPaymentProcessor_v1',
-            name: 'paymentProcessor_',
+            name: 'newPaymentProcessor',
             type: 'address',
-            description: 'The address of the new payment processor module.',
           },
         ],
         name: 'initiateSetPaymentProcessorWithTimelock',
@@ -15834,12 +17757,27 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'address', name: 'forwarder', type: 'address' },
+          {
+            internalType: 'address',
+            name: 'forwarder',
+            type: 'address',
+            description: 'The address to check.',
+          },
         ],
         name: 'isTrustedForwarder',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description:
+              'True if the address is the trusted forwarder, false otherwise.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
+        description:
+          'Returns wether the given address is the trusted forwarder or not.',
       },
       {
         inputs: [],
@@ -15876,7 +17814,14 @@ export const data = [
       {
         inputs: [],
         name: 'modulesSize',
-        outputs: [{ internalType: 'uint8', name: '_0', type: 'uint8' }],
+        outputs: [
+          {
+            internalType: 'uint8',
+            name: '_0',
+            type: 'uint8',
+            description: 'The number of modules.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
         description: 'Returns the number of modules.',
@@ -15887,7 +17832,7 @@ export const data = [
         outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
         stateMutability: 'view',
         type: 'function',
-        description: "Returns the orchestrator's id.",
+        description: "Returns the {Orchestrator_v1}'s id.",
       },
       {
         inputs: [],
@@ -15916,17 +17861,17 @@ export const data = [
       {
         inputs: [],
         name: 'trustedForwarder',
-        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        outputs: [
+          {
+            internalType: 'address',
+            name: '_0',
+            type: 'address',
+            description: 'The trusted forwarder address.',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'version',
-        outputs: [{ internalType: 'string', name: '_0', type: 'string' }],
-        stateMutability: 'pure',
-        type: 'function',
-        description: 'The version of the orchestrator instance.',
+        description: 'Returns the trusted forwarder for metatransactions.',
       },
     ],
   },

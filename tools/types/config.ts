@@ -1,4 +1,4 @@
-import { Tags } from './meta'
+import type { Tags } from './meta'
 
 export type DeploymentArgData = {
   name: string

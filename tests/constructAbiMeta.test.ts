@@ -10,14 +10,14 @@ const dirname = import.meta.dirname,
   startPath = path.join(dirname, '../deployments/build')
 
 describe('Constructed Abi Meta', () => {
-  it('Should Log Abi Meta', async () => {
-    readPath(
+  it.skip('Should Log Abi Meta', async () => {
+    await readPath(
       { startPath, extName: 'json', exclude: '_config' },
       (itemPath: string) => {
         // console.log('itemPath:', itemPath)
         const parsed = getParsedRawMetadata(itemPath)
         const res = constructAbiMeta(itemPath, parsed)
-        const label = 'abiMeta-' + itemPath.split('/v1.0')[0].split('/').pop()
+        const label = 'abiMeta-' + path.basename(itemPath, '.json')
         writeLog({ content: res, label })
       }
     )

@@ -4,18 +4,19 @@ import { isEqual, merge } from 'lodash'
 import getMetas from '../../utils/getMetas'
 import readPath from '../../utils/readPath'
 import write from './write'
-import { AbiMemberConfigs, Config, Tags } from '../../types'
 import getParsedRawMetadata from '../../utils/getParsedRawMetadata'
 import { getConfigPath } from '../../utils/getParsedConfig'
-import { Tag } from '../../../src'
+
+import type { AbiMemberConfigs, Config, Tags } from '../../types'
+import type { Tag } from '../../../src'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested JSON files
   startPath = path.join(dirname, '../../../deployments/build')
 
-export default function prep() {
+export default async function prep() {
   // 1- Read the directory recursively
-  readPath(
+  await readPath(
     { startPath, extName: 'json', exclude: '_config' },
     (itemPath: string) => {
       // 2- Get the path of the _config.json file

@@ -1,6 +1,7 @@
 import fs from 'fs'
 import chalk from 'chalk'
-import { Config } from '../../types'
+
+import type { Config } from '../../types'
 
 export default function (data: Config, destPath: string) {
   const extendedData = JSON.stringify(data)
