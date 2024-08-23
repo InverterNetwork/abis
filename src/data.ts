@@ -902,7 +902,24 @@ export const data = [
     description:
       '{OrchestratorFactory_v1} facilitates the deployment of {Orchestrator_v1}s and their associated modules for the Inverter Network, ensuring seamless creation and configuration of various components in a single transaction.',
     moduleType: 'factories',
-    deploymentInputs: { configData: [] },
+    deploymentInputs: {
+      configData: [
+        {
+          name: 'independentUpdates',
+          type: 'bool',
+          jsType: 'boolean',
+          description:
+            'Default is false - Whether this workflow’s updates to Orchestrator and Modules shall be self-governed.',
+        },
+        {
+          name: 'independentUpdateAdmin',
+          type: 'address',
+          jsType: '0xstring',
+          description:
+            'Should only be set if independentUpdates is true  - The address that will be responsible for updates to Orchestrator and Modules of the workflow.',
+        },
+      ],
+    },
     abi: [
       {
         inputs: [
@@ -1842,7 +1859,40 @@ export const data = [
     name: 'Restricted_PIM_Factory_v1',
     description: '',
     moduleType: 'factories',
-    deploymentInputs: { configData: [] },
+    deploymentInputs: {
+      configData: [
+        {
+          components: [
+            {
+              name: 'name',
+              type: 'string',
+              description: 'The name of the issuance token',
+            },
+            {
+              name: 'symbol',
+              type: 'string',
+              description: 'The symbol of the issuance token',
+            },
+            {
+              name: 'decimals',
+              type: 'uint8',
+              jsType: 'numberString',
+              description:
+                'The decimals used within the issuance token ( should be bigger or equal to 7 and bigger or equel to the collateral token decimals )',
+            },
+            {
+              name: 'maxSupply',
+              type: 'uint256',
+              jsType: 'numberString',
+              description: 'The max total supply of the token',
+              tags: ['decimals:params:exact:decimals'],
+            },
+          ],
+          name: 'issuanceToken',
+          type: 'tuple',
+        },
+      ],
+    },
     abi: [
       {
         inputs: [
@@ -2069,11 +2119,6 @@ export const data = [
             description:
               'CreatedOrchestrator Returns the created orchestrator instance.',
           },
-          {
-            internalType: 'contract ERC20Issuance_v1',
-            name: 'issuanceToken',
-            type: 'address',
-          },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
@@ -2101,6 +2146,377 @@ export const data = [
         name: 'trustedForwarder',
         outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
+        type: 'function',
+      },
+    ],
+  },
+  {
+    name: 'Immutable_PIM_Factory_v1',
+    description: '',
+    moduleType: 'factories',
+    deploymentInputs: {
+      configData: [
+        {
+          name: 'initialPurchaseAmount',
+          type: 'uint256',
+          jsType: 'numberString',
+          description: 'The amount of issuance tokens to purchase initially',
+          tags: ['decimals:params:exact:issuanceToken.decimals'],
+        },
+      ],
+    },
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: '_orchestratorFactory',
+            type: 'address',
+          },
+          {
+            internalType: 'address',
+            name: '_trustedForwarder',
+            type: 'address',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'constructor',
+      },
+      {
+        inputs: [],
+        name: 'PIM_WorkflowFactory__OnlyPimFeeRecipient',
+        type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'fundingManager',
+            type: 'address',
+            description: 'The address of the funding manager.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'issuanceToken',
+            type: 'address',
+            description: 'The address of the issuance token.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'deployer',
+            type: 'address',
+            description: 'The address of the deployer.',
+          },
+        ],
+        name: 'PIMWorkflowCreated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a new PIM workflow is created.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'fundingManager',
+            type: 'address',
+            description: 'The address of the funding manager.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'claimer',
+            type: 'address',
+            description: 'The address of the one that is claiming.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+            description: 'The address of that is receiving the fee.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: 'The amount claimed.',
+          },
+        ],
+        name: 'PimFeeClaimed',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when PIM fee (buy/sell fees) is claimed.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'fundingManager',
+            type: 'address',
+            description: 'The address of the funding manager.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'oldRecipient',
+            type: 'address',
+            description: 'The previous pim fee recipient.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'newRecipient',
+            type: 'address',
+            description: 'The new pim fee recipient.',
+          },
+        ],
+        name: 'PimFeeRecipientUpdated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when factory owner sets new fee.',
+      },
+      {
+        inputs: [
+          {
+            components: [
+              {
+                internalType: 'bool',
+                name: 'independentUpdates',
+                type: 'bool',
+              },
+              {
+                internalType: 'address',
+                name: 'independentUpdateAdmin',
+                type: 'address',
+              },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.WorkflowConfig',
+            name: 'workflowConfig',
+            type: 'tuple',
+            description: "The workflow's config data.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule_v1.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.ModuleConfig',
+            name: 'fundingManagerConfig',
+            type: 'tuple',
+            description:
+              "The config data for the orchestrator's {IFundingManager_v1} instance.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule_v1.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.ModuleConfig',
+            name: 'authorizerConfig',
+            type: 'tuple',
+            description:
+              "The config data for the orchestrator's {IAuthorizer_v1} instance.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule_v1.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.ModuleConfig',
+            name: 'paymentProcessorConfig',
+            type: 'tuple',
+            description:
+              "The config data for the orchestrator's {IPaymentProcessor_v1} instance.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule_v1.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.ModuleConfig[]',
+            name: 'moduleConfigs',
+            type: 'tuple[]',
+            description:
+              "Variable length set of optional module's config data.",
+          },
+          {
+            components: [
+              { internalType: 'string', name: 'name', type: 'string' },
+              { internalType: 'string', name: 'symbol', type: 'string' },
+              { internalType: 'uint8', name: 'decimals', type: 'uint8' },
+              { internalType: 'uint256', name: 'maxSupply', type: 'uint256' },
+            ],
+            internalType: 'struct IBondingCurveBase_v1.IssuanceToken',
+            name: 'issuanceTokenParams',
+            type: 'tuple',
+            description:
+              "The issuance token's parameters (name, symbol, decimals, maxSupply).",
+          },
+          {
+            internalType: 'uint256',
+            name: 'initialPurchaseAmount',
+            type: 'uint256',
+            description:
+              'The volume of the first purchase in terms of collateral token.',
+          },
+        ],
+        name: 'createPIMWorkflow',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator_v1',
+            name: 'orchestrator',
+            type: 'address',
+            description:
+              'CreatedOrchestrator Returns the created orchestrator instance.',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Deploys a new issuance token and uses that to deploy a workflow with restricted bonding curve.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'forwarder', type: 'address' },
+        ],
+        name: 'isTrustedForwarder',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'orchestratorFactory',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'fundingManager', type: 'address' },
+          { internalType: 'address', name: 'to', type: 'address' },
+        ],
+        name: 'transferPimFeeEligibility',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'trustedForwarder',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'fundingManager', type: 'address' },
+          { internalType: 'address', name: 'to', type: 'address' },
+        ],
+        name: 'withdrawPimFee',
+        outputs: [],
+        stateMutability: 'nonpayable',
         type: 'function',
       },
     ],
@@ -11209,7 +11625,7 @@ export const data = [
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            tags: ['decimals'],
+            tags: ['decimals', 'approval'],
             description: 'The number of tokens to deposit.',
           },
         ],
