@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.5](https://github.com/inverter-network/abis/compare/v0.2.4...v0.2.5) (2024-09-05)
+
+
+### Bug Fixes
+
+* esm support ([cfba7eb](https://github.com/inverter-network/abis/commit/cfba7eb4c3acbe66800bcb046acbbc9d4280db20))
+
 ### [0.2.4](https://github.com/inverter-network/abis/compare/v0.2.3...v0.2.4) (2024-09-01)
 
 ### [0.2.3](https://github.com/inverter-network/abis/compare/v0.2.2...v0.2.3) (2024-08-23)
