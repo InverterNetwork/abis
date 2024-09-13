@@ -473,7 +473,8 @@ export const data = [
   },
   {
     name: 'Restricted_PIM_Factory_v1',
-    description: '',
+    description:
+      'Used to deploy a PIM workflow with a restricted bonding curve with a mechanism to pre-fund the required collateral supply and an opinionated initial configuration.',
     moduleType: 'factories',
     deploymentInputs: {
       configData: [
@@ -527,6 +528,95 @@ export const data = [
         type: 'constructor',
       },
       {
+        inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
+        name: 'AddressEmptyCode',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'AddressInsufficientBalance',
+        type: 'error',
+      },
+      { inputs: [], name: 'FailedInnerCall', type: 'error' },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'availableFunding',
+            type: 'uint256',
+          },
+        ],
+        name: 'InsufficientFunding',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
+        name: 'SafeERC20FailedOperation',
+        type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'sponsor',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'actor',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+          },
+        ],
+        name: 'FundingAdded',
+        type: 'event',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'sponsor',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'actor',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+          },
+        ],
+        name: 'FundingRemoved',
+        type: 'event',
+      },
+      {
         anonymous: false,
         inputs: [
           {
@@ -555,6 +645,17 @@ export const data = [
         type: 'event',
         outputs: [],
         description: 'Event emitted when a new PIM workflow is created.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'actor', type: 'address' },
+          { internalType: 'address', name: 'token', type: 'address' },
+          { internalType: 'uint256', name: 'amount', type: 'uint256' },
+        ],
+        name: 'addFunding',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
       },
       {
         inputs: [
@@ -743,6 +844,17 @@ export const data = [
       },
       {
         inputs: [
+          { internalType: 'address', name: 'sponsor', type: 'address' },
+          { internalType: 'address', name: 'actor', type: 'address' },
+          { internalType: 'address', name: 'token', type: 'address' },
+        ],
+        name: 'fundings',
+        outputs: [{ internalType: 'uint256', name: 'amount', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
           { internalType: 'address', name: 'forwarder', type: 'address' },
         ],
         name: 'isTrustedForwarder',
@@ -762,6 +874,17 @@ export const data = [
         name: 'trustedForwarder',
         outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'actor', type: 'address' },
+          { internalType: 'address', name: 'token', type: 'address' },
+          { internalType: 'uint256', name: 'amount', type: 'uint256' },
+        ],
+        name: 'withdrawFunding',
+        outputs: [],
+        stateMutability: 'nonpayable',
         type: 'function',
       },
     ],
