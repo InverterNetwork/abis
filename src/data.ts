@@ -474,7 +474,7 @@ export const data = [
   {
     name: 'Restricted_PIM_Factory_v1',
     description:
-      'Used to deploy a PIM workflow with a restricted bonding curve with a mechanism to pre-fund the required collateral supply and an opinionated initial configuration.',
+      'Used to deploy a PIM workflow with a restricted bonding curve with a mechanism to sponsor the required collateral supply and an opinionated initial configuration.',
     moduleType: 'factories',
     deploymentInputs: {
       configData: [
@@ -507,6 +507,12 @@ export const data = [
           ],
           name: 'issuanceToken',
           type: 'tuple',
+        },
+        {
+          name: 'beneficiary',
+          type: 'address',
+          description:
+            'Receives the initial issuance supply and minting rights.',
         },
       ],
     },
@@ -631,14 +637,15 @@ export const data = [
             internalType: 'address',
             name: 'issuanceToken',
             type: 'address',
-            description: 'The address of the issuance token.',
+            description: 'The token issued by the bonding curve.',
           },
           {
             indexed: true,
             internalType: 'address',
-            name: 'deployer',
+            name: 'beneficiary',
             type: 'address',
-            description: 'The address of the deployer.',
+            description:
+              'The beneficiary receives initial issuance supply and minting rights.',
           },
         ],
         name: 'PIMWorkflowCreated',
@@ -825,6 +832,13 @@ export const data = [
             type: 'tuple',
             description:
               "The issuance token's parameters (name, symbol, decimals, maxSupply).",
+          },
+          {
+            internalType: 'address',
+            name: 'beneficiary',
+            type: 'address',
+            description:
+              'The beneficiary of the PIM receives initial supply & holds minting rights).',
           },
         ],
         name: 'createPIMWorkflow',
