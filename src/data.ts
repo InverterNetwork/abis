@@ -479,6 +479,20 @@ export const data = [
     deploymentInputs: {
       configData: [
         {
+          name: 'independentUpdates',
+          type: 'bool',
+          jsType: 'boolean',
+          description:
+            'Default is false - Whether this workflow’s updates to Orchestrator and Modules shall be self-governed.',
+        },
+        {
+          name: 'independentUpdateAdmin',
+          type: 'address',
+          jsType: '0xstring',
+          description:
+            'Should only be set if independentUpdates is true  - The address that will be responsible for updates to Orchestrator and Modules of the workflow.',
+        },
+        {
           components: [
             {
               name: 'name',
@@ -1395,6 +1409,50 @@ export const data = [
     moduleType: 'factories',
     deploymentInputs: {
       configData: [
+        {
+          name: 'independentUpdates',
+          type: 'bool',
+          jsType: 'boolean',
+          description:
+            'Default is false - Whether this workflow’s updates to Orchestrator and Modules shall be self-governed.',
+        },
+        {
+          name: 'independentUpdateAdmin',
+          type: 'address',
+          jsType: '0xstring',
+          description:
+            'Should only be set if independentUpdates is true  - The address that will be responsible for updates to Orchestrator and Modules of the workflow.',
+        },
+        {
+          components: [
+            {
+              name: 'name',
+              type: 'string',
+              description: 'The name of the issuance token',
+            },
+            {
+              name: 'symbol',
+              type: 'string',
+              description: 'The symbol of the issuance token',
+            },
+            {
+              name: 'decimals',
+              type: 'uint8',
+              jsType: 'numberString',
+              description:
+                'The decimals used within the issuance token ( should be bigger or equal to 7 and bigger or equel to the collateral token decimals )',
+            },
+            {
+              name: 'maxSupply',
+              type: 'uint256',
+              jsType: 'numberString',
+              description: 'The max total supply of the token',
+              tags: ['decimals:params:exact:decimals'],
+            },
+          ],
+          name: 'issuanceToken',
+          type: 'tuple',
+        },
         {
           name: 'initialPurchaseAmount',
           type: 'uint256',

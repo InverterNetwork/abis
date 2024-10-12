@@ -45,8 +45,6 @@
     "postpack": "pinst --enable",
     "pre-commit": "lint-staged",
     "pre-push": "bun run build",
-    "lint:fix": "eslint --ext .tsx --ext .ts ./src --fix",
-    "prettier:fix": "prettier --write ./src/.",
     "release": "standard-version -a",
     "release:alpha": "standard-version -a --prerelease alpha --skip.changelog",
     "release:beta": "standard-version -a --prerelease beta --skip.changelog",
@@ -57,8 +55,8 @@
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
       "bun type-check",
-      "bun lint:fix",
-      "bun prettier:fix"
+      "eslint --fix",
+      "prettier --write"
     ]
   },
   "peerDependencies": {
