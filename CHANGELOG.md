@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.2](https://github.com/inverter-network/abis/compare/v0.3.1...v0.3.2) (2024-10-26)
+
+
+### Bug Fixes
+
+* compile latest configs ([cc9bf69](https://github.com/inverter-network/abis/commit/cc9bf6993cc29b5c3b7de064a2232fd3dbcf8e39))
+
 ### [0.3.1](https://github.com/inverter-network/abis/compare/v0.3.0...v0.3.1) (2024-10-26)
 
 ## [0.3.0](https://github.com/inverter-network/abis/compare/v0.3.0-alpha.1...v0.3.0) (2024-10-14)
