@@ -17293,7 +17293,14 @@ export const data = [
       {
         inputs: [],
         name: 'rewardRate',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
       },
