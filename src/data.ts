@@ -582,34 +582,28 @@ export const data = [
             internalType: 'address',
             name: 'sponsor',
             type: 'address',
-            description: 'Address that pays funding.',
           },
           {
             indexed: true,
             internalType: 'address',
             name: 'actor',
             type: 'address',
-            description: 'Address that can use new funding.',
           },
           {
             indexed: true,
             internalType: 'address',
             name: 'token',
             type: 'address',
-            description: 'Address of token used for funding.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            description: 'Funding amount.',
           },
         ],
         name: 'FundingAdded',
         type: 'event',
-        outputs: [],
-        description: 'Event emitted when new funding is added.',
       },
       {
         anonymous: false,
@@ -619,35 +613,28 @@ export const data = [
             internalType: 'address',
             name: 'sponsor',
             type: 'address',
-            description: 'Address that agreed to pay for funding.',
           },
           {
             indexed: true,
             internalType: 'address',
             name: 'actor',
             type: 'address',
-            description: 'Address that could have used the funding.',
           },
           {
             indexed: true,
             internalType: 'address',
             name: 'token',
             type: 'address',
-            description:
-              'Address of token used that would have been used for funding.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
-            description: 'Funding amount.',
           },
         ],
         name: 'FundingRemoved',
         type: 'event',
-        outputs: [],
-        description: 'Event emitted when existing funding is removed.',
       },
       {
         anonymous: false,
@@ -682,34 +669,14 @@ export const data = [
       },
       {
         inputs: [
-          {
-            internalType: 'address',
-            name: 'actor',
-            type: 'address',
-            description:
-              'The address that can use the funding for a new bonding curve deployment.',
-          },
-          {
-            internalType: 'address',
-            name: 'token',
-            type: 'address',
-            description:
-              'The token sent to the factory and to be used as collateral token for a bonding curve.',
-          },
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            description:
-              'The amount of `token` to be provided as initialCollateralSupply.',
-          },
+          { internalType: 'address', name: 'actor', type: 'address' },
+          { internalType: 'address', name: 'token', type: 'address' },
+          { internalType: 'uint256', name: 'amount', type: 'uint256' },
         ],
         name: 'addFunding',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description:
-          'Adds `amount` of some `token` to factory to be used by some `actor` for a bonding curve deployment.',
       },
       {
         inputs: [
@@ -913,8 +880,6 @@ export const data = [
         outputs: [{ internalType: 'uint256', name: 'amount', type: 'uint256' }],
         stateMutability: 'view',
         type: 'function',
-        description:
-          'Returns the amount of funding for a given sponsor, actor and token.',
       },
       {
         inputs: [
@@ -941,32 +906,14 @@ export const data = [
       },
       {
         inputs: [
-          {
-            internalType: 'address',
-            name: 'actor',
-            type: 'address',
-            description:
-              'The address could have used the funding for a new bonding curve deployment.',
-          },
-          {
-            internalType: 'address',
-            name: 'token',
-            type: 'address',
-            description:
-              'The token that was sent to the factory to be used as collateral token for a bonding curve.',
-          },
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            description: 'The amount of `token` that was provided.',
-          },
+          { internalType: 'address', name: 'actor', type: 'address' },
+          { internalType: 'address', name: 'token', type: 'address' },
+          { internalType: 'uint256', name: 'amount', type: 'uint256' },
         ],
         name: 'withdrawFunding',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Withdraws an existing funding from the factory.',
       },
     ],
   },
@@ -1513,6 +1460,12 @@ export const data = [
           description: 'The amount of issuance tokens to purchase initially',
           tags: ['decimals:params:exact:issuanceToken.decimals'],
         },
+        {
+          name: 'isImmutable',
+          type: 'bool',
+          jsType: 'boolean',
+          description: 'Whether the workflow is immutable',
+        },
       ],
     },
     abi: [
@@ -1528,6 +1481,7 @@ export const data = [
             name: '_trustedForwarder',
             type: 'address',
           },
+          { internalType: 'address', name: '_dexAdapter', type: 'address' },
         ],
         stateMutability: 'nonpayable',
         type: 'constructor',
@@ -1536,6 +1490,53 @@ export const data = [
         inputs: [],
         name: 'PIM_WorkflowFactory__OnlyPimFeeRecipient',
         type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'issuanceToken',
+            type: 'address',
+            description: 'The address of the issuance token.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'collateralToken',
+            type: 'address',
+            description: 'The address of the collateral token.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'pool',
+            type: 'address',
+            description: 'The address of the pool.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'issuanceTokenAmount',
+            type: 'uint256',
+            tags: ['decimals:extras:issuanceToken'],
+            description: 'The amount of issuance tokens added as liquidity.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'collateralTokenAmount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'The amount of collateral tokens added as liquidity.',
+          },
+        ],
+        name: 'Graduation',
+        type: 'event',
+        outputs: [],
+        description:
+          'Event emitted when collateral liquidity is migrated to the dex.',
       },
       {
         anonymous: false,
@@ -1633,6 +1634,41 @@ export const data = [
         type: 'event',
         outputs: [],
         description: 'Event emitted when factory owner sets new fee.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'issuanceToken',
+            type: 'address',
+            description: 'The issuance token to buy',
+          },
+          {
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address to receive the purchased tokens',
+          },
+          {
+            internalType: 'uint256',
+            name: 'amountIn',
+            type: 'uint256',
+            tags: ['decimals', 'approval'],
+            description: 'The maximum amount of collateral tokens to spend',
+          },
+          {
+            internalType: 'uint256',
+            name: 'minAmountOut',
+            type: 'uint256',
+            tags: ['decimals:extras:issuanceToken'],
+          },
+        ],
+        name: 'buyForUpTo',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Buys tokens from the bonding curve funding manager for a recipient',
       },
       {
         inputs: [
@@ -1810,6 +1846,13 @@ export const data = [
             description:
               'The volume of the first purchase in terms of collateral token.',
           },
+          {
+            internalType: 'bool',
+            name: 'isImmutable',
+            type: 'bool',
+            description:
+              'Whether the admin rights are transferred to the factory or to the deployer.',
+          },
         ],
         name: 'createPIMWorkflow',
         outputs: [
@@ -1825,6 +1868,19 @@ export const data = [
         type: 'function',
         description:
           'Deploys a new issuance token and uses that to deploy a workflow with restricted bonding curve.',
+      },
+      {
+        inputs: [],
+        name: 'dexAdapter',
+        outputs: [
+          {
+            internalType: 'contract IDexAdapter_v1',
+            name: '_0',
+            type: 'address',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
       },
       {
         inputs: [
@@ -1844,10 +1900,47 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'address', name: 'fundingManager', type: 'address' },
-          { internalType: 'address', name: 'to', type: 'address' },
+          { internalType: 'address', name: 'issuanceToken', type: 'address' },
         ],
-        name: 'transferPimFeeEligibility',
+        name: 'pims',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator_v1',
+            name: 'orchestrator',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: 'initialVirtualIssuanceSupply',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'initialVirtualCollateralSupply',
+            type: 'uint256',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'issuanceToken', type: 'address' },
+          { internalType: 'address', name: 'recipient', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'amountIn',
+            type: 'uint256',
+            tags: ['decimals:extras:issuanceToken', 'approval'],
+          },
+          {
+            internalType: 'uint256',
+            name: 'minAmountOut',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'sellTo',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
@@ -1857,16 +1950,6 @@ export const data = [
         name: 'trustedForwarder',
         outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'fundingManager', type: 'address' },
-          { internalType: 'address', name: 'to', type: 'address' },
-        ],
-        name: 'withdrawPimFee',
-        outputs: [],
-        stateMutability: 'nonpayable',
         type: 'function',
       },
     ],
@@ -17478,814 +17561,6 @@ export const data = [
         type: 'function',
         description:
           'Unstake a specified amount of tokens and collect rewards.',
-      },
-      {
-        inputs: [],
-        name: 'url',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's URL.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's URL.",
-      },
-      {
-        inputs: [],
-        name: 'version',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            description: "The module's major version.",
-          },
-          {
-            internalType: 'uint256',
-            name: '_1',
-            type: 'uint256',
-            description: "The module's minor version.",
-          },
-          {
-            internalType: 'uint256',
-            name: '_2',
-            type: 'uint256',
-            description: "The module's patch version.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's version.",
-      },
-    ],
-  },
-  {
-    name: 'LM_PC_MigrateLiquidity_UniswapV2_v1',
-    description: '',
-    moduleType: 'optionalModule',
-    deploymentInputs: {
-      configData: [
-        {
-          components: [
-            {
-              name: 'collateralMigrationAmount',
-              type: 'uint256',
-              description: 'The amount of collateral to migrate.',
-              tags: ['decimals'],
-            },
-            {
-              name: 'collateralMigrateThreshold',
-              type: 'uint256',
-              description:
-                'The threshold for the collateral migration. ( i.e. 100,000 )',
-              tags: ['decimals'],
-            },
-            {
-              name: 'dexRouterAddress',
-              type: 'address',
-              description: 'The address of the DEX router.',
-            },
-            {
-              name: 'lpTokenRecipientAddress',
-              type: 'address',
-              description: 'The address of the recipient of the LP tokens.',
-            },
-          ],
-          name: 'liquidityMigrationConfig',
-          type: 'tuple',
-          description:
-            'The configuration data for the liquidity migration module.',
-        },
-      ],
-    },
-    abi: [
-      {
-        inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
-        name: 'AddressEmptyCode',
-        type: 'error',
-      },
-      {
-        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
-        name: 'AddressInsufficientBalance',
-        type: 'error',
-      },
-      { inputs: [], name: 'FailedInnerCall', type: 'error' },
-      { inputs: [], name: 'InvalidInitialization', type: 'error' },
-      {
-        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
-        name: 'Module_OrchestratorCallbackFailed',
-        type: 'error',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
-          { internalType: 'address', name: 'caller', type: 'address' },
-        ],
-        name: 'Module__CallerNotAuthorized',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClientBase__ArrayLengthMismatch',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClientBase__CallerNotAuthorized',
-        type: 'error',
-      },
-      {
-        inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
-        name: 'Module__ERC20PaymentClientBase__InsufficientFunds',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClientBase__InvalidAmount',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClientBase__InvalidPaymentOrder',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClientBase__InvalidRecipient',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClientBase__InvalidToken',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClientBase__Invalidend',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__ERC20PaymentClientBase__TokenTransferFailed',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
-      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
-      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__LM_PC_MigrateLiquidity__AlreadyExecuted',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__LM_PC_MigrateLiquidity__InvalidParameters',
-        type: 'error',
-      },
-      {
-        inputs: [],
-        name: 'Module__LM_PC_MigrateLiquidity__ThresholdNotReached',
-        type: 'error',
-      },
-      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
-      {
-        inputs: [],
-        name: 'Module__OnlyCallableByPaymentClient',
-        type: 'error',
-      },
-      { inputs: [], name: 'NotInitializing', type: 'error' },
-      {
-        inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
-        name: 'SafeERC20FailedOperation',
-        type: 'error',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'uint64',
-            name: 'version',
-            type: 'uint64',
-          },
-        ],
-        name: 'Initialized',
-        type: 'event',
-        outputs: [],
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'collateralMigrationAmount',
-            type: 'uint256',
-            tags: ['decimals'],
-            description: 'Amount of tokens which will be migrated',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'collateralMigrateThreshold',
-            type: 'uint256',
-            tags: ['decimals'],
-            description: 'The threshold point to trigger migration',
-          },
-        ],
-        name: 'MigrationConfigured',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when a new migration is configured',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            components: [
-              {
-                internalType: 'address',
-                name: 'lpTokenAddress',
-                type: 'address',
-              },
-              {
-                internalType: 'uint256',
-                name: 'lpTokenAmount',
-                type: 'uint256',
-              },
-              { internalType: 'address', name: 'token0', type: 'address' },
-              { internalType: 'address', name: 'token1', type: 'address' },
-              {
-                internalType: 'uint256',
-                name: 'amount0',
-                type: 'uint256',
-                tags: ['decimals'],
-              },
-              {
-                internalType: 'uint256',
-                name: 'amount1',
-                type: 'uint256',
-                tags: ['decimals:extras:issuanceToken'],
-              },
-            ],
-            indexed: false,
-            internalType:
-              'struct ILM_PC_MigrateLiquidity_UniswapV2_v1.LiquidityMigrationResult',
-            name: 'result',
-            type: 'tuple',
-            description: 'The result of the migration',
-          },
-        ],
-        name: 'MigrationExecuted',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when migration is executed',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'parentOrchestrator',
-            type: 'address',
-            description:
-              'The address of the {Orchestrator_v1} the module is linked to.',
-          },
-          {
-            components: [
-              {
-                internalType: 'uint256',
-                name: 'majorVersion',
-                type: 'uint256',
-              },
-              {
-                internalType: 'uint256',
-                name: 'minorVersion',
-                type: 'uint256',
-              },
-              {
-                internalType: 'uint256',
-                name: 'patchVersion',
-                type: 'uint256',
-              },
-              { internalType: 'string', name: 'url', type: 'string' },
-              { internalType: 'string', name: 'title', type: 'string' },
-            ],
-            indexed: false,
-            internalType: 'struct IModule_v1.Metadata',
-            name: 'metadata',
-            type: 'tuple',
-            description: 'The metadata of the module.',
-          },
-        ],
-        name: 'ModuleInitialized',
-        type: 'event',
-        outputs: [],
-        description: 'Module has been initialized.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'recipient',
-            type: 'address',
-            description: 'The address that will receive the payment.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'token',
-            type: 'address',
-            description: 'The token in which to pay.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            description: 'The amount of tokens the payment consists of.',
-          },
-        ],
-        name: 'PaymentOrderAdded',
-        type: 'event',
-        outputs: [],
-        description: 'Added a payment order.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'token',
-            type: 'address',
-            description: 'The token received as protocol fee.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'treasury',
-            type: 'address',
-            description:
-              'The protocol treasury address receiving the token fee amount.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'feeAmount',
-            type: 'uint256',
-            description: 'The fee amount transferred to the treasury.',
-          },
-        ],
-        name: 'ProtocolFeeTransferred',
-        type: 'event',
-        outputs: [],
-        description:
-          'Event emitted when protocol fee has been transferred to the treasury.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'token',
-            type: 'address',
-            description: 'The token in which the payment was made.',
-          },
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            description: 'amount of tokens that have been paid out.',
-          },
-        ],
-        name: 'amountPaid',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Notifies the PaymentClient, that tokens have been paid out accordingly.',
-      },
-      {
-        inputs: [],
-        name: 'collectPaymentOrders',
-        outputs: [
-          {
-            components: [
-              { internalType: 'address', name: 'recipient', type: 'address' },
-              {
-                internalType: 'address',
-                name: 'paymentToken',
-                type: 'address',
-              },
-              { internalType: 'uint256', name: 'amount', type: 'uint256' },
-              { internalType: 'uint256', name: 'start', type: 'uint256' },
-              { internalType: 'uint256', name: 'cliff', type: 'uint256' },
-              { internalType: 'uint256', name: 'end', type: 'uint256' },
-            ],
-            internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder[]',
-            name: '_0',
-            type: 'tuple[]',
-            description: 'list of payment orders.',
-          },
-          {
-            internalType: 'address[]',
-            name: '_1',
-            type: 'address[]',
-            description: 'list of token addresses.',
-          },
-          {
-            internalType: 'uint256[]',
-            name: '_2',
-            type: 'uint256[]',
-            description: 'list of amounts.',
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Collects outstanding payment orders.',
-      },
-      {
-        inputs: [],
-        name: 'executeMigration',
-        outputs: [
-          {
-            components: [
-              {
-                internalType: 'address',
-                name: 'lpTokenAddress',
-                type: 'address',
-              },
-              {
-                internalType: 'uint256',
-                name: 'lpTokenAmount',
-                type: 'uint256',
-              },
-              { internalType: 'address', name: 'token0', type: 'address' },
-              { internalType: 'address', name: 'token1', type: 'address' },
-              {
-                internalType: 'uint256',
-                name: 'amount0',
-                type: 'uint256',
-                tags: ['decimals'],
-              },
-              {
-                internalType: 'uint256',
-                name: 'amount1',
-                type: 'uint256',
-                tags: ['decimals:extras:issuanceToken'],
-              },
-            ],
-            internalType:
-              'struct ILM_PC_MigrateLiquidity_UniswapV2_v1.LiquidityMigrationResult',
-            name: '_0',
-            type: 'tuple',
-          },
-        ],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Executes the configured migration when threshold is reached',
-      },
-      {
-        inputs: [],
-        name: 'getExecuted',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'bool Whether the migration has been executed',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Gets the executed flag',
-      },
-      {
-        inputs: [],
-        name: 'getMigrationConfig',
-        outputs: [
-          {
-            components: [
-              {
-                internalType: 'uint256',
-                name: 'collateralMigrationAmount',
-                type: 'uint256',
-                tags: ['decimals'],
-              },
-              {
-                internalType: 'uint256',
-                name: 'collateralMigrateThreshold',
-                type: 'uint256',
-                tags: ['decimals'],
-              },
-              {
-                internalType: 'address',
-                name: 'dexRouterAddress',
-                type: 'address',
-              },
-              {
-                internalType: 'address',
-                name: 'lpTokenRecipientAddress',
-                type: 'address',
-              },
-            ],
-            internalType:
-              'struct ILM_PC_MigrateLiquidity_UniswapV2_v1.LiquidityMigrationConfig',
-            name: '_0',
-            type: 'tuple',
-            description: 'The migration configuration',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Gets the migration configuration',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'bytes32',
-            name: 'role',
-            type: 'bytes32',
-            description: 'The role to grant.',
-          },
-          {
-            internalType: 'address',
-            name: 'target',
-            type: 'address',
-            description: 'The target address to grant the role to.',
-          },
-        ],
-        name: 'grantModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Grants a module role to a target address.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'bytes32',
-            name: 'role',
-            type: 'bytes32',
-            description: 'The role to grant.',
-          },
-          {
-            internalType: 'address[]',
-            name: 'targets',
-            type: 'address[]',
-            description: 'The target addresses to grant the role to.',
-          },
-        ],
-        name: 'grantModuleRoleBatched',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Grants a module role to multiple target addresses.',
-      },
-      {
-        inputs: [],
-        name: 'identifier',
-        outputs: [
-          {
-            internalType: 'bytes32',
-            name: '_0',
-            type: 'bytes32',
-            description: "The module's identifier.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's identifier.",
-      },
-      {
-        inputs: [
-          {
-            internalType: 'contract IOrchestrator_v1',
-            name: 'orchestrator_',
-            type: 'address',
-          },
-          {
-            components: [
-              {
-                internalType: 'uint256',
-                name: 'majorVersion',
-                type: 'uint256',
-              },
-              {
-                internalType: 'uint256',
-                name: 'minorVersion',
-                type: 'uint256',
-              },
-              {
-                internalType: 'uint256',
-                name: 'patchVersion',
-                type: 'uint256',
-              },
-              { internalType: 'string', name: 'url', type: 'string' },
-              { internalType: 'string', name: 'title', type: 'string' },
-            ],
-            internalType: 'struct IModule_v1.Metadata',
-            name: 'metadata',
-            type: 'tuple',
-            description: "The module's metadata.",
-          },
-          {
-            internalType: 'bytes',
-            name: 'configData',
-            type: 'bytes',
-            description:
-              'Variable config data for specific module implementations.',
-          },
-        ],
-        name: 'init',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: "The module's initializer function.",
-      },
-      {
-        inputs: [],
-        name: 'isMigrationReady',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'bool Whether the migration can be executed',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Checks if a migration is ready to execute',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'forwarder',
-            type: 'address',
-            description: 'The contract address to be verified.',
-          },
-        ],
-        name: 'isTrustedForwarder',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'bool Is the given address the trusted forwarder.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Checks if the provided address is the trusted forwarder.',
-      },
-      {
-        inputs: [],
-        name: 'orchestrator',
-        outputs: [
-          {
-            internalType: 'contract IOrchestrator_v1',
-            name: '_0',
-            type: 'address',
-            description: "The module's {Orchestrator_1}.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description:
-          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
-      },
-      {
-        inputs: [{ internalType: 'address', name: '_token', type: 'address' }],
-        name: 'outstandingTokenAmount',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            description: 'total amount of token to pay.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the total outstanding token payment amount.',
-      },
-      {
-        inputs: [],
-        name: 'paymentOrders',
-        outputs: [
-          {
-            components: [
-              { internalType: 'address', name: 'recipient', type: 'address' },
-              {
-                internalType: 'address',
-                name: 'paymentToken',
-                type: 'address',
-              },
-              { internalType: 'uint256', name: 'amount', type: 'uint256' },
-              { internalType: 'uint256', name: 'start', type: 'uint256' },
-              { internalType: 'uint256', name: 'cliff', type: 'uint256' },
-              { internalType: 'uint256', name: 'end', type: 'uint256' },
-            ],
-            internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder[]',
-            name: '_0',
-            type: 'tuple[]',
-            description: 'list of payment orders.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the list of outstanding payment orders.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'bytes32',
-            name: 'role',
-            type: 'bytes32',
-            description: 'The role to revoke.',
-          },
-          {
-            internalType: 'address',
-            name: 'target',
-            type: 'address',
-            description: 'The target address to revoke the role from.',
-          },
-        ],
-        name: 'revokeModuleRole',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Revokes a module role from a target address.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'bytes32',
-            name: 'role',
-            type: 'bytes32',
-            description: 'The role to revoke.',
-          },
-          {
-            internalType: 'address[]',
-            name: 'targets',
-            type: 'address[]',
-            description: 'The target addresses to revoke the role from.',
-          },
-        ],
-        name: 'revokeModuleRoleBatched',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Revokes a module role from multiple target addresses.',
-      },
-      {
-        inputs: [
-          { internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' },
-        ],
-        name: 'supportsInterface',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'title',
-        outputs: [
-          {
-            internalType: 'string',
-            name: '_0',
-            type: 'string',
-            description: "The module's title.",
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: "Returns the module's title.",
-      },
-      {
-        inputs: [],
-        name: 'trustedForwarder',
-        outputs: [
-          {
-            internalType: 'address',
-            name: '_0',
-            type: 'address',
-            description: 'address The trusted forwarder.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Returns the trusted forwarder.',
       },
       {
         inputs: [],
