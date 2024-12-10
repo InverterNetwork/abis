@@ -1525,12 +1525,6 @@ export const data = [
           description: 'The amount of issuance tokens to purchase initially',
           tags: ['decimals:params:exact:issuanceToken.decimals'],
         },
-        {
-          name: 'isImmutable',
-          type: 'bool',
-          jsType: 'boolean',
-          description: 'Whether the workflow is immutable',
-        },
       ],
     },
     abi: [
