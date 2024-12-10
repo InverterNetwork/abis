@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.4](https://github.com/inverter-network/abis/compare/v0.3.3...v0.3.4) (2024-12-10)
+
+
+### Bug Fixes
+
+* remove unused deployment arg at immutable ([524e522](https://github.com/inverter-network/abis/commit/524e52295c6c49e89106e434b5b5d1693b88e0ab))
+
 ### [0.3.3](https://github.com/inverter-network/abis/compare/v0.3.3-alpha.1...v0.3.3) (2024-12-10)
 
 
