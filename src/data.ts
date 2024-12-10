@@ -582,28 +582,35 @@ export const data = [
             internalType: 'address',
             name: 'sponsor',
             type: 'address',
+            description: 'Address that pays funding.',
           },
           {
             indexed: true,
             internalType: 'address',
             name: 'actor',
             type: 'address',
+            description: 'Address that can use new funding.',
           },
           {
             indexed: true,
             internalType: 'address',
             name: 'token',
             type: 'address',
+            description: 'Address of token used for funding.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
+            tags: ['decimals'],
+            description: 'Funding amount.',
           },
         ],
         name: 'FundingAdded',
         type: 'event',
+        outputs: [],
+        description: 'Event emitted when new funding is added.',
       },
       {
         anonymous: false,
@@ -613,28 +620,36 @@ export const data = [
             internalType: 'address',
             name: 'sponsor',
             type: 'address',
+            description: 'Address that agreed to pay for funding.',
           },
           {
             indexed: true,
             internalType: 'address',
             name: 'actor',
             type: 'address',
+            description: 'Address that could have used the funding.',
           },
           {
             indexed: true,
             internalType: 'address',
             name: 'token',
             type: 'address',
+            description:
+              'Address of token used that would have been used for funding.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'amount',
             type: 'uint256',
+            tags: ['decimals'],
+            description: 'Funding amount.',
           },
         ],
         name: 'FundingRemoved',
         type: 'event',
+        outputs: [],
+        description: 'Event emitted when existing funding is removed.',
       },
       {
         anonymous: false,
@@ -669,14 +684,35 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'address', name: 'actor', type: 'address' },
-          { internalType: 'address', name: 'token', type: 'address' },
-          { internalType: 'uint256', name: 'amount', type: 'uint256' },
+          {
+            internalType: 'address',
+            name: 'actor',
+            type: 'address',
+            description:
+              'The address that can use the funding for a new bonding curve deployment.',
+          },
+          {
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description:
+              'The token sent to the factory and to be used as collateral token for a bonding curve.',
+          },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description:
+              'The amount of `token` to be provided as initialCollateralSupply.',
+          },
         ],
         name: 'addFunding',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description:
+          'Adds `amount` of some `token` to factory to be used by some `actor` for a bonding curve deployment.',
       },
       {
         inputs: [
@@ -877,9 +913,18 @@ export const data = [
           { internalType: 'address', name: 'token', type: 'address' },
         ],
         name: 'fundings',
-        outputs: [{ internalType: 'uint256', name: 'amount', type: 'uint256' }],
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
+        description:
+          'Returns the amount of funding for a given sponsor, actor and token.',
       },
       {
         inputs: [
@@ -906,14 +951,33 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'address', name: 'actor', type: 'address' },
-          { internalType: 'address', name: 'token', type: 'address' },
-          { internalType: 'uint256', name: 'amount', type: 'uint256' },
+          {
+            internalType: 'address',
+            name: 'actor',
+            type: 'address',
+            description:
+              'The address could have used the funding for a new bonding curve deployment.',
+          },
+          {
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description:
+              'The token that was sent to the factory to be used as collateral token for a bonding curve.',
+          },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'The amount of `token` that was provided.',
+          },
         ],
         name: 'withdrawFunding',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Withdraws an existing funding from the factory.',
       },
     ],
   },
@@ -1405,7 +1469,8 @@ export const data = [
   },
   {
     name: 'Immutable_PIM_Factory_v1',
-    description: '',
+    description:
+      'Used to deploy a PIM workflow with an unrestricted bonding curve and a mechanism to ensure immutability of the workflow while still enabling the claiming of fees.',
     moduleType: 'factories',
     deploymentInputs: {
       configData: [
@@ -1481,10 +1546,14 @@ export const data = [
             name: '_trustedForwarder',
             type: 'address',
           },
-          { internalType: 'address', name: '_dexAdapter', type: 'address' },
         ],
         stateMutability: 'nonpayable',
         type: 'constructor',
+      },
+      {
+        inputs: [],
+        name: 'PIM_WorkflowFactory__InvalidZeroAddress',
+        type: 'error',
       },
       {
         inputs: [],
@@ -1497,54 +1566,7 @@ export const data = [
           {
             indexed: true,
             internalType: 'address',
-            name: 'issuanceToken',
-            type: 'address',
-            description: 'The address of the issuance token.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'collateralToken',
-            type: 'address',
-            description: 'The address of the collateral token.',
-          },
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'pool',
-            type: 'address',
-            description: 'The address of the pool.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'issuanceTokenAmount',
-            type: 'uint256',
-            tags: ['decimals:extras:issuanceToken'],
-            description: 'The amount of issuance tokens added as liquidity.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'collateralTokenAmount',
-            type: 'uint256',
-            tags: ['decimals'],
-            description: 'The amount of collateral tokens added as liquidity.',
-          },
-        ],
-        name: 'Graduation',
-        type: 'event',
-        outputs: [],
-        description:
-          'Event emitted when collateral liquidity is migrated to the dex.',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
-            indexed: true,
-            internalType: 'address',
-            name: 'fundingManager',
+            name: 'orchestrator',
             type: 'address',
             description: 'The address of the funding manager.',
           },
@@ -1634,41 +1656,6 @@ export const data = [
         type: 'event',
         outputs: [],
         description: 'Event emitted when factory owner sets new fee.',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'issuanceToken',
-            type: 'address',
-            description: 'The issuance token to buy',
-          },
-          {
-            internalType: 'address',
-            name: 'recipient',
-            type: 'address',
-            description: 'The address to receive the purchased tokens',
-          },
-          {
-            internalType: 'uint256',
-            name: 'amountIn',
-            type: 'uint256',
-            tags: ['decimals', 'approval'],
-            description: 'The maximum amount of collateral tokens to spend',
-          },
-          {
-            internalType: 'uint256',
-            name: 'minAmountOut',
-            type: 'uint256',
-            tags: ['decimals:extras:issuanceToken'],
-          },
-        ],
-        name: 'buyForUpTo',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description:
-          'Buys tokens from the bonding curve funding manager for a recipient',
       },
       {
         inputs: [
@@ -1846,13 +1833,6 @@ export const data = [
             description:
               'The volume of the first purchase in terms of collateral token.',
           },
-          {
-            internalType: 'bool',
-            name: 'isImmutable',
-            type: 'bool',
-            description:
-              'Whether the admin rights are transferred to the factory or to the deployer.',
-          },
         ],
         name: 'createPIMWorkflow',
         outputs: [
@@ -1860,27 +1840,13 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: 'orchestrator',
             type: 'address',
-            description:
-              'CreatedOrchestrator Returns the created orchestrator instance.',
+            description: 'Returns an instance of the created orchestrator.',
           },
         ],
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Deploys a new issuance token and uses that to deploy a workflow with restricted bonding curve.',
-      },
-      {
-        inputs: [],
-        name: 'dexAdapter',
-        outputs: [
-          {
-            internalType: 'contract IDexAdapter_v1',
-            name: '_0',
-            type: 'address',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
+          'Deploys a new issuance with workflow that includes open yet immutable bonding curve.',
       },
       {
         inputs: [
@@ -1900,50 +1866,26 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'address', name: 'issuanceToken', type: 'address' },
-        ],
-        name: 'pims',
-        outputs: [
           {
-            internalType: 'contract IOrchestrator_v1',
-            name: 'orchestrator',
+            internalType: 'address',
+            name: 'fundingManager',
             type: 'address',
+            description: 'The address of the funding manager.',
           },
           {
-            internalType: 'uint256',
-            name: 'initialVirtualIssuanceSupply',
-            type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'initialVirtualCollateralSupply',
-            type: 'uint256',
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+            description:
+              'The address to transfer the fee recipient eligibility to.',
           },
         ],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [
-          { internalType: 'address', name: 'issuanceToken', type: 'address' },
-          { internalType: 'address', name: 'recipient', type: 'address' },
-          {
-            internalType: 'uint256',
-            name: 'amountIn',
-            type: 'uint256',
-            tags: ['decimals:extras:issuanceToken', 'approval'],
-          },
-          {
-            internalType: 'uint256',
-            name: 'minAmountOut',
-            type: 'uint256',
-            tags: ['decimals'],
-          },
-        ],
-        name: 'sellTo',
+        name: 'transferPimFeeEligibility',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description:
+          'Transfers the fee recipient eligibility of a bonding curve to another address.',
       },
       {
         inputs: [],
@@ -1951,6 +1893,27 @@ export const data = [
         outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
         type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'fundingManager',
+            type: 'address',
+            description: 'The address of the funding manager.',
+          },
+          {
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+            description: 'The address to send the fees to.',
+          },
+        ],
+        name: 'withdrawPimFee',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Withdraws buy/sell fees accumulated by a bonding curve.',
       },
     ],
   },
