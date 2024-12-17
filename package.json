@@ -63,8 +63,8 @@
     "typescript": "^5.6.2"
   },
   "devDependencies": {
-    "@commitlint/cli": "^18",
-    "@commitlint/config-conventional": "^18",
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
     "@types/bun": "^1",
     "@types/lodash": "^4.17.1",
     "abitype": "^1",
