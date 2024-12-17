@@ -3216,7 +3216,7 @@ export const data = [
   {
     name: 'ERC20Issuance_Blacklist_v1',
     description:
-      'An ERC20 token implementation that extends ERC20Issuance_v1 with blacklisting capabilities. This allows the owner to restrict specific addresses from participating in token operations.',
+      'An ERC20 token implementation that extends ERC20Issuance_v1 with blacklisting capabilities. This allows accounts with the blacklist manager role to restrict specific addresses from participating in token operations.',
     moduleType: 'external',
     deploymentInputs: {
       bytecode:
@@ -3261,7 +3261,7 @@ export const data = [
           { internalType: 'string', name: 'name_', type: 'string' },
           { internalType: 'string', name: 'symbol_', type: 'string' },
           { internalType: 'uint8', name: 'decimals_', type: 'uint8' },
-          { internalType: 'uint256', name: 'initialSupply_', type: 'uint256' },
+          { internalType: 'uint256', name: 'maxSupply_', type: 'uint256' },
           { internalType: 'address', name: 'initialAdmin_', type: 'address' },
           {
             internalType: 'address',
@@ -3329,14 +3329,16 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'uint256', name: 'provided', type: 'uint256' },
-          { internalType: 'uint256', name: 'limit', type: 'uint256' },
+          { internalType: 'uint256', name: 'provided_', type: 'uint256' },
+          { internalType: 'uint256', name: 'limit_', type: 'uint256' },
         ],
         name: 'ERC20Issuance_Blacklist_BatchLimitExceeded',
         type: 'error',
       },
       {
-        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        inputs: [
+          { internalType: 'address', name: 'account_', type: 'address' },
+        ],
         name: 'ERC20Issuance_Blacklist_BlacklistedAddress',
         type: 'error',
       },
@@ -3369,13 +3371,13 @@ export const data = [
             internalType: 'address',
             name: 'account_',
             type: 'address',
-            description: 'The address that was blacklisted',
+            description: 'The address that was blacklisted.',
           },
         ],
         name: 'AddedToBlacklist',
         type: 'event',
         outputs: [],
-        description: 'Emitted when an address is added to the blacklist',
+        description: 'Emitted when an address is added to the blacklist.',
       },
       {
         anonymous: false,
@@ -3412,7 +3414,7 @@ export const data = [
             internalType: 'address',
             name: 'account_',
             type: 'address',
-            description: 'The address that was granted or revoked the role',
+            description: 'The address that was granted or revoked the role.',
           },
           {
             indexed: false,
@@ -3420,14 +3422,14 @@ export const data = [
             name: 'allowed_',
             type: 'bool',
             description:
-              'Whether the role was granted (true) or revoked (false)',
+              'Whether the role was granted (true) or revoked (false).',
           },
         ],
         name: 'BlacklistManagerUpdated',
         type: 'event',
         outputs: [],
         description:
-          'Emitted when a blacklist manager role is granted or revoked',
+          'Emitted when a blacklist manager role is granted or revoked.',
       },
       {
         anonymous: false,
@@ -3478,13 +3480,13 @@ export const data = [
             internalType: 'address',
             name: 'account_',
             type: 'address',
-            description: 'The address that was removed from blacklist',
+            description: 'The address that was removed from blacklist.',
           },
         ],
         name: 'RemovedFromBlacklist',
         type: 'event',
         outputs: [],
-        description: 'Emitted when an address is removed from the blacklist',
+        description: 'Emitted when an address is removed from the blacklist.',
       },
       {
         anonymous: false,
@@ -3520,7 +3522,7 @@ export const data = [
         stateMutability: 'view',
         type: 'function',
         description:
-          'Maximum number of addresses that can be blacklisted in a batch',
+          'Maximum number of addresses that can be blacklisted in a batch.',
       },
       {
         inputs: [
@@ -3528,14 +3530,14 @@ export const data = [
             internalType: 'address',
             name: 'account_',
             type: 'address',
-            description: 'The address to blacklist',
+            description: 'The address to the blacklist.',
           },
         ],
         name: 'addToBlacklist',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Adds an address to blacklist',
+        description: 'Adds an address to blacklist.',
       },
       {
         inputs: [
@@ -3543,14 +3545,14 @@ export const data = [
             internalType: 'address[]',
             name: 'accounts_',
             type: 'address[]',
-            description: 'Array of addresses to blacklist',
+            description: 'Array of addresses to the blacklist.',
           },
         ],
-        name: 'addToBlacklistBatchAddresses',
+        name: 'addToBlacklistBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Adds multiple addresses to blacklist',
+        description: 'Adds multiple addresses to the blacklist.',
       },
       {
         inputs: [
@@ -3654,7 +3656,7 @@ export const data = [
             internalType: 'address',
             name: 'account_',
             type: 'address',
-            description: 'The account to check',
+            description: 'The address to check.',
           },
         ],
         name: 'isBlacklistManager',
@@ -3663,12 +3665,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'True if the account is a blacklist manager',
+            description: 'True if address is a blacklist manager.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if an address is a blacklist manager',
+        description: 'Checks if an address is a blacklist manager.',
       },
       {
         inputs: [
@@ -3676,7 +3678,7 @@ export const data = [
             internalType: 'address',
             name: 'account_',
             type: 'address',
-            description: 'The account to check',
+            description: 'The address to check.',
           },
         ],
         name: 'isBlacklisted',
@@ -3685,12 +3687,12 @@ export const data = [
             internalType: 'bool',
             name: '_0',
             type: 'bool',
-            description: 'True if the account is blacklisted',
+            description: 'True if address is blacklisted.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Checks if an address is blacklisted',
+        description: 'Checks if an address is blacklisted.',
       },
       {
         inputs: [
@@ -3734,14 +3736,14 @@ export const data = [
             internalType: 'address',
             name: 'account_',
             type: 'address',
-            description: 'The address to remove',
+            description: 'The address to remove.',
           },
         ],
         name: 'removeFromBlacklist',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Removes an address from blacklist',
+        description: 'Removes an address from the blacklist.',
       },
       {
         inputs: [
@@ -3749,14 +3751,14 @@ export const data = [
             internalType: 'address[]',
             name: 'accounts_',
             type: 'address[]',
-            description: 'Array of addresses to remove',
+            description: 'Array of addresses to remove.',
           },
         ],
-        name: 'removeFromBlacklistBatchAddresses',
+        name: 'removeFromBlacklistBatched',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Removes multiple addresses from blacklist',
+        description: 'Removes multiple addresses from the blacklist.',
       },
       {
         inputs: [],
@@ -3771,20 +3773,20 @@ export const data = [
             internalType: 'address',
             name: 'manager_',
             type: 'address',
-            description: 'The address to grant or revoke the role from',
+            description: 'The address to grant or revoke the role from.',
           },
           {
             internalType: 'bool',
             name: 'allowed_',
             type: 'bool',
-            description: 'Whether to grant (true) or revoke (false) the role',
+            description: 'Whether to grant (true) or revoke (false) the role.',
           },
         ],
         name: 'setBlacklistManager',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Sets or revokes blacklist manager role for an address',
+        description: 'Sets or revokes blacklist manager role for an address.',
       },
       {
         inputs: [
@@ -5708,11 +5710,6 @@ export const data = [
     deploymentInputs: {
       configData: [
         {
-          name: 'oracleAddress_',
-          type: 'address',
-          description: 'The address of the oracle contract',
-        },
-        {
           name: 'projectTreasury_',
           type: 'address',
           description: 'The address of the project treasury',
@@ -5872,8 +5869,8 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'uint256', name: 'fee', type: 'uint256' },
-          { internalType: 'uint256', name: 'maxFee', type: 'uint256' },
+          { internalType: 'uint256', name: 'fee_', type: 'uint256' },
+          { internalType: 'uint256', name: 'maxFee_', type: 'uint256' },
         ],
         name: 'Module__FM_PC_ExternalPrice_Redeeming_FeeExceedsMaximum',
         type: 'error',
@@ -6202,93 +6199,93 @@ export const data = [
           {
             indexed: true,
             internalType: 'uint256',
-            name: 'orderId',
+            name: 'orderId_',
             type: 'uint256',
-            description: 'Order identifier',
+            description: 'Order identifier.',
           },
           {
             indexed: true,
             internalType: 'address',
-            name: 'seller',
+            name: 'seller_',
             type: 'address',
-            description: 'Address selling tokens',
+            description: 'Address selling tokens.',
           },
           {
             indexed: true,
             internalType: 'address',
-            name: 'receiver',
+            name: 'receiver_',
             type: 'address',
-            description: 'Address who receives the redeemed tokens',
+            description: 'Address who receives the redeemed tokens.',
           },
           {
             indexed: false,
             internalType: 'uint256',
-            name: 'sellAmount',
+            name: 'sellAmount_',
             type: 'uint256',
-            description: 'Amount of tokens to sell',
+            description: 'Amount of tokens to sell.',
           },
           {
             indexed: false,
             internalType: 'uint256',
-            name: 'exchangeRate',
+            name: 'exchangeRate_',
             type: 'uint256',
-            description: 'Current exchange rate',
+            description: 'Current exchange rate.',
           },
           {
             indexed: false,
             internalType: 'uint256',
-            name: 'collateralAmount',
+            name: 'collateralAmount_',
             type: 'uint256',
-            description: 'Amount of collateral',
+            description: 'Amount of collateral.',
           },
           {
             indexed: false,
             internalType: 'uint256',
-            name: 'feePercentage',
+            name: 'feePercentage_',
             type: 'uint256',
-            description: 'Fee percentage applied',
+            description: 'Fee percentage applied.',
           },
           {
             indexed: false,
             internalType: 'uint256',
-            name: 'feeAmount',
+            name: 'feeAmount_',
             type: 'uint256',
-            description: 'Fee amount calculated',
+            description: 'Fee amount calculated.',
           },
           {
             indexed: false,
             internalType: 'uint256',
-            name: 'redemptionAmount',
+            name: 'redemptionAmount_',
             type: 'uint256',
-            description: 'Final redemption amount',
+            description: 'Final redemption amount.',
           },
           {
             indexed: false,
             internalType: 'address',
-            name: 'collateralToken',
+            name: 'collateralToken_',
             type: 'address',
-            description: 'Address of collateral token',
+            description: 'Address of collateral token.',
           },
           {
             indexed: false,
             internalType: 'uint256',
-            name: 'redemptionTime',
+            name: 'redemptionTime_',
             type: 'uint256',
-            description: 'Time of redemption',
+            description: 'Time of redemption.',
           },
           {
             indexed: false,
             internalType:
               'enum IFM_PC_ExternalPrice_Redeeming_v1.RedemptionState',
-            name: 'state',
+            name: 'state_',
             type: 'uint8',
-            description: 'Initial state of the order',
+            description: 'Initial state of the order.',
           },
         ],
         name: 'RedemptionOrderCreated',
         type: 'event',
         outputs: [],
-        description: 'Emitted when a new redemption order is created',
+        description: 'Emitted when a new redemption order is created.',
       },
       {
         anonymous: false,
@@ -6296,22 +6293,22 @@ export const data = [
           {
             indexed: true,
             internalType: 'address',
-            name: 'depositor',
+            name: 'depositor_',
             type: 'address',
-            description: 'The address depositing tokens',
+            description: 'The address depositing tokens.',
           },
           {
             indexed: false,
             internalType: 'uint256',
-            name: 'amount',
+            name: 'amount_',
             type: 'uint256',
-            description: 'The amount deposited',
+            description: 'The amount deposited.',
           },
         ],
         name: 'ReserveDeposited',
         type: 'event',
         outputs: [],
-        description: 'Emitted when reserve tokens are deposited',
+        description: 'Emitted when reserve tokens are deposited.',
       },
       {
         anonymous: false,
@@ -6481,7 +6478,7 @@ export const data = [
         outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
         stateMutability: 'view',
         type: 'function',
-        description: 'Role for payment queue.',
+        description: 'Role for payment queue management.',
       },
       {
         inputs: [],
@@ -6489,7 +6486,7 @@ export const data = [
         outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
         stateMutability: 'view',
         type: 'function',
-        description: 'Role for whitelisted addresses.',
+        description: 'Role for whitelist management.',
       },
       {
         inputs: [
@@ -6521,7 +6518,6 @@ export const data = [
             name: 'collateralAmount_',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The amount of collateral to spend.',
           },
           {
             internalType: 'uint256',
@@ -6545,25 +6541,18 @@ export const data = [
       },
       {
         inputs: [
-          {
-            internalType: 'address',
-            name: 'receiver_',
-            type: 'address',
-            description: 'Address to receive tokens.',
-          },
+          { internalType: 'address', name: 'receiver_', type: 'address' },
           {
             internalType: 'uint256',
             name: 'depositAmount_',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The amount of collateral to spend.',
           },
           {
             internalType: 'uint256',
             name: 'minAmountOut_',
             type: 'uint256',
             tags: ['decimals:extras:issuanceToken'],
-            description: 'The minimum amount of tokens to receive.',
           },
         ],
         name: 'buyFor',
@@ -6698,7 +6687,7 @@ export const data = [
             name: 'amount_',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The amount of collateral to deposit',
+            description: 'The amount of collateral to deposit.',
           },
         ],
         name: 'depositReserve',
@@ -6706,7 +6695,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Allows depositing collateral to provide reserves for redemptions',
+          'Allows depositing collateral to provide reserves for redemptions.',
       },
       {
         inputs: [],
@@ -6714,7 +6703,7 @@ export const data = [
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Executes the redemption queue',
+        description: 'Executes the redemption queue.',
       },
       {
         inputs: [],
@@ -6727,9 +6716,24 @@ export const data = [
             description: 'The current buy fee.',
           },
         ],
-        stateMutability: 'pure',
+        stateMutability: 'view',
         type: 'function',
         description: 'Gets current buy fee.',
+      },
+      {
+        inputs: [],
+        name: 'getIsDirectOperationsOnly',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: 'isDirectOnly_',
+            type: 'bool',
+            description: 'Whether only direct operations are allowed.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Gets the direct operations only flag.',
       },
       {
         inputs: [],
@@ -6747,7 +6751,7 @@ export const data = [
             internalType: 'uint256',
             name: 'maxBuyFee_',
             type: 'uint256',
-            description: 'The maximum fee percentage.',
+            description: 'The maximum buy fee.',
           },
         ],
         stateMutability: 'view',
@@ -6757,19 +6761,19 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'getMaxSellFee',
+        name: 'getMaxProjectSellFee',
         outputs: [
           {
             internalType: 'uint256',
-            name: 'maxSellFee_',
+            name: 'maxProjectSellFee_',
             type: 'uint256',
-            description: 'The maximum fee percentage.',
+            description: 'The maximum project sell fee percentage.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Gets the maximum fee that can be charged for sell operations.',
+          'Gets the maximum project fee that can be charged for sell operations.',
       },
       {
         inputs: [],
@@ -6779,12 +6783,12 @@ export const data = [
             internalType: 'uint256',
             name: 'orderId_',
             type: 'uint256',
-            description: 'The next order ID',
+            description: 'The next order ID.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Gets the next available order ID',
+        description: 'Gets the next available order ID.',
       },
       {
         inputs: [],
@@ -6795,12 +6799,12 @@ export const data = [
             name: 'amount_',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The total amount of open redemptions',
+            description: 'The total amount of open redemptions.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Gets the current open collateral redemption amount',
+        description: 'Gets the current open collateral redemption amount.',
       },
       {
         inputs: [],
@@ -6810,12 +6814,12 @@ export const data = [
             internalType: 'uint256',
             name: 'orderId_',
             type: 'uint256',
-            description: 'The current order ID',
+            description: 'The current order ID.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Gets the current order ID',
+        description: 'Gets the current order ID.',
       },
       {
         inputs: [],
@@ -6823,14 +6827,14 @@ export const data = [
         outputs: [
           {
             internalType: 'address',
-            name: '_0',
+            name: 'treasury_',
             type: 'address',
-            description: 'address_ The address of the project treasury',
+            description: 'The address of the project treasury.',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Gets the project treasury address',
+        description: 'Gets the project treasury address.',
       },
       {
         inputs: [],
@@ -6838,12 +6842,12 @@ export const data = [
         outputs: [
           {
             internalType: 'uint256',
-            name: 'sellFee_',
+            name: 'fee_',
             type: 'uint256',
             description: 'The current sell fee.',
           },
         ],
-        stateMutability: 'pure',
+        stateMutability: 'view',
         type: 'function',
         description: 'Gets current sell fee.',
       },
@@ -6853,7 +6857,7 @@ export const data = [
         outputs: [
           {
             internalType: 'uint256',
-            name: '_0',
+            name: 'buyPrice_',
             type: 'uint256',
             tags: ['decimals:extras:issuanceToken'],
             description: 'uint The static price for buying the issuance token.',
@@ -6870,7 +6874,7 @@ export const data = [
         outputs: [
           {
             internalType: 'uint256',
-            name: '_0',
+            name: 'sellPrice_',
             type: 'uint256',
             tags: ['decimals'],
             description:
@@ -6977,22 +6981,6 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description: "The module's initializer function.",
-      },
-      {
-        inputs: [],
-        name: 'isDirectOperationsOnly',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description:
-              'isDirectOperationsOnly_ The current value of the flag.',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Gets the direct operations only flag.',
       },
       {
         inputs: [
@@ -7161,14 +7149,12 @@ export const data = [
             name: 'depositAmount_',
             type: 'uint256',
             tags: ['decimals:extras:issuanceToken'],
-            description: 'Amount of tokens to sell.',
           },
           {
             internalType: 'uint256',
             name: 'minAmountOut_',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'Minimum collateral to receive.',
           },
         ],
         name: 'sell',
@@ -7193,25 +7179,18 @@ export const data = [
       },
       {
         inputs: [
-          {
-            internalType: 'address',
-            name: 'receiver_',
-            type: 'address',
-            description: 'Address to receive tokens.',
-          },
+          { internalType: 'address', name: 'receiver_', type: 'address' },
           {
             internalType: 'uint256',
             name: 'depositAmount_',
             type: 'uint256',
             tags: ['decimals:extras:issuanceToken'],
-            description: 'Amount of tokens to sell.',
           },
           {
             internalType: 'uint256',
             name: 'minAmountOut_',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'Minimum collateral to receive.',
           },
         ],
         name: 'sellTo',
@@ -7222,19 +7201,13 @@ export const data = [
           'Redeem tokens and directs the proceeds to a specified receiver address.',
       },
       {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'fee_',
-            type: 'uint256',
-            description: 'New fee amount.',
-          },
-        ],
+        inputs: [{ internalType: 'uint256', name: 'fee_', type: 'uint256' }],
         name: 'setBuyFee',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Sets fee for buy operations.',
+        description:
+          'Sets the fee percentage for buying tokens, payed in collateral.',
       },
       {
         inputs: [
@@ -7249,7 +7222,23 @@ export const data = [
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Sets the direct operations only flag.',
+        description:
+          'Toggles whether the contract only allows direct operations or not.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'oracle_',
+            type: 'address',
+            description: 'The address of the oracle.',
+          },
+        ],
+        name: 'setOracleAddress',
+        outputs: [null],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Sets the oracle address.',
       },
       {
         inputs: [
@@ -7257,47 +7246,30 @@ export const data = [
             internalType: 'address',
             name: 'projectTreasury_',
             type: 'address',
+            description: 'The address of the project treasury.',
           },
         ],
         name: 'setProjectTreasury',
-        outputs: [],
+        outputs: [null],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Sets the project treasury address',
+        description: 'Sets the project treasury address.',
       },
       {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'fee_',
-            type: 'uint256',
-            description: 'New fee amount.',
-          },
-        ],
+        inputs: [{ internalType: 'uint256', name: 'fee_', type: 'uint256' }],
         name: 'setSellFee',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Sets fee for sell operations.',
+        description:
+          'Sets the fee percentage for selling collateral, payed in collateral.',
       },
       {
         inputs: [
-          {
-            internalType: 'bytes4',
-            name: 'interfaceId_',
-            type: 'bytes4',
-            description: 'The interface identifier to check support for.',
-          },
+          { internalType: 'bytes4', name: 'interfaceId_', type: 'bytes4' },
         ],
         name: 'supportsInterface',
-        outputs: [
-          {
-            internalType: 'bool',
-            name: '_0',
-            type: 'bool',
-            description: 'True if the interface is supported.',
-          },
-        ],
+        outputs: [{ internalType: 'bool', name: 'isSupported_', type: 'bool' }],
         stateMutability: 'view',
         type: 'function',
       },
@@ -7322,9 +7294,9 @@ export const data = [
         outputs: [
           {
             internalType: 'contract IERC20',
-            name: '_0',
+            name: 'token_',
             type: 'address',
-            description: 'token_ The token address.',
+            description: 'The token.',
           },
         ],
         stateMutability: 'view',
@@ -7333,18 +7305,12 @@ export const data = [
       },
       {
         inputs: [
-          {
-            internalType: 'address',
-            name: 'to_',
-            type: 'address',
-            description: 'The recipient address.',
-          },
+          { internalType: 'address', name: 'to_', type: 'address' },
           {
             internalType: 'uint256',
             name: 'amount_',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The amount to transfer.',
           },
         ],
         name: 'transferOrchestratorToken',
@@ -14917,22 +14883,22 @@ export const data = [
           {
             indexed: true,
             internalType: 'uint256',
-            name: 'price',
+            name: 'price_',
             type: 'uint256',
-            description: 'The price that was set',
+            description: 'The price that was set.',
           },
           {
             indexed: true,
             internalType: 'uint256',
-            name: 'timestamp',
+            name: 'timestamp_',
             type: 'uint256',
-            description: 'The timestamp when the price was updated',
+            description: 'The timestamp when the price was updated.',
           },
         ],
         name: 'IssuancePriceSet',
         type: 'event',
         outputs: [],
-        description: 'Emitted when an issuance price is set',
+        description: 'Emitted when an issuance price is set.',
       },
       {
         anonymous: false,
@@ -15015,22 +14981,22 @@ export const data = [
           {
             indexed: true,
             internalType: 'uint256',
-            name: 'price',
+            name: 'price_',
             type: 'uint256',
-            description: 'The price that was set',
+            description: 'The price that was set.',
           },
           {
             indexed: true,
             internalType: 'uint256',
-            name: 'timestamp',
+            name: 'timestamp_',
             type: 'uint256',
-            description: 'The timestamp when the price was updated',
+            description: 'The timestamp when the price was updated.',
           },
         ],
         name: 'RedemptionPriceSet',
         type: 'event',
         outputs: [],
-        description: 'Emitted when a redemption price is set',
+        description: 'Emitted when a redemption price is set.',
       },
       {
         inputs: [],
@@ -15038,7 +15004,7 @@ export const data = [
         outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
         stateMutability: 'view',
         type: 'function',
-        description: 'Role identifier for accounts authorized to set prices',
+        description: 'Role identifier for accounts authorized to set prices.',
       },
       {
         inputs: [],
@@ -15050,12 +15016,12 @@ export const data = [
             type: 'uint256',
             tags: ['decimals'],
             description:
-              'price_ Current price in 18 decimals (collateral tokens per 1 issuance token)',
+              'price_ Current price in 18 decimals (collateral tokens per 1 issuance token).',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Gets current price for token issuance (buying tokens)',
+        description: 'Gets current price for token issuance (buying tokens).',
       },
       {
         inputs: [],
@@ -15067,12 +15033,13 @@ export const data = [
             type: 'uint256',
             tags: ['decimals:extras:issuanceToken'],
             description:
-              'price_ Current price in 18 decimals (collateral tokens per 1 issuance token)',
+              'price_ Current price in 18 decimals (collateral tokens per 1 issuance token).',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Gets current price for token redemption (selling tokens)',
+        description:
+          'Gets current price for token redemption (selling tokens).',
       },
       {
         inputs: [
@@ -15257,14 +15224,14 @@ export const data = [
             name: 'price_',
             type: 'uint256',
             tags: ['decimals'],
-            description: 'The price to set',
+            description: 'The price to set.',
           },
         ],
         name: 'setIssuancePrice',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Sets the issuance price',
+        description: 'Sets the issuance price.',
       },
       {
         inputs: [
@@ -15273,14 +15240,14 @@ export const data = [
             name: 'price_',
             type: 'uint256',
             tags: ['decimals:extras:issuanceToken'],
-            description: 'The price to set',
+            description: 'The price to set.',
           },
         ],
         name: 'setRedemptionPrice',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Sets the redemption price',
+        description: 'Sets the redemption price.',
       },
       {
         inputs: [
