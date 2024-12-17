@@ -5710,42 +5710,42 @@ export const data = [
     deploymentInputs: {
       configData: [
         {
-          name: 'projectTreasury_',
+          name: 'projectTreasury',
           type: 'address',
           description: 'The address of the project treasury',
         },
         {
-          name: 'issuanceToken_',
+          name: 'issuanceToken',
           type: 'address',
           description: 'The token that will be issued',
         },
         {
-          name: 'acceptedToken_',
+          name: 'collateralToken',
           type: 'address',
           description: 'The token that will be accepted for purchases',
         },
         {
-          name: 'buyFee_',
+          name: 'buyFee',
           type: 'uint256',
           description: 'The fee charged on buy operations in PPM',
         },
         {
-          name: 'sellFee_',
+          name: 'sellFee',
           type: 'uint256',
           description: 'The fee charged on sell operations in PPM',
         },
         {
-          name: 'maxSellFee_',
+          name: 'maxSellFee',
           type: 'uint256',
           description: 'The maximum allowed sell fee in PPM',
         },
         {
-          name: 'maxBuyFee_',
+          name: 'maxBuyFee',
           type: 'uint256',
           description: 'The maximum allowed buy fee in PPM',
         },
         {
-          name: 'isDirectOperationsOnly_',
+          name: 'isDirectOperationsOnly',
           type: 'bool',
           description: 'Whether only direct operations are allowed',
         },
