@@ -22,7 +22,10 @@ export default function (abi: Abi, abiMemberMetas: AbiMemberMetas) {
         // 7- Update the outputs of the member with the nameWithIndexArr
         const updatedOutputs = nameWithIndexArr.map(({ index, name }) => {
           const output = (abi[memberIndex] as any)?.outputs[index]
-          output.name = name
+
+          if (output) {
+            output.name = name
+          }
           return output
         })
 
