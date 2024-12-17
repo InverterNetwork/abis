@@ -23,9 +23,15 @@ export default function (abi: Abi, abiMemberMetas: AbiMemberMetas) {
         const updatedOutputs = nameWithIndexArr.map(({ index, name }) => {
           const output = (abi[memberIndex] as any)?.outputs[index]
 
-          if (output) {
+          try {
             output.name = name
+          } catch (error) {
+            console.log(
+              `Error updating output name: ${name} for ${member} at index ${index}`,
+              error
+            )
           }
+
           return output
         })
 

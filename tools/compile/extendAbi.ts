@@ -35,8 +35,8 @@ function extend(
 ): AbiParameter | ExtendedAbiParameter {
   const { descriptions, tags: sotTags } = abiMemberMeta
 
-  // 0- Check if the parameter is defined and has a name else return the parameter unchanged
-  if (!parameter || !parameter.name) return parameter
+  // 0- Check if the parameter has a name else return the parameter unchanged
+  if (!parameter.name) return parameter
 
   const name = parameter.name
 
