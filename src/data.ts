@@ -6474,14 +6474,6 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'QUEUE_MANAGER_ROLE',
-        outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
-        stateMutability: 'view',
-        type: 'function',
-        description: 'Role for payment queue management.',
-      },
-      {
-        inputs: [],
         name: 'WHITELIST_ROLE',
         outputs: [{ internalType: 'bytes32', name: '_0', type: 'bytes32' }],
         stateMutability: 'view',
@@ -6696,14 +6688,6 @@ export const data = [
         type: 'function',
         description:
           'Allows depositing collateral to provide reserves for redemptions.',
-      },
-      {
-        inputs: [],
-        name: 'executeRedemptionQueue',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Executes the redemption queue.',
       },
       {
         inputs: [],

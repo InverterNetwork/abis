@@ -1,7 +1,7 @@
 {
   "name": "@inverter-network/abis",
   "description": "INVERTER typescript ABIs",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "type": "module",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -48,7 +48,7 @@
     "release": "standard-version -a",
     "release:alpha": "standard-version -a --prerelease alpha --skip.changelog",
     "release:beta": "standard-version -a --prerelease beta --skip.changelog",
-    "release:pub": "git push --follow-tags origin main",
+    "release:pub": "git push --follow-tags origin $(git rev-parse --abbrev-ref HEAD)",
     "trans:tags": "bun tools/transition/singleTagToTagArray.ts && prettier --write ./deployments > /dev/null 2>&1",
     "cp:dist-sdk": "bun compile && bun run build && cp -r dist ../sdk/node_modules/@inverter-network/abis/ && cp package.json ../sdk/node_modules/@inverter-network/abis/"
   },
