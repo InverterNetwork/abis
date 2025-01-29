@@ -6663,7 +6663,7 @@ export const data = [
             internalType: 'uint256',
             name: 'collateralAmount_',
             type: 'uint256',
-            tags: ['decimals'],
+            tags: ['decimals', 'approval'],
           },
           {
             internalType: 'uint256',
@@ -6692,7 +6692,7 @@ export const data = [
             internalType: 'uint256',
             name: 'depositAmount_',
             type: 'uint256',
-            tags: ['decimals'],
+            tags: ['decimals', 'approval'],
           },
           {
             internalType: 'uint256',
@@ -7397,7 +7397,7 @@ export const data = [
             internalType: 'uint256',
             name: 'depositAmount_',
             type: 'uint256',
-            tags: ['decimals:extras:issuanceToken'],
+            tags: ['decimals:extras:issuanceToken', 'approval'],
           },
           {
             internalType: 'uint256',
@@ -7433,7 +7433,7 @@ export const data = [
             internalType: 'uint256',
             name: 'depositAmount_',
             type: 'uint256',
-            tags: ['decimals:extras:issuanceToken'],
+            tags: ['decimals:extras:issuanceToken', 'approval'],
           },
           {
             internalType: 'uint256',
@@ -17405,14 +17405,9 @@ export const data = [
     deploymentInputs: {
       configData: [
         {
-          name: 'collateralToken_',
+          name: 'collateralToken',
           type: 'address',
           description: 'The address of the collateral token',
-        },
-        {
-          name: 'issuanceToken_',
-          type: 'address',
-          description: 'The address of the issuance token',
         },
       ],
     },
