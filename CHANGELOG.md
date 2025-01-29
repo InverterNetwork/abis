@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.7](https://github.com/inverter-network/abis/compare/v0.3.6...v0.3.7) (2025-01-29)
+
+
+### Features
+
+* update module interfaces and event structures ([5de3b33](https://github.com/inverter-network/abis/commit/5de3b3391fa5bfa430471d0602a4b03784618178))
+
 ### [0.3.6](https://github.com/inverter-network/abis/compare/v0.3.5...v0.3.6) (2024-12-19)
 
 ### [0.3.5](https://github.com/inverter-network/abis/compare/v0.3.5-alpha.6...v0.3.5) (2024-12-18)
