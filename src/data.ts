@@ -9885,6 +9885,13 @@ export const data = [
         type: 'error',
       },
       {
+        inputs: [
+          { internalType: 'address', name: 'treasury_', type: 'address' },
+        ],
+        name: 'Module__PP_Queue_InvalidTreasuryAddress',
+        type: 'error',
+      },
+      {
         inputs: [],
         name: 'Module__PP_Queue_OnlyCallableByClient',
         type: 'error',
@@ -10307,6 +10314,45 @@ export const data = [
           'Emitted when a payment was unclaimable due to a token error.',
       },
       {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'originalReceiver_',
+            type: 'address',
+            description: 'Address that received the unclaimable amounts.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'treasury_',
+            type: 'address',
+            description: 'Address of the treasury.',
+          },
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'amount_',
+            type: 'uint256',
+            description: 'Amount of tokens claimed.',
+          },
+          {
+            indexed: false,
+            internalType: 'address',
+            name: 'queueOperator_',
+            type: 'address',
+            description:
+              'Address of the queue operator who called the function.',
+          },
+        ],
+        name: 'UnclaimableAmountClaimedToTreasury',
+        type: 'event',
+        outputs: [],
+        description:
+          'Emitted when unclaimable amounts are claimed to the treasury.',
+      },
+      {
         inputs: [
           {
             internalType: 'uint256',
@@ -10332,7 +10378,8 @@ export const data = [
         ],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Cancels a payment order by its queue ID.',
+        description:
+          'Cancels a payment order by its queue ID and sends the funds from the cancelled order to the canceled orders treasury.',
       },
       {
         inputs: [
@@ -10365,6 +10412,34 @@ export const data = [
       {
         inputs: [
           {
+            internalType: 'address',
+            name: 'client_',
+            type: 'address',
+            description: 'The client address.',
+          },
+          {
+            internalType: 'address',
+            name: 'token_',
+            type: 'address',
+            description: 'The token address.',
+          },
+          {
+            internalType: 'address',
+            name: 'receiver_',
+            type: 'address',
+            description: 'The receiver address.',
+          },
+        ],
+        name: 'claimPreviouslyUnclaimableToTreasury',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Claim previously unclaimable amounts from a receiver to the failed orders treasury.',
+      },
+      {
+        inputs: [
+          {
             internalType: 'contract IERC20PaymentClientBase_v1',
             name: 'client_',
             type: 'address',
@@ -10376,6 +10451,36 @@ export const data = [
         type: 'function',
         description:
           'Executes all pending payment orders in the queue as long as the payment client has funds to cover the orders.',
+      },
+      {
+        inputs: [],
+        name: 'getCanceledOrdersTreasury',
+        outputs: [
+          {
+            internalType: 'address',
+            name: 'treasury_',
+            type: 'address',
+            description: 'The treasury address for canceled orders.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Get the treasury address for canceled orders.',
+      },
+      {
+        inputs: [],
+        name: 'getFailedOrdersTreasury',
+        outputs: [
+          {
+            internalType: 'address',
+            name: 'treasury_',
+            type: 'address',
+            description: 'The treasury address for failed orders.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Get the treasury address for failed orders.',
       },
       {
         inputs: [
@@ -10511,21 +10616,6 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'getQueueOperatorAdminRole',
-        outputs: [
-          {
-            internalType: 'bytes32',
-            name: 'role_',
-            type: 'bytes32',
-            description: 'The queue operator role admin identifier.',
-          },
-        ],
-        stateMutability: 'pure',
-        type: 'function',
-        description: 'Gets the role identifier for queue operator admin.',
-      },
-      {
-        inputs: [],
         name: 'getQueueOperatorRole',
         outputs: [
           {
@@ -10538,6 +10628,21 @@ export const data = [
         stateMutability: 'pure',
         type: 'function',
         description: 'Gets the role identifier for the queue operator role.',
+      },
+      {
+        inputs: [],
+        name: 'getQueueOperatorRoleAdmin',
+        outputs: [
+          {
+            internalType: 'bytes32',
+            name: 'role_',
+            type: 'bytes32',
+            description: 'The queue operator role admin identifier.',
+          },
+        ],
+        stateMutability: 'pure',
+        type: 'function',
+        description: 'Gets the role identifier for queue operator admin.',
       },
       {
         inputs: [
@@ -10671,7 +10776,7 @@ export const data = [
             name: 'metadata_',
             type: 'tuple',
           },
-          { internalType: 'bytes', name: '', type: 'bytes' },
+          { internalType: 'bytes', name: 'configData_', type: 'bytes' },
         ],
         name: 'init',
         outputs: [],
@@ -10773,6 +10878,38 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description: 'Revokes a module role from multiple target addresses.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'treasury_',
+            type: 'address',
+            description: 'The treasury address for canceled orders.',
+          },
+        ],
+        name: 'setCanceledOrdersTreasury',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Set the treasury address which receives the collateral of canceled orders.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'treasury_',
+            type: 'address',
+            description: 'The treasury address for failed orders.',
+          },
+        ],
+        name: 'setFailedOrdersTreasury',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Set the treasury address which receives the collateral of failed orders.',
       },
       {
         inputs: [
@@ -13155,6 +13292,13 @@ export const data = [
         type: 'error',
       },
       {
+        inputs: [
+          { internalType: 'address', name: 'treasury_', type: 'address' },
+        ],
+        name: 'Module__PP_Queue_InvalidTreasuryAddress',
+        type: 'error',
+      },
+      {
         inputs: [],
         name: 'Module__PP_Queue_OnlyCallableByClient',
         type: 'error',
@@ -13577,6 +13721,45 @@ export const data = [
           'Emitted when a payment was unclaimable due to a token error.',
       },
       {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'originalReceiver_',
+            type: 'address',
+            description: 'Address that received the unclaimable amounts.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'treasury_',
+            type: 'address',
+            description: 'Address of the treasury.',
+          },
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'amount_',
+            type: 'uint256',
+            description: 'Amount of tokens claimed.',
+          },
+          {
+            indexed: false,
+            internalType: 'address',
+            name: 'queueOperator_',
+            type: 'address',
+            description:
+              'Address of the queue operator who called the function.',
+          },
+        ],
+        name: 'UnclaimableAmountClaimedToTreasury',
+        type: 'event',
+        outputs: [],
+        description:
+          'Emitted when unclaimable amounts are claimed to the treasury.',
+      },
+      {
         inputs: [
           {
             internalType: 'uint256',
@@ -13602,7 +13785,8 @@ export const data = [
         ],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Cancels a payment order by its queue ID.',
+        description:
+          'Cancels a payment order by its queue ID and sends the funds from the cancelled order to the canceled orders treasury.',
       },
       {
         inputs: [
@@ -13631,6 +13815,64 @@ export const data = [
         type: 'function',
         description:
           'claim every unclaimable amount that the paymentClient owes to the _msgSender and send it to a specified receiver.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'client_',
+            type: 'address',
+            description: 'The client address.',
+          },
+          {
+            internalType: 'address',
+            name: 'token_',
+            type: 'address',
+            description: 'The token address.',
+          },
+          {
+            internalType: 'address',
+            name: 'receiver_',
+            type: 'address',
+            description: 'The receiver address.',
+          },
+        ],
+        name: 'claimPreviouslyUnclaimableToTreasury',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Claim previously unclaimable amounts from a receiver to the failed orders treasury.',
+      },
+      {
+        inputs: [],
+        name: 'getCanceledOrdersTreasury',
+        outputs: [
+          {
+            internalType: 'address',
+            name: 'treasury_',
+            type: 'address',
+            description: 'The treasury address for canceled orders.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Get the treasury address for canceled orders.',
+      },
+      {
+        inputs: [],
+        name: 'getFailedOrdersTreasury',
+        outputs: [
+          {
+            internalType: 'address',
+            name: 'treasury_',
+            type: 'address',
+            description: 'The treasury address for failed orders.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Get the treasury address for failed orders.',
       },
       {
         inputs: [
@@ -13766,21 +14008,6 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'getQueueOperatorAdminRole',
-        outputs: [
-          {
-            internalType: 'bytes32',
-            name: 'role_',
-            type: 'bytes32',
-            description: 'The queue operator role admin identifier.',
-          },
-        ],
-        stateMutability: 'pure',
-        type: 'function',
-        description: 'Gets the role identifier for queue operator admin.',
-      },
-      {
-        inputs: [],
         name: 'getQueueOperatorRole',
         outputs: [
           {
@@ -13793,6 +14020,21 @@ export const data = [
         stateMutability: 'pure',
         type: 'function',
         description: 'Gets the role identifier for the queue operator role.',
+      },
+      {
+        inputs: [],
+        name: 'getQueueOperatorRoleAdmin',
+        outputs: [
+          {
+            internalType: 'bytes32',
+            name: 'role_',
+            type: 'bytes32',
+            description: 'The queue operator role admin identifier.',
+          },
+        ],
+        stateMutability: 'pure',
+        type: 'function',
+        description: 'Gets the role identifier for queue operator admin.',
       },
       {
         inputs: [
@@ -13926,7 +14168,7 @@ export const data = [
             name: 'metadata_',
             type: 'tuple',
           },
-          { internalType: 'bytes', name: '', type: 'bytes' },
+          { internalType: 'bytes', name: 'configData_', type: 'bytes' },
         ],
         name: 'init',
         outputs: [],
@@ -14028,6 +14270,38 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description: 'Revokes a module role from multiple target addresses.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'treasury_',
+            type: 'address',
+            description: 'The treasury address for canceled orders.',
+          },
+        ],
+        name: 'setCanceledOrdersTreasury',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Set the treasury address which receives the collateral of canceled orders.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'treasury_',
+            type: 'address',
+            description: 'The treasury address for failed orders.',
+          },
+        ],
+        name: 'setFailedOrdersTreasury',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Set the treasury address which receives the collateral of failed orders.',
       },
       {
         inputs: [
@@ -17849,7 +18123,7 @@ export const data = [
             internalType: 'uint256',
             name: 'redemptionPrice_',
             type: 'uint256',
-            tags: ['decimals:extras:issuanceToken'],
+            tags: ['decimals'],
             description:
               'The redemption price to set, denominated in the collateral token decimals.',
           },
@@ -17884,7 +18158,7 @@ export const data = [
             internalType: 'uint256',
             name: 'price_',
             type: 'uint256',
-            tags: ['decimals:extras:issuanceToken'],
+            tags: ['decimals'],
             description:
               'The redemption price to set, denominated in the collateral token decimals.',
           },
