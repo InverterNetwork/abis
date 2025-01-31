@@ -9760,7 +9760,22 @@ export const data = [
     description:
       'A payment processor implementation that extends the base queue system with manual execution capabilities. This allows for controlled, manual processing of payment orders in the queue.',
     moduleType: 'paymentProcessor',
-    deploymentInputs: { configData: [] },
+    deploymentInputs: {
+      configData: [
+        {
+          name: 'canceledOrdersTreasury',
+          type: 'address',
+          description:
+            'The address of the treasury that will receive the canceled orders',
+        },
+        {
+          name: 'failedOrdersTreasury',
+          type: 'address',
+          description:
+            'The address of the treasury that will receive the failed orders',
+        },
+      ],
+    },
     abi: [
       {
         inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
@@ -13167,7 +13182,22 @@ export const data = [
     description:
       'A payment processor implementation that manages payment orders through a FIFO queue system. It supports automated execution of payments within the processPayments function.',
     moduleType: 'paymentProcessor',
-    deploymentInputs: { configData: [] },
+    deploymentInputs: {
+      configData: [
+        {
+          name: 'canceledOrdersTreasury',
+          type: 'address',
+          description:
+            'The address of the treasury that will receive the canceled orders',
+        },
+        {
+          name: 'failedOrdersTreasury',
+          type: 'address',
+          description:
+            'The address of the treasury that will receive the failed orders',
+        },
+      ],
+    },
     abi: [
       {
         inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
