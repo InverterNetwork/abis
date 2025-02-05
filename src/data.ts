@@ -6841,7 +6841,7 @@ export const data = [
             internalType: 'uint256',
             name: 'amount_',
             type: 'uint256',
-            tags: ['decimals'],
+            tags: ['decimals', 'approval'],
             description: 'The amount of collateral to deposit.',
           },
         ],
