@@ -366,20 +366,12 @@ export const data = [
                 'Whether the migration configuration can be changed after deployment',
             },
             {
-              name: 'collateralToken',
-              type: 'address',
-              jsType: '0xstring',
-              description: 'The address of the collateral token',
-            },
-            {
               name: 'migrationThreshold',
               type: 'uint256',
               jsType: 'numberString',
               description:
                 'The collateral amount threshold that triggers migration to DEX',
-              tags: [
-                'decimals:params:indirect:migrationConfig.collateralToken',
-              ],
+              tags: ['decimals'],
             },
             {
               name: 'dexAdapter',
@@ -605,7 +597,7 @@ export const data = [
             internalType: 'uint256',
             name: 'amountIn',
             type: 'uint256',
-            tags: ['decimals'],
+            tags: ['decimals', 'approval'],
             description: 'The maximum amount of collateral tokens to spend',
           },
           {
@@ -799,11 +791,6 @@ export const data = [
           },
           {
             components: [
-              {
-                internalType: 'address',
-                name: 'collateralToken',
-                type: 'address',
-              },
               { internalType: 'bool', name: 'isImmutable', type: 'bool' },
               {
                 internalType: 'uint256',
@@ -935,7 +922,7 @@ export const data = [
             internalType: 'uint256',
             name: 'amountIn',
             type: 'uint256',
-            tags: ['decimals:params:indirect:issuanceToken'],
+            tags: ['decimals:params:indirect:issuanceToken', 'approval'],
           },
           {
             internalType: 'uint256',
