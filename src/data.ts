@@ -337,6 +337,628 @@ export const data = [
     ],
   },
   {
+    name: 'Migrating_PIM_Factory_v1',
+    description: '',
+    moduleType: 'factories',
+    deploymentInputs: {
+      configData: [
+        {
+          name: 'independentUpdates',
+          type: 'bool',
+          jsType: 'boolean',
+          description:
+            'Default is false - Whether this workflow’s updates to Orchestrator and Modules shall be self-governed.',
+        },
+        {
+          name: 'independentUpdateAdmin',
+          type: 'address',
+          jsType: '0xstring',
+          description:
+            'Should only be set if independentUpdates is true  - The address that will be responsible for updates to Orchestrator and Modules of the workflow.',
+        },
+        {
+          components: [
+            {
+              name: 'isImmutable',
+              type: 'bool',
+              jsType: 'boolean',
+              description:
+                'Whether the migration configuration can be changed after deployment',
+            },
+            {
+              name: 'collateralToken',
+              type: 'address',
+              jsType: '0xstring',
+              description: 'The address of the collateral token',
+            },
+            {
+              name: 'migrationThreshold',
+              type: 'uint256',
+              jsType: 'numberString',
+              description:
+                'The collateral amount threshold that triggers migration to DEX',
+              tags: [
+                'decimals:params:indirect:migrationConfig.collateralToken',
+              ],
+            },
+            {
+              name: 'dexAdapter',
+              type: 'address',
+              jsType: '0xstring',
+              description: 'The address of the DEX adapter contract',
+            },
+            {
+              name: 'lpTokenRecipient',
+              type: 'address',
+              jsType: '0xstring',
+              description:
+                'The address that will receive LP tokens after migration',
+            },
+          ],
+          name: 'migrationConfig',
+          type: 'tuple',
+        },
+      ],
+    },
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: '_orchestratorFactory',
+            type: 'address',
+          },
+          {
+            internalType: 'address',
+            name: '_trustedForwarder',
+            type: 'address',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'constructor',
+      },
+      {
+        inputs: [],
+        name: 'PIM_WorkflowFactory__AlreadyGraduated',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'PIM_WorkflowFactory__OnlyPimFeeRecipient',
+        type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'issuanceToken',
+            type: 'address',
+            description: 'The address of the issuance token.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'collateralToken',
+            type: 'address',
+            description: 'The address of the collateral token.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'pool',
+            type: 'address',
+            description: 'The address of the pool.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'issuanceTokenAmount',
+            type: 'uint256',
+            description: 'The amount of issuance tokens added as liquidity.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'collateralTokenAmount',
+            type: 'uint256',
+            description: 'The amount of collateral tokens added as liquidity.',
+          },
+        ],
+        name: 'Graduation',
+        type: 'event',
+        outputs: [],
+        description:
+          'Event emitted when collateral liquidity is migrated to the dex.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'fundingManager',
+            type: 'address',
+            description: 'The address of the funding manager.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'issuanceToken',
+            type: 'address',
+            description: 'The address of the issuance token.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'deployer',
+            type: 'address',
+            description: 'The address of the deployer.',
+          },
+          {
+            indexed: false,
+            internalType: 'bool',
+            name: 'isImmutable',
+            type: 'bool',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'migrationThreshold',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'address',
+            name: 'lpTokenRecipient',
+            type: 'address',
+          },
+        ],
+        name: 'PIMWorkflowCreated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when a new PIM workflow is created.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'fundingManager',
+            type: 'address',
+            description: 'The address of the funding manager.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'claimer',
+            type: 'address',
+            description: 'The address of the one that is claiming.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'to',
+            type: 'address',
+            description: 'The address of that is receiving the fee.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: 'The amount claimed.',
+          },
+        ],
+        name: 'PimFeeClaimed',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when PIM fee (buy/sell fees) is claimed.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'fundingManager',
+            type: 'address',
+            description: 'The address of the funding manager.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'oldRecipient',
+            type: 'address',
+            description: 'The previous pim fee recipient.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'newRecipient',
+            type: 'address',
+            description: 'The new pim fee recipient.',
+          },
+        ],
+        name: 'PimFeeRecipientUpdated',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when factory owner sets new fee.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'issuanceToken',
+            type: 'address',
+            description: 'The issuance token to buy',
+          },
+          {
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address to receive the purchased tokens',
+          },
+          {
+            internalType: 'uint256',
+            name: 'amountIn',
+            type: 'uint256',
+            tags: ['decimals'],
+            description: 'The maximum amount of collateral tokens to spend',
+          },
+          {
+            internalType: 'uint256',
+            name: 'minAmountOut',
+            type: 'uint256',
+            tags: ['decimals:params:indirect:issuanceToken'],
+          },
+        ],
+        name: 'buyForUpTo',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Buys tokens from the bonding curve funding manager for a recipient',
+      },
+      {
+        inputs: [
+          {
+            components: [
+              {
+                internalType: 'bool',
+                name: 'independentUpdates',
+                type: 'bool',
+              },
+              {
+                internalType: 'address',
+                name: 'independentUpdateAdmin',
+                type: 'address',
+              },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.WorkflowConfig',
+            name: 'workflowConfig',
+            type: 'tuple',
+            description: "The workflow's config data.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule_v1.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.ModuleConfig',
+            name: 'fundingManagerConfig',
+            type: 'tuple',
+            description:
+              "The config data for the orchestrator's {IFundingManager_v1} instance.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule_v1.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.ModuleConfig',
+            name: 'authorizerConfig',
+            type: 'tuple',
+            description:
+              "The config data for the orchestrator's {IAuthorizer_v1} instance.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule_v1.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.ModuleConfig',
+            name: 'paymentProcessorConfig',
+            type: 'tuple',
+            description:
+              "The config data for the orchestrator's {IPaymentProcessor_v1} instance.",
+          },
+          {
+            components: [
+              {
+                components: [
+                  {
+                    internalType: 'uint256',
+                    name: 'majorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'minorVersion',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'patchVersion',
+                    type: 'uint256',
+                  },
+                  { internalType: 'string', name: 'url', type: 'string' },
+                  { internalType: 'string', name: 'title', type: 'string' },
+                ],
+                internalType: 'struct IModule_v1.Metadata',
+                name: 'metadata',
+                type: 'tuple',
+              },
+              { internalType: 'bytes', name: 'configData', type: 'bytes' },
+            ],
+            internalType: 'struct IOrchestratorFactory_v1.ModuleConfig[]',
+            name: 'moduleConfigs',
+            type: 'tuple[]',
+            description:
+              "Variable length set of optional module's config data.",
+          },
+          {
+            components: [
+              { internalType: 'string', name: 'name', type: 'string' },
+              { internalType: 'string', name: 'symbol', type: 'string' },
+              { internalType: 'uint8', name: 'decimals', type: 'uint8' },
+              { internalType: 'uint256', name: 'maxSupply', type: 'uint256' },
+            ],
+            internalType: 'struct IBondingCurveBase_v1.IssuanceToken',
+            name: 'issuanceTokenParams',
+            type: 'tuple',
+            description:
+              "The issuance token's parameters (name, symbol, decimals, maxSupply).",
+          },
+          {
+            internalType: 'uint256',
+            name: 'initialPurchaseAmount',
+            type: 'uint256',
+            description: 'The initial purchase amount.',
+          },
+          {
+            components: [
+              {
+                internalType: 'address',
+                name: 'collateralToken',
+                type: 'address',
+              },
+              { internalType: 'bool', name: 'isImmutable', type: 'bool' },
+              {
+                internalType: 'uint256',
+                name: 'migrationThreshold',
+                type: 'uint256',
+              },
+              { internalType: 'address', name: 'dexAdapter', type: 'address' },
+              {
+                internalType: 'address',
+                name: 'lpTokenRecipient',
+                type: 'address',
+              },
+            ],
+            internalType: 'struct IMigrating_PIM_Factory_v1.MigrationConfig',
+            name: 'migrationConfig_',
+            type: 'tuple',
+            description: 'The config data for the migration.',
+          },
+        ],
+        name: 'createPIMWorkflow',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator_v1',
+            name: '_0',
+            type: 'address',
+            description:
+              'CreatedOrchestrator Returns the created orchestrator instance.',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Deploys a new issuance token and uses that to deploy a workflow with restricted bonding curve.',
+      },
+      {
+        inputs: [],
+        name: 'dexAdapter',
+        outputs: [
+          {
+            internalType: 'contract IDexAdapter_v1',
+            name: '_0',
+            type: 'address',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'isGraduated',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'isImmutable',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'forwarder', type: 'address' },
+        ],
+        name: 'isTrustedForwarder',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'lpTokenRecipient',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'migrationThreshold',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'orchestratorFactory',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'issuanceToken', type: 'address' },
+        ],
+        name: 'pims',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator_v1',
+            name: 'orchestrator',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: 'initialVirtualIssuanceSupply',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'initialVirtualCollateralSupply',
+            type: 'uint256',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'issuanceToken', type: 'address' },
+          { internalType: 'address', name: 'recipient', type: 'address' },
+          {
+            internalType: 'uint256',
+            name: 'amountIn',
+            type: 'uint256',
+            tags: ['decimals:params:indirect:issuanceToken'],
+          },
+          {
+            internalType: 'uint256',
+            name: 'minAmountOut',
+            type: 'uint256',
+            tags: ['decimals'],
+          },
+        ],
+        name: 'sellTo',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'trustedForwarder',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+    ],
+  },
+  {
     name: 'InverterProxyAdmin_v1',
     description:
       'Acts as the admin of the {InverterTransparentUpgradeableProxy_v1}s and is responsible for upgrading the proxies to the newest version.',
@@ -5907,6 +6529,11 @@ export const data = [
       },
       {
         inputs: [],
+        name: 'Module__FM_PC_ExternalPrice_Redeeming_InvalidMaxFee',
+        type: 'error',
+      },
+      {
+        inputs: [],
         name: 'Module__FM_PC_ExternalPrice_Redeeming_InvalidOracleInterface',
         type: 'error',
       },
@@ -6067,6 +6694,38 @@ export const data = [
         type: 'event',
         outputs: [],
         description: 'Event emitted when the issuance token is updated.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'maxProjectBuyFee_',
+            type: 'uint256',
+            description: 'The maximum project buy fee.',
+          },
+        ],
+        name: 'MaxProjectBuyFeeSet',
+        type: 'event',
+        outputs: [],
+        description: 'Emitted when the maximum buy fee is set.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'maxProjectSellFee_',
+            type: 'uint256',
+            description: 'The maximum project sell fee.',
+          },
+        ],
+        name: 'MaxProjectSellFeeSet',
+        type: 'event',
+        outputs: [],
+        description: 'Emitted when the maximum sell fee is set.',
       },
       {
         anonymous: false,
@@ -6978,6 +7637,21 @@ export const data = [
         stateMutability: 'view',
         type: 'function',
         description: 'Gets the current open collateral redemption amount.',
+      },
+      {
+        inputs: [],
+        name: 'getOracle',
+        outputs: [
+          {
+            internalType: 'address',
+            name: 'oracle_',
+            type: 'address',
+            description: 'The address of the oracle.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Gets the oracle address.',
       },
       {
         inputs: [],
@@ -17907,13 +18581,13 @@ export const data = [
             name: '_0',
             type: 'uint256',
             tags: ['decimals'],
-            description:
-              'price_ Current price denominated in the collateral token decimals.',
+            description: 'Current issuance price in collateral token decimals',
           },
         ],
         stateMutability: 'view',
         type: 'function',
-        description: 'Gets current price for token issuance (buying tokens).',
+        description:
+          'Gets current price for token issuance (buying tokens) Price represents how much collateral is paid for 1 issuance token.',
       },
       {
         inputs: [],
@@ -17925,13 +18599,13 @@ export const data = [
             type: 'uint256',
             tags: ['decimals:extras:issuanceToken'],
             description:
-              'price_ Current price denominated in the collateral token decimals.',
+              'Current redemption price in collateral token decimals',
           },
         ],
         stateMutability: 'view',
         type: 'function',
         description:
-          'Gets current price for token redemption (selling tokens).',
+          'Gets current price for token redemption (selling tokens) Price represents how much collateral is returned for 1 issuance token.',
       },
       {
         inputs: [],
@@ -18172,15 +18846,15 @@ export const data = [
             name: 'price_',
             type: 'uint256',
             tags: ['decimals'],
-            description:
-              'The issuance price to set, denominated in the collateral token decimals.',
+            description: 'The issuance price in collateral token decimals',
           },
         ],
         name: 'setIssuancePrice',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Sets the issuance price.',
+        description:
+          'Sets the issuance price for token issuance (buying tokens) Price represents how much collateral is paid for 1 issuance token.',
       },
       {
         inputs: [
@@ -18189,15 +18863,15 @@ export const data = [
             name: 'price_',
             type: 'uint256',
             tags: ['decimals'],
-            description:
-              'The redemption price to set, denominated in the collateral token decimals.',
+            description: 'The redemption price in collateral token decimals',
           },
         ],
         name: 'setRedemptionPrice',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Sets the redemption price.',
+        description:
+          'Sets the redemption price for token redemption (selling tokens) Price represents how much collateral is returned for 1 issuance token.',
       },
       {
         inputs: [
