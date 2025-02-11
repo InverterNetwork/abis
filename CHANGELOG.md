@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.13](https://github.com/inverter-network/abis/compare/v0.3.12...v0.3.13) (2025-02-11)
+
+
+### Features
+
+* add Migrating PIM Factory and update module interfaces ([16527f2](https://github.com/inverter-network/abis/commit/16527f2da0357e9e2e9468708ff805479516ba11))
+
 ### [0.3.12](https://github.com/inverter-network/abis/compare/v0.3.11...v0.3.12) (2025-02-05)
 
 ### [0.3.11](https://github.com/inverter-network/abis/compare/v0.3.10...v0.3.11) (2025-01-31)
