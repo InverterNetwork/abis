@@ -411,11 +411,6 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'PIM_WorkflowFactory__AlreadyGraduated',
-        type: 'error',
-      },
-      {
-        inputs: [],
         name: 'PIM_WorkflowFactory__OnlyPimFeeRecipient',
         type: 'error',
       },
@@ -425,12 +420,19 @@ export const data = [
           {
             indexed: true,
             internalType: 'address',
+            name: 'fundingManager',
+            type: 'address',
+            description: 'The address of the funding manager.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
             name: 'issuanceToken',
             type: 'address',
             description: 'The address of the issuance token.',
           },
           {
-            indexed: true,
+            indexed: false,
             internalType: 'address',
             name: 'collateralToken',
             type: 'address',
@@ -583,9 +585,9 @@ export const data = [
         inputs: [
           {
             internalType: 'address',
-            name: 'issuanceToken',
+            name: 'fundingManager',
             type: 'address',
-            description: 'The issuance token to buy',
+            description: 'The funding manager to buy from',
           },
           {
             internalType: 'address',
@@ -604,10 +606,11 @@ export const data = [
             internalType: 'uint256',
             name: 'minAmountOut',
             type: 'uint256',
-            tags: ['decimals:params:indirect:issuanceToken'],
+            tags: ['decimals:extras:issuanceToken'],
+            description: 'The minimum amount of issuance tokens to receive',
           },
         ],
-        name: 'buyForUpTo',
+        name: 'buyFor',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
@@ -839,11 +842,27 @@ export const data = [
         type: 'function',
       },
       {
-        inputs: [],
-        name: 'isGraduated',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'fundingManager',
+            type: 'address',
+            description: 'The funding manager to check',
+          },
+        ],
+        name: 'getIsGraduated',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description:
+              'isGraduated Whether the issuance token has been graduated',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
+        description: 'Returns whether the issuance token has been graduated',
       },
       {
         inputs: [],
@@ -891,18 +910,19 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'address', name: 'issuanceToken', type: 'address' },
+          { internalType: 'address', name: 'fundingManager', type: 'address' },
         ],
         name: 'pims',
         outputs: [
+          { internalType: 'bool', name: 'orchestrator', type: 'bool' },
           {
             internalType: 'contract IOrchestrator_v1',
-            name: 'orchestrator',
+            name: 'initialVirtualIssuanceSupply',
             type: 'address',
           },
           {
             internalType: 'uint256',
-            name: 'initialVirtualIssuanceSupply',
+            name: 'initialVirtualCollateralSupply',
             type: 'uint256',
           },
           {
@@ -916,25 +936,38 @@ export const data = [
       },
       {
         inputs: [
-          { internalType: 'address', name: 'issuanceToken', type: 'address' },
-          { internalType: 'address', name: 'recipient', type: 'address' },
+          {
+            internalType: 'address',
+            name: 'fundingManager',
+            type: 'address',
+            description: 'The funding manager to sell to',
+          },
+          {
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address to receive the purchased tokens',
+          },
           {
             internalType: 'uint256',
             name: 'amountIn',
             type: 'uint256',
-            tags: ['decimals:params:indirect:issuanceToken', 'approval'],
+            tags: ['decimals:extras:issuanceToken', 'approval'],
+            description: 'The amount of issuance tokens to sell',
           },
           {
             internalType: 'uint256',
             name: 'minAmountOut',
             type: 'uint256',
             tags: ['decimals'],
+            description: 'The minimum amount of collateral tokens to receive',
           },
         ],
         name: 'sellTo',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
+        description: 'Sells tokens to the funding manager for a recipient',
       },
       {
         inputs: [],
