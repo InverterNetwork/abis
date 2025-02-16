@@ -495,18 +495,21 @@ export const data = [
             internalType: 'bool',
             name: 'isImmutable',
             type: 'bool',
+            description: 'Whether the PIM is immutable.',
           },
           {
             indexed: false,
             internalType: 'uint256',
             name: 'migrationThreshold',
             type: 'uint256',
+            description: 'The migration threshold.',
           },
           {
             indexed: false,
             internalType: 'address',
             name: 'lpTokenRecipient',
             type: 'address',
+            description: 'The address of the LP token recipient.',
           },
         ],
         name: 'PIMWorkflowCreated',
@@ -829,19 +832,6 @@ export const data = [
           'Deploys a new issuance token and uses that to deploy a workflow with restricted bonding curve.',
       },
       {
-        inputs: [],
-        name: 'dexAdapter',
-        outputs: [
-          {
-            internalType: 'contract IDexAdapter_v1',
-            name: '_0',
-            type: 'address',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
         inputs: [
           {
             internalType: 'address',
@@ -865,11 +855,70 @@ export const data = [
         description: 'Returns whether the issuance token has been graduated',
       },
       {
-        inputs: [],
-        name: 'isImmutable',
-        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'fundingManager',
+            type: 'address',
+            description: 'The funding manager to check',
+          },
+        ],
+        name: 'getIsImmutable',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'isImmutable Whether the issuance token is immutable',
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
+        description: 'Returns whether the issuance token is immutable',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'fundingManager',
+            type: 'address',
+            description: 'The funding manager to check',
+          },
+        ],
+        name: 'getLpTokenRecipient',
+        outputs: [
+          {
+            internalType: 'address',
+            name: '_0',
+            type: 'address',
+            description: 'lpTokenRecipient The LP token recipient',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the LP token recipient',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'fundingManager',
+            type: 'address',
+            description: 'The funding manager to check',
+          },
+        ],
+        name: 'getMigrationThreshold',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: 'migrationThreshold The migration threshold',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the migration threshold',
       },
       {
         inputs: [
@@ -877,27 +926,6 @@ export const data = [
         ],
         name: 'isTrustedForwarder',
         outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'lpTokenRecipient',
-        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      {
-        inputs: [],
-        name: 'migrationThreshold',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '_0',
-            type: 'uint256',
-            tags: ['decimals'],
-          },
-        ],
         stateMutability: 'view',
         type: 'function',
       },
@@ -916,13 +944,33 @@ export const data = [
         outputs: [
           { internalType: 'bool', name: 'orchestrator', type: 'bool' },
           {
-            internalType: 'contract IOrchestrator_v1',
+            internalType: 'bool',
             name: 'initialVirtualIssuanceSupply',
-            type: 'address',
+            type: 'bool',
           },
           {
             internalType: 'uint256',
             name: 'initialVirtualCollateralSupply',
+            type: 'uint256',
+          },
+          {
+            internalType: 'address',
+            name: 'initialVirtualCollateralSupply',
+            type: 'address',
+          },
+          {
+            internalType: 'address',
+            name: 'lpTokenRecipient',
+            type: 'address',
+          },
+          {
+            internalType: 'contract IOrchestrator_v1',
+            name: 'orchestrator',
+            type: 'address',
+          },
+          {
+            internalType: 'uint256',
+            name: 'initialVirtualIssuanceSupply',
             type: 'uint256',
           },
           {
