@@ -386,12 +386,6 @@ export const data = [
               description:
                 'The address that will receive LP tokens after migration',
             },
-            {
-              name: 'initialRewardDuration',
-              type: 'uint256',
-              jsType: 'numberString',
-              description: 'The duration of the initial rewards in seconds',
-            },
           ],
           name: 'migrationConfig',
           type: 'tuple',
