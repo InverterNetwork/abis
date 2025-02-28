@@ -411,18 +411,20 @@ export const data = [
             name: '_trustedForwarder',
             type: 'address',
           },
+          { internalType: 'address', name: '_admin', type: 'address' },
         ],
         stateMutability: 'nonpayable',
         type: 'constructor',
       },
       {
         inputs: [],
-        name: 'PIM_WorkflowFactory__OnlyInitiatorAfterGraduation',
+        name: 'PIM_WorkflowFactory__CantBeZeroAddress',
         type: 'error',
       },
+      { inputs: [], name: 'PIM_WorkflowFactory__OnlyAdmin', type: 'error' },
       {
         inputs: [],
-        name: 'PIM_WorkflowFactory__OnlyInitiatorAndRewardDurationOver',
+        name: 'PIM_WorkflowFactory__OnlyInitiatorAfterGraduation',
         type: 'error',
       },
       {
@@ -522,11 +524,6 @@ export const data = [
                 name: 'lpTokenRecipient',
                 type: 'address',
               },
-              {
-                internalType: 'uint256',
-                name: 'initialRewardDuration',
-                type: 'uint256',
-              },
             ],
             indexed: false,
             internalType: 'struct IMigrating_PIM_Factory_v1.MigrationConfig',
@@ -575,6 +572,13 @@ export const data = [
         type: 'function',
         description:
           'Buys tokens from the bonding curve funding manager for a recipient',
+      },
+      {
+        inputs: [],
+        name: 'collateralFeeMultiplier',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
       },
       {
         inputs: [
@@ -765,11 +769,6 @@ export const data = [
                 name: 'lpTokenRecipient',
                 type: 'address',
               },
-              {
-                internalType: 'uint256',
-                name: 'initialRewardDuration',
-                type: 'uint256',
-              },
             ],
             internalType: 'struct IMigrating_PIM_Factory_v1.MigrationConfig',
             name: 'migrationConfig_',
@@ -892,6 +891,20 @@ export const data = [
       },
       {
         inputs: [],
+        name: 'issuanceFeeMultiplier',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'mainFundingManager',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
         name: 'orchestratorFactory',
         outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
@@ -928,21 +941,6 @@ export const data = [
             internalType: 'uint256',
             name: 'initialVirtualCollateralSupply',
             type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'initialRewardDuration',
-            type: 'uint256',
-          },
-          {
-            internalType: 'contract LM_PC_Staking_v1',
-            name: 'staking',
-            type: 'address',
-          },
-          {
-            internalType: 'contract LM_PC_PaymentRouter_v1',
-            name: 'paymentRouter',
-            type: 'address',
           },
         ],
         stateMutability: 'view',
@@ -984,32 +982,50 @@ export const data = [
         description: 'Sells tokens to the funding manager for a recipient',
       },
       {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'fundingManager',
-            type: 'address',
-            description: 'The funding manager to set the rewards for',
-          },
-          {
-            internalType: 'uint256',
-            name: 'amount',
-            type: 'uint256',
-            tags: ['decimals'],
-            description: 'The amount of rewards to set',
-          },
-          {
-            internalType: 'uint256',
-            name: 'duration',
-            type: 'uint256',
-            description: 'The duration of the rewards',
-          },
-        ],
-        name: 'setRewards',
+        inputs: [{ internalType: 'address', name: '_admin', type: 'address' }],
+        name: 'setAdmin',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
-        description: 'Sets the rewards for the staking module',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: '_collateralFeeMultiplier',
+            type: 'uint256',
+          },
+        ],
+        name: 'setCollateralFeeMultiplier',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: '_issuanceFeeMultiplier',
+            type: 'uint256',
+          },
+        ],
+        name: 'setIssuanceFeeMultiplier',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: '_mainFundingManager',
+            type: 'address',
+          },
+        ],
+        name: 'setMainFundingManager',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
       },
       {
         inputs: [],
@@ -1017,27 +1033,6 @@ export const data = [
         outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
         type: 'function',
-      },
-      {
-        inputs: [
-          {
-            internalType: 'address',
-            name: 'fundingManager',
-            type: 'address',
-            description: 'The address of the funding manager.',
-          },
-          {
-            internalType: 'address',
-            name: 'to',
-            type: 'address',
-            description: 'The address to send the fees to.',
-          },
-        ],
-        name: 'withdrawPimFee',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-        description: 'Withdraws buy/sell fees accumulated by a bonding curve.',
       },
     ],
   },
