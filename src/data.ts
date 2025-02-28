@@ -8537,7 +8537,7 @@ export const data = [
           description: 'The address of the token that will be issued',
         },
         {
-          name: 'acceptedToken',
+          name: 'collateralToken',
           type: 'address',
           description:
             'The address of the token that will be accepted as collateral',
@@ -8553,6 +8553,7 @@ export const data = [
             {
               name: 'capitalRequired',
               type: 'uint256',
+              tags: ['decimals:params:indirect:collateralToken'],
               description:
                 'The initial capital requirement for the bonding curve',
             },
@@ -10447,7 +10448,7 @@ export const data = [
           description: 'The address of the token that will be issued',
         },
         {
-          name: 'acceptedToken',
+          name: 'collateralToken',
           type: 'address',
           description:
             'The address of the token that will be accepted as collateral',
@@ -10463,6 +10464,7 @@ export const data = [
             {
               name: 'capitalRequired',
               type: 'uint256',
+              tags: ['decimals:params:indirect:collateralToken'],
               description:
                 'The initial capital requirement for the bonding curve',
             },
