@@ -532,6 +532,13 @@ export const data = [
         description: 'Event emitted when a new PIM workflow is created.',
       },
       {
+        inputs: [],
+        name: 'admin',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
         inputs: [
           {
             internalType: 'address',
@@ -892,6 +899,13 @@ export const data = [
       },
       {
         inputs: [],
+        name: 'issuanceLiquidityDivisor',
+        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
         name: 'mainFundingManager',
         outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
@@ -1004,6 +1018,19 @@ export const data = [
           },
         ],
         name: 'setIssuanceFeeMultiplier',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: '_issuanceLiquidityDivisor',
+            type: 'uint256',
+          },
+        ],
+        name: 'setIssuanceLiquidityDivisor',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
