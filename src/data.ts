@@ -338,7 +338,7 @@ export const data = [
   },
   {
     name: 'Migrating_PIM_Factory_v1',
-    description: '',
+    description: 'Factory contract for creating and managing PIM workflows',
     moduleType: 'factories',
     deploymentInputs: {
       configData: [
@@ -415,11 +415,33 @@ export const data = [
         name: 'PIM_WorkflowFactory__CantBeZeroAddress',
         type: 'error',
       },
+      {
+        inputs: [],
+        name: 'PIM_WorkflowFactory__InitialPurchaseGraduatesMarket',
+        type: 'error',
+      },
       { inputs: [], name: 'PIM_WorkflowFactory__OnlyAdmin', type: 'error' },
       {
         inputs: [],
         name: 'PIM_WorkflowFactory__OnlyInitiatorAfterGraduation',
         type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'fundingManager',
+            type: 'address',
+            description: 'The address of the funding manager.',
+          },
+        ],
+        name: 'FundingManagerRegistered',
+        type: 'event',
+        outputs: [],
+        description:
+          'Event emitted when a funding manager registers to the factory.',
       },
       {
         anonymous: false,
@@ -451,13 +473,6 @@ export const data = [
             name: 'collateralTokenAmount',
             type: 'uint256',
             description: 'The amount of collateral tokens added as liquidity.',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'stakingRewards',
-            type: 'uint256',
-            description: 'The amount of staking rewards added as liquidity.',
           },
         ],
         name: 'Graduation',
@@ -793,6 +808,13 @@ export const data = [
           'Deploys a new issuance token and uses that to deploy a workflow with restricted bonding curve.',
       },
       {
+        inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+        name: 'fundingManagers',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
         inputs: [
           {
             internalType: 'address',
@@ -950,6 +972,8 @@ export const data = [
             name: 'initialVirtualCollateralSupply',
             type: 'uint256',
           },
+          { internalType: 'address', name: 'stakingModule', type: 'address' },
+          { internalType: 'address', name: 'paymentRouter', type: 'address' },
         ],
         stateMutability: 'view',
         type: 'function',
@@ -1053,6 +1077,13 @@ export const data = [
         name: 'trustedForwarder',
         outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'withdrawAllProjectCollateralFeesToStaking',
+        outputs: [],
+        stateMutability: 'nonpayable',
         type: 'function',
       },
     ],
