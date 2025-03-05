@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.27](https://github.com/inverter-network/abis/compare/v0.3.25...v0.3.27) (2025-03-05)
+
 ### [0.3.26](https://github.com/inverter-network/abis/compare/v0.3.25...v0.3.26) (2025-03-05)
 
 ### [0.3.25](https://github.com/inverter-network/abis/compare/v0.3.24...v0.3.25) (2025-03-05)

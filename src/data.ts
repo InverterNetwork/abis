@@ -411,6 +411,17 @@ export const data = [
         type: 'constructor',
       },
       {
+        inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
+        name: 'AddressEmptyCode',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'AddressInsufficientBalance',
+        type: 'error',
+      },
+      { inputs: [], name: 'FailedInnerCall', type: 'error' },
+      {
         inputs: [],
         name: 'PIM_WorkflowFactory__CantBeZeroAddress',
         type: 'error',
@@ -425,6 +436,57 @@ export const data = [
         inputs: [],
         name: 'PIM_WorkflowFactory__OnlyInitiatorAfterGraduation',
         type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
+        name: 'SafeERC20FailedOperation',
+        type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'oldAdmin',
+            type: 'address',
+            description: 'The old admin address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'newAdmin',
+            type: 'address',
+            description: 'The new admin address',
+          },
+        ],
+        name: 'AdminChanged',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when admin is changed',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'oldMultiplier',
+            type: 'uint256',
+            description: 'The old collateral fee multiplier',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'newMultiplier',
+            type: 'uint256',
+            description: 'The new collateral fee multiplier',
+          },
+        ],
+        name: 'CollateralFeeMultiplierChanged',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when collateral fee multiplier is changed',
       },
       {
         anonymous: false,
@@ -463,6 +525,75 @@ export const data = [
         outputs: [],
         description:
           'Event emitted when collateral liquidity is migrated to the dex.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'oldMultiplier',
+            type: 'uint256',
+            description: 'The old issuance fee multiplier',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'newMultiplier',
+            type: 'uint256',
+            description: 'The new issuance fee multiplier',
+          },
+        ],
+        name: 'IssuanceFeeMultiplierChanged',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when issuance fee multiplier is changed',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'oldDivisor',
+            type: 'uint256',
+            description: 'The old issuance liquidity divisor',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'newDivisor',
+            type: 'uint256',
+            description: 'The new issuance liquidity divisor',
+          },
+        ],
+        name: 'IssuanceLiquidityDivisorChanged',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when issuance liquidity divisor is changed',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'oldMainFundingManager',
+            type: 'address',
+            description: 'The old main funding manager address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'newMainFundingManager',
+            type: 'address',
+            description: 'The new main funding manager address',
+          },
+        ],
+        name: 'MainFundingManagerChanged',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when main funding manager is changed',
       },
       {
         anonymous: false,
@@ -528,6 +659,67 @@ export const data = [
         type: 'event',
         outputs: [],
         description: 'Event emitted when a new PIM workflow is created.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+            ],
+            indexed: false,
+            internalType:
+              'struct IMigrating_PIM_Factory_v1.LM_PC_Staking_v1_Metadata',
+            name: 'oldMetadata',
+            type: 'tuple',
+            description: 'The old staking module metadata',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+            ],
+            indexed: false,
+            internalType:
+              'struct IMigrating_PIM_Factory_v1.LM_PC_Staking_v1_Metadata',
+            name: 'newMetadata',
+            type: 'tuple',
+            description: 'The new staking module metadata',
+          },
+        ],
+        name: 'StakingModuleMetadataChanged',
+        type: 'event',
+        outputs: [],
+        description: 'Event emitted when staking module metadata is changed',
       },
       {
         inputs: [],
@@ -1053,6 +1245,50 @@ export const data = [
         name: 'setMainFundingManager',
         outputs: [],
         stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+            ],
+            internalType:
+              'struct IMigrating_PIM_Factory_v1.LM_PC_Staking_v1_Metadata',
+            name: '_stakingModuleMetadata',
+            type: 'tuple',
+          },
+        ],
+        name: 'setStakingModuleMetadata',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'stakingModuleMetadata',
+        outputs: [
+          { internalType: 'uint256', name: 'majorVersion', type: 'uint256' },
+          { internalType: 'uint256', name: 'minorVersion', type: 'uint256' },
+          { internalType: 'uint256', name: 'patchVersion', type: 'uint256' },
+          { internalType: 'string', name: 'url', type: 'string' },
+        ],
+        stateMutability: 'view',
         type: 'function',
       },
       {
