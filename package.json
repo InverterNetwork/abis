@@ -1,7 +1,7 @@
 {
   "name": "@inverter-network/abis",
   "description": "INVERTER typescript ABIs",
-  "version": "0.3.28-alpha.0",
+  "version": "0.3.28-alpha.1",
   "type": "module",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -12,7 +12,8 @@
     "test": "tests"
   },
   "files": [
-    "dist"
+    "dist",
+    "tools/build-esm.js"
   ],
   "publishConfig": {
     "access": "public"
@@ -36,10 +37,10 @@
     "compile": "bun tools/compile/index.ts && prettier --write ./src/data.ts",
     "build": "bun clean && bun build:types && bun build:esm && bun build:cjs",
     "build:types": "tsc --project ./tsconfig.build.json --module ESNext --declarationDir ./dist/types --emitDeclarationOnly --declaration && tsc-alias --outDir ./dist/types",
-    "build:esm": "tsc --project ./tsconfig.build.json --module ESNext --outDir ./dist/esm && printf '{\"type\": \"module\",\"sideEffects\":false}' > ./dist/esm/package.json && tsc-alias --outDir ./dist/esm && ts-add-js-extension --dir=dist/esm --showchanges=false && cp tools/constants/data-esm-template.js dist/esm/data.js",
+    "build:esm": "tsc --project ./tsconfig.build.json --module ESNext --outDir ./dist/esm && printf '{\"type\": \"module\",\"sideEffects\":false}' > ./dist/esm/package.json && tsc-alias --outDir ./dist/esm && ts-add-js-extension --dir=dist/esm --showchanges=false && echo 'export {};' > ./dist/esm/data.js",
     "build:cjs": "tsc --project ./tsconfig.build.json --module commonjs --outDir ./dist/cjs --removeComments --verbatimModuleSyntax false && printf '{\"type\":\"commonjs\"}' > ./dist/cjs/package.json && tsc-alias --outDir ./dist/cjs && ts-add-js-extension --dir=dist/cjs --showchanges=false && cp tools/constants/data-cjs-template.js dist/cjs/data.js",
     "clean": "rm -rf dist tsconfig.tsbuildinfo tsconfig.build.tsbuildinfo",
-    "postinstall": "husky || true",
+    "postinstall": "husky || true && node tools/build-esm.js",
     "prepack": "pinst --disable",
     "package": "bun run build && npm pack",
     "postpack": "pinst --enable",
