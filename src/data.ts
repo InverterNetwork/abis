@@ -431,6 +431,11 @@ export const data = [
         name: 'PIM_WorkflowFactory__InitialPurchaseGraduatesMarket',
         type: 'error',
       },
+      {
+        inputs: [],
+        name: 'PIM_WorkflowFactory__MainFundingManagerNotSet',
+        type: 'error',
+      },
       { inputs: [], name: 'PIM_WorkflowFactory__OnlyAdmin', type: 'error' },
       {
         inputs: [],
