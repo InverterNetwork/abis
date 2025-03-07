@@ -553,29 +553,6 @@ export const data = [
         anonymous: false,
         inputs: [
           {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'oldDivisor',
-            type: 'uint256',
-            description: 'The old issuance liquidity divisor',
-          },
-          {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'newDivisor',
-            type: 'uint256',
-            description: 'The new issuance liquidity divisor',
-          },
-        ],
-        name: 'IssuanceLiquidityDivisorChanged',
-        type: 'event',
-        outputs: [],
-        description: 'Event emitted when issuance liquidity divisor is changed',
-      },
-      {
-        anonymous: false,
-        inputs: [
-          {
             indexed: true,
             internalType: 'address',
             name: 'oldMainFundingManager',
@@ -594,6 +571,30 @@ export const data = [
         type: 'event',
         outputs: [],
         description: 'Event emitted when main funding manager is changed',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'oldAmount',
+            type: 'uint256',
+            description: 'The old mutable initial mint amount',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'newAmount',
+            type: 'uint256',
+            description: 'The new mutable initial mint amount',
+          },
+        ],
+        name: 'MutableInitialMintAmountChanged',
+        type: 'event',
+        outputs: [],
+        description:
+          'Event emitted when mutable initial mint amount is changed',
       },
       {
         anonymous: false,
@@ -1096,15 +1097,22 @@ export const data = [
       },
       {
         inputs: [],
-        name: 'issuanceLiquidityDivisor',
-        outputs: [{ internalType: 'uint256', name: '_0', type: 'uint256' }],
+        name: 'mainFundingManager',
+        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
         stateMutability: 'view',
         type: 'function',
       },
       {
         inputs: [],
-        name: 'mainFundingManager',
-        outputs: [{ internalType: 'address', name: '_0', type: 'address' }],
+        name: 'mutableInitialMintAmount',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            tags: ['decimals:extras:issuanceToken'],
+          },
+        ],
         stateMutability: 'view',
         type: 'function',
       },
@@ -1224,12 +1232,12 @@ export const data = [
       {
         inputs: [
           {
-            internalType: 'uint256',
-            name: '_issuanceLiquidityDivisor',
-            type: 'uint256',
+            internalType: 'address',
+            name: '_mainFundingManager',
+            type: 'address',
           },
         ],
-        name: 'setIssuanceLiquidityDivisor',
+        name: 'setMainFundingManager',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
@@ -1237,12 +1245,13 @@ export const data = [
       {
         inputs: [
           {
-            internalType: 'address',
-            name: '_mainFundingManager',
-            type: 'address',
+            internalType: 'uint256',
+            name: '_mutableInitialMintAmount',
+            type: 'uint256',
+            tags: ['decimals:extras:issuanceToken'],
           },
         ],
-        name: 'setMainFundingManager',
+        name: 'setMutableInitialMintAmount',
         outputs: [],
         stateMutability: 'nonpayable',
         type: 'function',
