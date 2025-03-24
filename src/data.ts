@@ -6657,6 +6657,7 @@ export const data = [
             internalType: 'uint256',
             name: '_virtualSupply',
             type: 'uint256',
+            tags: ['decimals'],
             description:
               'The new value to set for the virtual collateral supply.',
           },
@@ -6673,6 +6674,7 @@ export const data = [
             internalType: 'uint256',
             name: '_virtualSupply',
             type: 'uint256',
+            tags: ['decimals:contract:indirect:getIssuanceToken'],
             description:
               'The new value to set for the virtual issuance supply.',
           },
@@ -16056,6 +16058,7 @@ export const data = [
             internalType: 'uint256',
             name: '_virtualSupply',
             type: 'uint256',
+            tags: ['decimals'],
             description:
               'The new value to set for the virtual collateral supply.',
           },
@@ -16072,6 +16075,7 @@ export const data = [
             internalType: 'uint256',
             name: '_virtualSupply',
             type: 'uint256',
+            tags: ['decimals:contract:indirect:getIssuanceToken'],
             description:
               'The new value to set for the virtual issuance supply.',
           },
