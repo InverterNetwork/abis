@@ -54,7 +54,7 @@ export type ExtendedAbiFunction = Omit<AbiFunction, 'inputs' | 'outputs'> & {
 
 export type ExtendedAbiEvent = Omit<AbiEvent, 'inputs'> & {
   inputs: readonly ExtendedAbiParameter[]
-  outputs: readonly ExtendedAbiParameter[]
+  outputs?: readonly ExtendedAbiParameter[]
   description?: string
 }
 
