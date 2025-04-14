@@ -15,6 +15,7 @@ import type { Tag } from './base'
 type ExtendedAbiParameterBase = {
   name?: string
   description?: string
+  indexed?: boolean
   /** Representation used by Solidity compiler */
   internalType?: AbiInternalType
   tags?: readonly Tag[]
@@ -53,6 +54,7 @@ export type ExtendedAbiFunction = Omit<AbiFunction, 'inputs' | 'outputs'> & {
 
 export type ExtendedAbiEvent = Omit<AbiEvent, 'inputs'> & {
   inputs: readonly ExtendedAbiParameter[]
+  outputs: readonly ExtendedAbiParameter[]
   description?: string
 }
 
