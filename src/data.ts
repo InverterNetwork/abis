@@ -12839,7 +12839,7 @@ export const data = [
         type: 'error',
       },
       {
-        inputs: [],
+        inputs: [{ internalType: 'bytes', name: 'data', type: 'bytes' }],
         name: 'Module__FM_PC_ExternalPrice_Redeeming_QueueExecutionFailed',
         type: 'error',
       },
@@ -13378,6 +13378,13 @@ export const data = [
           {
             indexed: false,
             internalType: 'uint256',
+            name: 'protocolFeeAmount_',
+            type: 'uint256',
+            description: 'Protocol collateral fee amount collected.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
             name: 'finalRedemptionAmount_',
             type: 'uint256',
             tags: ['decimals'],
@@ -13698,10 +13705,9 @@ export const data = [
         inputs: [
           {
             internalType: 'uint256',
-            name: '_depositAmount',
+            name: 'depositAmount_',
             type: 'uint256',
             tags: ['decimals:contract:indirect:getIssuanceToken'],
-            description: 'The amount of tokens deposited by the user.',
           },
         ],
         name: 'calculateSaleReturn',
@@ -13710,7 +13716,6 @@ export const data = [
             internalType: 'uint256',
             name: 'redeemAmount',
             type: 'uint256',
-            tags: ['decimals'],
             description:
               'The amount of collateral that will be redeemed as a result of the deposit.',
           },
@@ -14427,7 +14432,14 @@ export const data = [
           'Redeem tokens and directs the proceeds to a specified receiver address.',
       },
       {
-        inputs: [{ internalType: 'uint256', name: 'fee_', type: 'uint256' }],
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: '_fee',
+            type: 'uint256',
+            description: 'The fee in basis points.',
+          },
+        ],
         name: 'setBuyFee',
         outputs: [],
         stateMutability: 'nonpayable',
@@ -14482,7 +14494,14 @@ export const data = [
         description: 'Sets the project treasury address.',
       },
       {
-        inputs: [{ internalType: 'uint256', name: 'fee_', type: 'uint256' }],
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: '_fee',
+            type: 'uint256',
+            description: 'The fee in basis points.',
+          },
+        ],
         name: 'setSellFee',
         outputs: [],
         stateMutability: 'nonpayable',
@@ -16314,6 +16333,11 @@ export const data = [
       { inputs: [], name: 'Module__PP_Queue_EmptyQueue', type: 'error' },
       {
         inputs: [{ internalType: 'uint256', name: 'amount_', type: 'uint256' }],
+        name: 'Module__PP_Queue_FeeAmountToHigh',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'uint256', name: 'amount_', type: 'uint256' }],
         name: 'Module__PP_Queue_InvalidAmount',
         type: 'error',
       },
@@ -16332,6 +16356,11 @@ export const data = [
         type: 'error',
       },
       { inputs: [], name: 'Module__PP_Queue_InvalidConfig', type: 'error' },
+      {
+        inputs: [{ internalType: 'uint256', name: 'amount_', type: 'uint256' }],
+        name: 'Module__PP_Queue_InvalidFeeAmount',
+        type: 'error',
+      },
       {
         inputs: [
           { internalType: 'bytes32', name: 'flags_', type: 'bytes32' },
@@ -21849,6 +21878,11 @@ export const data = [
       { inputs: [], name: 'Module__PP_Queue_EmptyQueue', type: 'error' },
       {
         inputs: [{ internalType: 'uint256', name: 'amount_', type: 'uint256' }],
+        name: 'Module__PP_Queue_FeeAmountToHigh',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'uint256', name: 'amount_', type: 'uint256' }],
         name: 'Module__PP_Queue_InvalidAmount',
         type: 'error',
       },
@@ -21867,6 +21901,11 @@ export const data = [
         type: 'error',
       },
       { inputs: [], name: 'Module__PP_Queue_InvalidConfig', type: 'error' },
+      {
+        inputs: [{ internalType: 'uint256', name: 'amount_', type: 'uint256' }],
+        name: 'Module__PP_Queue_InvalidFeeAmount',
+        type: 'error',
+      },
       {
         inputs: [
           { internalType: 'bytes32', name: 'flags_', type: 'bytes32' },
@@ -22385,7 +22424,7 @@ export const data = [
             description: 'The ID of the order to cancel.',
           },
           {
-            internalType: 'contract IERC20PaymentClientBase_v1',
+            internalType: 'contract IERC20PaymentClientBase_v2',
             name: 'client_',
             type: 'address',
             description: 'The client associated with the order.',
@@ -22408,7 +22447,7 @@ export const data = [
       {
         inputs: [
           {
-            internalType: 'contract IERC20PaymentClientBase_v1',
+            internalType: 'contract IERC20PaymentClientBase_v2',
             name: 'client_',
             type: 'address',
           },
@@ -22418,7 +22457,7 @@ export const data = [
         stateMutability: 'view',
         type: 'function',
         description:
-          'Cancels all unfinished payments from an {IERC20PaymentClientBase_v1} instance.',
+          'Cancels all unfinished payments from an {IERC20PaymentClientBase_v2} instance.',
       },
       {
         inputs: [
@@ -22500,7 +22539,7 @@ export const data = [
             description: 'The ID of the payment order.',
           },
           {
-            internalType: 'contract IERC20PaymentClientBase_v1',
+            internalType: 'contract IERC20PaymentClientBase_v2',
             name: 'client_',
             type: 'address',
             description: 'The client associated with the order.',
@@ -22545,7 +22584,7 @@ export const data = [
                     type: 'bytes32[]',
                   },
                 ],
-                internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder',
+                internalType: 'struct IERC20PaymentClientBase_v2.PaymentOrder',
                 name: 'order_',
                 type: 'tuple',
                 description: 'The payment order data.',
@@ -22760,6 +22799,7 @@ export const data = [
             internalType: 'contract IOrchestrator_v1',
             name: 'orchestrator_',
             type: 'address',
+            description: 'The orchestrator contract.',
           },
           {
             components: [
@@ -22784,8 +22824,15 @@ export const data = [
             internalType: 'struct IModule_v1.Metadata',
             name: 'metadata_',
             type: 'tuple',
+            description: 'The metadata of the module.',
           },
-          { internalType: 'bytes', name: 'configData_', type: 'bytes' },
+          {
+            internalType: 'bytes',
+            name: 'configData_',
+            type: 'bytes',
+            description:
+              'The config data of the module, comprised of: - address: cancelledOrdersTreasury: The treasury address which receives collateral from cancelled orders. - address: failedOrdersTreasury: The treasury address which receives collateral from failed orders.',
+          },
         ],
         name: 'init',
         outputs: [],
@@ -22834,7 +22881,7 @@ export const data = [
       {
         inputs: [
           {
-            internalType: 'contract IERC20PaymentClientBase_v1',
+            internalType: 'contract IERC20PaymentClientBase_v2',
             name: 'client_',
             type: 'address',
           },
@@ -22844,7 +22891,7 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description:
-          'Processes all payments from an {IERC20PaymentClientBase_v1} instance. Please note: this function does not support callbacks on transfer of tokens.',
+          'Processes all payments from an {IERC20PaymentClientBase_v2} instance. Please note: this function does not support callbacks on transfer of tokens.',
       },
       {
         inputs: [
@@ -23028,7 +23075,7 @@ export const data = [
               { internalType: 'bytes32', name: 'flags', type: 'bytes32' },
               { internalType: 'bytes32[]', name: 'data', type: 'bytes32[]' },
             ],
-            internalType: 'struct IERC20PaymentClientBase_v1.PaymentOrder',
+            internalType: 'struct IERC20PaymentClientBase_v2.PaymentOrder',
             name: 'order_',
             type: 'tuple',
           },
