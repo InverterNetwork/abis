@@ -8,6 +8,7 @@ export type DeploymentArgData = {
 
 export type DeploymentInputs = {
   configData?: DeploymentArgData[]
+  bytecode?: string
 }
 
 export type AbiMemberConfig = {
