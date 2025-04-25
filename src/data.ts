@@ -20212,6 +20212,948 @@ export const data = [
     ],
   },
   {
+    name: 'PP_Everclear_CrossChain_v1',
+    description:
+      "A payment processor implementation that enables cross-chain payments using the Everclear protocol. This module processes payment orders created by an Inverter Payment Client and bridges the payments to the target chain through Everclear's infrastructure.",
+    moduleType: 'paymentProcessor',
+    deploymentInputs: { configData: [] },
+    abi: [
+      {
+        inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
+        name: 'AddressEmptyCode',
+        type: 'error',
+      },
+      {
+        inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+        name: 'AddressInsufficientBalance',
+        type: 'error',
+      },
+      { inputs: [], name: 'FailedInnerCall', type: 'error' },
+      { inputs: [], name: 'InvalidInitialization', type: 'error' },
+      {
+        inputs: [{ internalType: 'string', name: 'funcSig', type: 'string' }],
+        name: 'Module_OrchestratorCallbackFailed',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+          { internalType: 'address', name: 'caller', type: 'address' },
+        ],
+        name: 'Module__CallerNotAuthorized',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__ERC20PaymentClientBase__InvalidPaymentOrder',
+        type: 'error',
+      },
+      { inputs: [], name: 'Module__InvalidAddress', type: 'error' },
+      { inputs: [], name: 'Module__InvalidMetadata', type: 'error' },
+      { inputs: [], name: 'Module__InvalidOrchestratorAddress', type: 'error' },
+      { inputs: [], name: 'Module__OnlyCallableByOrchestrator', type: 'error' },
+      {
+        inputs: [],
+        name: 'Module__OnlyCallableByPaymentClient',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__PP_CrossChain__InvalidMaxFeeOrTTL',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__PP_CrossChain__InvalidUnclaimableAmount',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__PaymentProcessor__CannotCallOnOtherClientsOrders',
+        type: 'error',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'paymentClient', type: 'address' },
+          { internalType: 'address', name: 'paymentReceiver', type: 'address' },
+        ],
+        name: 'Module__PaymentProcessor__NothingToClaim',
+        type: 'error',
+      },
+      {
+        inputs: [],
+        name: 'Module__PaymentProcessor__OnlyCallableByModule',
+        type: 'error',
+      },
+      { inputs: [], name: 'NotInitializing', type: 'error' },
+      {
+        inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
+        name: 'SafeERC20FailedOperation',
+        type: 'error',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'uint256',
+            name: 'paymentId_',
+            type: 'uint256',
+            description: 'The payment ID.',
+          },
+          {
+            indexed: true,
+            internalType: 'bytes32',
+            name: 'intentId_',
+            type: 'bytes32',
+            description: 'The intent ID.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient_',
+            type: 'address',
+            description: 'The recipient of the payment.',
+          },
+          {
+            indexed: false,
+            internalType: 'address',
+            name: 'client_',
+            type: 'address',
+            description: 'The payment client that initiated the payment.',
+          },
+          {
+            indexed: false,
+            internalType: 'address',
+            name: 'paymentToken_',
+            type: 'address',
+            description: 'The token which has been bridged.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount_',
+            type: 'uint256',
+            description: 'The amount of tokens that have been bridged.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'originChainId_',
+            type: 'uint256',
+            description: 'The chain id of the origin chain.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'targetChainId_',
+            type: 'uint256',
+            description: 'The chain id of the target chain.',
+          },
+          {
+            indexed: false,
+            internalType: 'bytes32',
+            name: 'flags_',
+            type: 'bytes32',
+          },
+          {
+            indexed: false,
+            internalType: 'bytes32[]',
+            name: 'data_',
+            type: 'bytes32[]',
+          },
+        ],
+        name: 'BridgeTransferCompleted',
+        type: 'event',
+        outputs: [],
+        description: 'Emitted when a payment ID is assigned.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'client_',
+            type: 'address',
+            description: 'The address initiating the transfer.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient_',
+            type: 'address',
+            description: 'The intended recipient of the transfer.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'paymentToken_',
+            type: 'address',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount_',
+            type: 'uint256',
+            description: 'The amount that failed to transfer.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'originChainId_',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'targetChainId_',
+            type: 'uint256',
+          },
+          {
+            indexed: false,
+            internalType: 'bytes32',
+            name: 'flags_',
+            type: 'bytes32',
+            description: 'The flags for this transfer attempt.',
+          },
+          {
+            indexed: false,
+            internalType: 'bytes32[]',
+            name: 'data_',
+            type: 'bytes32[]',
+            description: 'The data for this transfer attempt.',
+          },
+        ],
+        name: 'BridgeTransferFailed',
+        type: 'event',
+        outputs: [],
+        description: 'Emitted when a cross-chain transfer fails to complete.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: false,
+            internalType: 'uint64',
+            name: 'version',
+            type: 'uint64',
+          },
+        ],
+        name: 'Initialized',
+        type: 'event',
+        outputs: [],
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'parentOrchestrator',
+            type: 'address',
+            description:
+              'The address of the {Orchestrator_v1} the module is linked to.',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
+            indexed: false,
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata',
+            type: 'tuple',
+            description: 'The metadata of the module.',
+          },
+        ],
+        name: 'ModuleInitialized',
+        type: 'event',
+        outputs: [],
+        description: 'Module has been initialized.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'paymentClient',
+            type: 'address',
+            description: 'The payment client that originated the order.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that will receive the payment.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'paymentToken',
+            type: 'address',
+            description:
+              'The address of the token that will be used for the payment.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: 'The amount of tokens the payment consists of.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'originChainId',
+            type: 'uint256',
+            description: 'The id of the origin chain.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'targetChainId',
+            type: 'uint256',
+            description: 'The id of the target chain.',
+          },
+          {
+            indexed: false,
+            internalType: 'bytes32',
+            name: 'flags',
+            type: 'bytes32',
+            description:
+              'Flags that indicate additional data used by the payment order.',
+          },
+          {
+            indexed: false,
+            internalType: 'bytes32[]',
+            name: 'data',
+            type: 'bytes32[]',
+            description:
+              'Array of additional data regarding the payment order.',
+          },
+        ],
+        name: 'PaymentOrderProcessed',
+        type: 'event',
+        outputs: [],
+        description: 'Emitted when a payment gets processed for execution.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description: 'The token received as protocol fee.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'treasury',
+            type: 'address',
+            description:
+              'The protocol treasury address receiving the token fee amount.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'feeAmount',
+            type: 'uint256',
+            description: 'The fee amount transferred to the treasury.',
+          },
+        ],
+        name: 'ProtocolFeeTransferred',
+        type: 'event',
+        outputs: [],
+        description:
+          'Event emitted when protocol fee has been transferred to the treasury.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that will receive the payment.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+            description:
+              'The token address in which the payment should have happened.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: 'The amount of tokens the payment consists of.',
+          },
+        ],
+        name: 'TokensReleased',
+        type: 'event',
+        outputs: [],
+        description:
+          'Emitted when an amount of ERC20 tokens gets sent out of the contract.',
+      },
+      {
+        anonymous: false,
+        inputs: [
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'paymentClient',
+            type: 'address',
+            description:
+              'The token address in which the payment should have happened.',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'token',
+            type: 'address',
+          },
+          {
+            indexed: true,
+            internalType: 'address',
+            name: 'recipient',
+            type: 'address',
+            description: 'The address that should have received the payment.',
+          },
+          {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+            description: 'The amount of tokens that were unclaimable.',
+          },
+        ],
+        name: 'UnclaimableAmountAdded',
+        type: 'event',
+        outputs: [],
+        description:
+          'Emitted when a payment was unclaimable due to a token error.',
+      },
+      {
+        inputs: [],
+        name: 'FLAG_MAX_FEE',
+        outputs: [{ internalType: 'uint8', name: '_0', type: 'uint8' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Payment order flag for the Everclear max fee.',
+      },
+      {
+        inputs: [],
+        name: 'FLAG_TTL',
+        outputs: [{ internalType: 'uint8', name: '_0', type: 'uint8' }],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Payment order flag for the Everclear TTL.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IERC20PaymentClientBase_v2',
+            name: 'client_',
+            type: 'address',
+          },
+        ],
+        name: 'cancelRunningPayments',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Cancels all unfinished payments from an {IERC20PaymentClientBase_v2} instance.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'client_', type: 'address' },
+          { internalType: 'address', name: 'token_', type: 'address' },
+          { internalType: 'address', name: 'receiver_', type: 'address' },
+        ],
+        name: 'claimPreviouslyUnclaimable',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'claim every unclaimable amount that the paymentClient owes to the _msgSender and send it to a specified receiver.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'paymentId_',
+            type: 'uint256',
+            description: 'The ID of the payment to get the bridge data for.',
+          },
+        ],
+        name: 'getBridgeDataByPaymentId',
+        outputs: [
+          {
+            internalType: 'bytes',
+            name: 'bridgeData_',
+            type: 'bytes',
+            description: 'The bridge data for the given payment ID.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Get the bridge data for a given payment ID.',
+      },
+      {
+        inputs: [],
+        name: 'getEverClearSpoke',
+        outputs: [
+          {
+            internalType: 'contract IEverclear',
+            name: 'everClearSpoke_',
+            type: 'address',
+            description: 'The Everclear contract address.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the Everclear spoke contract address.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'bytes32',
+            name: 'intentId_',
+            type: 'bytes32',
+            description: 'The intent ID.',
+          },
+        ],
+        name: 'getIntentByIntentId',
+        outputs: [
+          {
+            components: [
+              { internalType: 'bytes32', name: 'initiator', type: 'bytes32' },
+              { internalType: 'bytes32', name: 'receiver', type: 'bytes32' },
+              { internalType: 'bytes32', name: 'inputAsset', type: 'bytes32' },
+              { internalType: 'bytes32', name: 'outputAsset', type: 'bytes32' },
+              { internalType: 'uint24', name: 'maxFee', type: 'uint24' },
+              { internalType: 'uint32', name: 'origin', type: 'uint32' },
+              { internalType: 'uint64', name: 'nonce', type: 'uint64' },
+              { internalType: 'uint48', name: 'timestamp', type: 'uint48' },
+              { internalType: 'uint48', name: 'ttl', type: 'uint48' },
+              {
+                internalType: 'uint256',
+                name: 'amount',
+                type: 'uint256',
+                tags: ['decimals:params:indirect:inputAsset'],
+              },
+              {
+                internalType: 'uint32[]',
+                name: 'destinations',
+                type: 'uint32[]',
+              },
+              { internalType: 'bytes', name: 'data', type: 'bytes' },
+            ],
+            internalType: 'struct IEverclear.Intent',
+            name: 'intent_',
+            type: 'tuple',
+            description: 'The Everclear intent.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the Everclear intent for a given intent ID.',
+      },
+      {
+        inputs: [],
+        name: 'getPaymentId',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'paymentId_',
+            type: 'uint256',
+            description: 'The current payment ID.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Get the current payment ID.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to grant the role to.',
+          },
+        ],
+        name: 'grantModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Grants a module role to a target address.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to grant.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to grant the role to.',
+          },
+        ],
+        name: 'grantModuleRoleBatched',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Grants a module role to multiple target addresses.',
+      },
+      {
+        inputs: [],
+        name: 'identifier',
+        outputs: [
+          {
+            internalType: 'bytes32',
+            name: '_0',
+            type: 'bytes32',
+            description: "The module's identifier.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's identifier.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IOrchestrator_v1',
+            name: 'orchestrator_',
+            type: 'address',
+            description: 'The orchestrator contract.',
+          },
+          {
+            components: [
+              {
+                internalType: 'uint256',
+                name: 'majorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'minorVersion',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'patchVersion',
+                type: 'uint256',
+              },
+              { internalType: 'string', name: 'url', type: 'string' },
+              { internalType: 'string', name: 'title', type: 'string' },
+            ],
+            internalType: 'struct IModule_v1.Metadata',
+            name: 'metadata_',
+            type: 'tuple',
+            description: 'The metadata of the module.',
+          },
+          {
+            internalType: 'bytes',
+            name: 'configData_',
+            type: 'bytes',
+            description:
+              'The config data of the module, comprised of: - address: everClearSpoke_: The Everclear spoke contract address for cross-chain message passing',
+          },
+        ],
+        name: 'init',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: "The module's initializer function.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'address',
+            name: 'forwarder',
+            type: 'address',
+            description: 'The contract address to be verified.',
+          },
+        ],
+        name: 'isTrustedForwarder',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: '_0',
+            type: 'bool',
+            description: 'bool Is the given address the trusted forwarder.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Checks if the provided address is the trusted forwarder.',
+      },
+      {
+        inputs: [],
+        name: 'orchestrator',
+        outputs: [
+          {
+            internalType: 'contract IOrchestrator_v1',
+            name: '_0',
+            type: 'address',
+            description: "The module's {Orchestrator_1}.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          "Returns the module's {Orchestrator_v1} interface, {IOrchestrator_v1}.",
+      },
+      {
+        inputs: [
+          {
+            internalType: 'contract IERC20PaymentClientBase_v2',
+            name: 'client_',
+            type: 'address',
+          },
+        ],
+        name: 'processPayments',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Processes all payments from an {IERC20PaymentClientBase_v2} instance. Please note: this function does not support callbacks on transfer of tokens.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address',
+            name: 'target',
+            type: 'address',
+            description: 'The target address to revoke the role from.',
+          },
+        ],
+        name: 'revokeModuleRole',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Revokes a module role from a target address.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'bytes32',
+            name: 'role',
+            type: 'bytes32',
+            description: 'The role to revoke.',
+          },
+          {
+            internalType: 'address[]',
+            name: 'targets',
+            type: 'address[]',
+            description: 'The target addresses to revoke the role from.',
+          },
+        ],
+        name: 'revokeModuleRoleBatched',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Revokes a module role from multiple target addresses.',
+      },
+      {
+        inputs: [
+          { internalType: 'bytes4', name: 'interfaceId_', type: 'bytes4' },
+        ],
+        name: 'supportsInterface',
+        outputs: [{ internalType: 'bool', name: '_0', type: 'bool' }],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      {
+        inputs: [],
+        name: 'title',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: "The module's title.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's title.",
+      },
+      {
+        inputs: [],
+        name: 'trustedForwarder',
+        outputs: [
+          {
+            internalType: 'address',
+            name: '_0',
+            type: 'address',
+            description: 'address The trusted forwarder.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: 'Returns the trusted forwarder.',
+      },
+      {
+        inputs: [
+          { internalType: 'address', name: 'client_', type: 'address' },
+          { internalType: 'address', name: 'token_', type: 'address' },
+          {
+            internalType: 'address',
+            name: 'paymentReceiver_',
+            type: 'address',
+          },
+        ],
+        name: 'unclaimable',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: 'amount_',
+            type: 'uint256',
+            tags: ['decimals:params:indirect:token_'],
+            description: 'Amount of tokens that could not be claimed.',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description:
+          'Getter for the amount of tokens that could not be claimed.',
+      },
+      {
+        inputs: [],
+        name: 'url',
+        outputs: [
+          {
+            internalType: 'string',
+            name: '_0',
+            type: 'string',
+            description: "The module's URL.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's URL.",
+      },
+      {
+        inputs: [
+          {
+            components: [
+              { internalType: 'address', name: 'recipient', type: 'address' },
+              {
+                internalType: 'address',
+                name: 'paymentToken',
+                type: 'address',
+              },
+              {
+                internalType: 'uint256',
+                name: 'amount',
+                type: 'uint256',
+                tags: ['decimals:params:indirect:paymentToken'],
+              },
+              {
+                internalType: 'uint256',
+                name: 'originChainId',
+                type: 'uint256',
+              },
+              {
+                internalType: 'uint256',
+                name: 'targetChainId',
+                type: 'uint256',
+              },
+              { internalType: 'bytes32', name: 'flags', type: 'bytes32' },
+              { internalType: 'bytes32[]', name: 'data', type: 'bytes32[]' },
+            ],
+            internalType: 'struct IERC20PaymentClientBase_v2.PaymentOrder',
+            name: 'order_',
+            type: 'tuple',
+          },
+        ],
+        name: 'validPaymentOrder',
+        outputs: [
+          {
+            internalType: 'bool',
+            name: 'valid_',
+            type: 'bool',
+            description: 'valid Bool if the Payment Order is valid.',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description:
+          'Function that checks if the given PaymentOrder was valid.',
+      },
+      {
+        inputs: [],
+        name: 'version',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '_0',
+            type: 'uint256',
+            description: "The module's major version.",
+          },
+          {
+            internalType: 'uint256',
+            name: '_1',
+            type: 'uint256',
+            description: "The module's minor version.",
+          },
+          {
+            internalType: 'uint256',
+            name: '_2',
+            type: 'uint256',
+            description: "The module's patch version.",
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+        description: "Returns the module's version.",
+      },
+    ],
+  },
+  {
     name: 'PP_Simple_v2',
     description:
       'Manages ERC20 payment processing for modules within the Inverter Network that are compliant with the {IERC20PaymentClientBase_v2} interface.',
