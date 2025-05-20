@@ -2001,6 +2001,16 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'constructor',
       },
+      { inputs: [], name: 'Create2EmptyBytecode', type: 'error' },
+      { inputs: [], name: 'Create2FailedDeployment', type: 'error' },
+      {
+        inputs: [
+          { internalType: 'uint256', name: 'balance', type: 'uint256' },
+          { internalType: 'uint256', name: 'needed', type: 'uint256' },
+        ],
+        name: 'Create2InsufficientBalance',
+        type: 'error',
+      },
       { inputs: [], name: 'InvalidInitialization', type: 'error' },
       { inputs: [], name: 'NotInitializing', type: 'error' },
       { inputs: [], name: 'OrchestratorFactory__InvalidBeacon', type: 'error' },
@@ -2319,6 +2329,34 @@ export const data = [
         stateMutability: 'nonpayable',
         type: 'function',
         description: 'Creates a new {Orchestrator_v1}.',
+      },
+      {
+        inputs: [
+          {
+            internalType: 'bytes',
+            name: 'code',
+            type: 'bytes',
+            description: 'The creation code of the contract.',
+          },
+          {
+            internalType: 'bytes[]',
+            name: 'calls',
+            type: 'bytes[]',
+            description:
+              'Additional calls to be made to the deployed contract.',
+          },
+        ],
+        name: 'deployExternalContract',
+        outputs: [
+          {
+            internalType: 'address',
+            name: 'deploymentAddress',
+            type: 'address',
+          },
+        ],
+        stateMutability: 'nonpayable',
+        type: 'function',
+        description: 'Deploys an external contract using the CREATE2 opcode.',
       },
       {
         inputs: [
