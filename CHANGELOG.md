@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.38](https://github.com/inverter-network/abis/compare/v0.3.37...v0.3.38) (2025-06-03)
+
+
+### Features
+
+* **types:** add Authorizer template types and utility for filtering by suffix ([0c44b2d](https://github.com/inverter-network/abis/commit/0c44b2d9d1292ef0b5d2fdfdd03128c94df5cc0a))
+
 ### [0.3.37](https://github.com/inverter-network/abis/compare/v0.3.36...v0.3.37) (2025-05-20)
 
 ### [0.3.36](https://github.com/inverter-network/abis/compare/v0.3.35...v0.3.36) (2025-04-24)
