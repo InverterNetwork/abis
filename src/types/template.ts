@@ -1,16 +1,15 @@
 import type { ExtractAbiFunctionNames } from 'abitype'
 import type { ModuleName } from './data'
-import type { GetModuleData, FilterBySuffix } from './utils'
+import type {
+  GetModuleData,
+  FilterBySuffix,
+  GetAbiFunctionSelector,
+} from './utils'
 
 /**
  * @description Module names which are compatible with the Autorizer v2
  */
 export type AutV2ModuleName = FilterBySuffix<ModuleName, '_v2' | '_v3'>
-
-export type AuthorizerFunctionSelector<TModuleName extends ModuleName> = {
-  selector: `0x${string}`
-  name: ExtractAbiFunctionNames<GetModuleData<TModuleName>['abi']>
-}
 
 /**
  * @description Private role for the Autorizer v2
@@ -25,7 +24,7 @@ export type AuthorizerPrivateRole<TModuleName extends AutV2ModuleName> = {
   name: string
   adminRole: `0x${string}`
   members: `0x${string}`[]
-  functions: AuthorizerFunctionSelector<TModuleName>[]
+  functions: GetAbiFunctionSelector<TModuleName>[]
 }
 
 /**
@@ -49,7 +48,7 @@ export type AuthorizerTemplateConfig<TModuleName extends AutV2ModuleName> = {
 }
 
 /**
- * @description Return type for creating an Autorizer template
+ * @description Return type for defining an Autorizer template
  * @template TModuleName - The module name
  * @property name - The name of the template
  * @property module - The module name
@@ -57,11 +56,11 @@ export type AuthorizerTemplateConfig<TModuleName extends AutV2ModuleName> = {
  * @property publicRoles - The public functions of the template
  * @returns The Autorizer template
  */
-export type CreateAuthorizerTemplateReturnType<
+export type DefineAuthorizerTemplateReturnType<
   TModuleName extends AutV2ModuleName,
 > = {
   name: string
   module: TModuleName
   roles: AuthorizerPrivateRole<TModuleName>[]
-  publicRoles: AuthorizerFunctionSelector<TModuleName>[]
+  publicRoles: GetAbiFunctionSelector<TModuleName>[]
 }
