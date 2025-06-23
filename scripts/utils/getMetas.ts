@@ -1,15 +1,16 @@
 import type { Abi, AbiEventParameter, AbiParameter } from 'abitype'
 
-const eventNames = (abi: Abi): string[] =>
-  abi
-    .map((entry) => {
-      if ('type' in entry && entry.type === 'event') {
-        return entry.name
-      }
+// NOTICE: Event names are retired until we have a use for them
+// const eventNames = (abi: Abi): string[] =>
+//   abi
+//     .map((entry) => {
+//       if ('type' in entry && entry.type === 'event') {
+//         return entry.name
+//       }
 
-      return
-    })
-    .filter((name): name is string => !!name)
+//       return
+//     })
+//     .filter((name): name is string => !!name)
 
 const methodNames = (abi: Abi) =>
   abi
@@ -22,7 +23,9 @@ const methodNames = (abi: Abi) =>
     })
     .filter((name): name is string => !!name)
 
-const abiMemberNames = (abi: Abi) => eventNames(abi).concat(methodNames(abi))
+// const abiMemberNames = (abi: Abi) => eventNames(abi).concat(methodNames(abi))
+// NOTICE: Event names are retired until we have a use for them
+const abiMemberNames = (abi: Abi) => methodNames(abi)
 
 const returnNames = (abi: Abi) => {
   // 0- Initialize the accumulator fro returnNames memberName, returnName Array
@@ -51,7 +54,9 @@ const returnNames = (abi: Abi) => {
 }
 
 const combinedNames = (abi: Abi) => ({
-  abiMemberNames: eventNames(abi).concat(methodNames(abi)),
+  // abiMemberNames: eventNames(abi).concat(methodNames(abi)),
+  // NOTICE: Event names are retired until we have a use for them
+  abiMemberNames: methodNames(abi),
   returnNames: returnNames(abi),
 })
 
@@ -81,7 +86,8 @@ const parameterNames = (abi: Abi) => {
 }
 
 export default {
-  eventNames,
+  // eventNames,
+  // NOTICE: Event names are retired until we have a use for them
   methodNames,
   returnNames,
   combinedNames,
