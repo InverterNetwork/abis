@@ -1,8 +1,8 @@
 import { expect, describe, it } from 'bun:test'
-import getParsedRawMetadata from '../tools/utils/getParsedRawMetadata'
-import writeLog from '../tools/utils/writeLog'
+import getParsedRawMetadata from '../scripts/utils/getParsedRawMetadata'
+import writeLog from '../scripts/utils/writeLog'
 import path from 'path'
-import getMetas from '../tools/utils/getMetas'
+import getMetas from '../scripts/utils/getMetas'
 
 // The path JSON file
 const itemPath = path.join(

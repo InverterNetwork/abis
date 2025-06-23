@@ -1,5 +1,5 @@
 import { expect, describe, it } from 'bun:test'
-import compile from '../tools/compile'
+import compile from '../scripts/compile'
 
 describe('Tags Compiler Test', () => {
   it('Should Log The Compiled Tags', async () => {

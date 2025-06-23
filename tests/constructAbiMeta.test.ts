@@ -1,9 +1,9 @@
 import { expect, describe, it } from 'bun:test'
-import getParsedRawMetadata from '../tools/utils/getParsedRawMetadata'
-import writeLog from '../tools/utils/writeLog'
+import getParsedRawMetadata from '../scripts/utils/getParsedRawMetadata'
+import writeLog from '../scripts/utils/writeLog'
 import path from 'path'
-import readPath from '../tools/utils/readPath'
-import constructAbiMeta from '../tools/utils/constructAbiMeta'
+import readPath from '../scripts/utils/readPath'
+import constructAbiMeta from '../scripts/utils/constructAbiMeta'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files

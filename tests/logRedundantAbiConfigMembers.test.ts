@@ -1,6 +1,6 @@
 import { expect, describe, it } from 'bun:test'
-import writeLog from '../tools/utils/writeLog'
-import getRedundantAbiConfigMembers from '../tools/utils/getRedundantAbiConfigMembers'
+import writeLog from '../scripts/utils/writeLog'
+import getRedundantAbiConfigMembers from '../scripts/utils/getRedundantAbiConfigMembers'
 
 describe('#Log_Redundant_Abi_Config_Members', () => {
   it('Log diff of redundant abi config members', async () => {

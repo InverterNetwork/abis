@@ -1,5 +1,5 @@
 import type { DeploymentArgData, DeploymentInputs } from '.'
-import type { ModuleType, Tag } from '../../src/'
+import type { ModuleType, Tag } from '../../src'
 
 export type Descriptions = Record<'selfDescription' | string, string>
 export type Tags = Record<string, Tag[]>

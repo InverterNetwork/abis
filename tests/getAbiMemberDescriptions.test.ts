@@ -1,10 +1,10 @@
 import { expect, describe, it } from 'bun:test'
-import getAbiMemberDescriptions from '../tools/utils/getAbiMemberDescriptions'
-import getParsedRawMetadata from '../tools/utils/getParsedRawMetadata'
-import writeLog from '../tools/utils/writeLog'
+import getAbiMemberDescriptions from '../scripts/utils/getAbiMemberDescriptions'
+import getParsedRawMetadata from '../scripts/utils/getParsedRawMetadata'
+import writeLog from '../scripts/utils/writeLog'
 import path from 'path'
-import readPath from '../tools/utils/readPath'
-import getParsedConfig from '../tools/utils/getParsedConfig'
+import readPath from '../scripts/utils/readPath'
+import getParsedConfig from '../scripts/utils/getParsedConfig'
 
 const dirname = import.meta.dirname,
   // The path of the directory containing nested the JSON files

@@ -1,6 +1,6 @@
 import { expect, describe, it } from 'bun:test'
 
-import getMissingDescriptions from '../tools/utils/getMissingDescriptions'
+import getMissingDescriptions from '../scripts/utils/getMissingDescriptions'
 
 describe('#Log_Missing_Descriptions', () => {
   it('Find missing descriptions, expect total to be 0', async () => {
