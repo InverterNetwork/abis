@@ -28,6 +28,18 @@ export type AuthorizerPrivateRole<TModuleName extends AutV2ModuleName> = {
 }
 
 /**
+ * @description The public role for the Autorizer v2
+ * @template TModuleName - The module name
+ * @property publicRole.adminRole - The public admin role
+ * @property publicRole.function - The function of the role
+ * @returns The public roles
+ */
+export type AuthorizerPublicRole<TModuleName extends AutV2ModuleName> = {
+  adminRole: `0x${string}`
+  function: GetAbiFunctionSelector<TModuleName>
+}
+
+/**
  * @description The Autorizer template config
  * @template TModuleName - The module name
  * @property name - The name of the template
@@ -62,5 +74,5 @@ export type DefineAuthorizerTemplateReturnType<
   name: string
   module: TModuleName
   roles: AuthorizerPrivateRole<TModuleName>[]
-  publicRoles: GetAbiFunctionSelector<TModuleName>[]
+  publicRoles: AuthorizerPublicRole<TModuleName>[]
 }
