@@ -40,7 +40,7 @@ export type AuthorizerTemplateConfig<TModuleName extends AutV2ModuleName> = {
   module: TModuleName
   roles: Array<{
     name: string
-    adminRole: `0x${string}`
+    adminRole: number
     functions: ExtractAbiFunctionNames<GetModuleData<TModuleName>['abi']>[]
     members?: `0x${string}`[]
   }>
