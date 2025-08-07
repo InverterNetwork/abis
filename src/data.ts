@@ -27316,7 +27316,7 @@ export const data = [
             internalType: 'uint256',
             name: '_0',
             type: 'uint256',
-            tags: ['decimals:extras:issuanceToken'],
+            tags: ['decimals'],
             description:
               'Current redemption price in collateral token decimals',
           },
@@ -35568,7 +35568,7 @@ export const data = [
             internalType: 'uint256',
             name: '_0',
             type: 'uint256',
-            tags: ['decimals:extras:issuanceToken'],
+            tags: ['decimals'],
             description:
               'Current redemption price in collateral token decimals',
           },
