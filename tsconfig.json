@@ -1,11 +1,12 @@
 {
   // This configuration is used for local development and type checking.
   "extends": "./tsconfig.base.json",
-  "include": ["src", "tests", "scripts"],
+  "include": ["src/**/*", "tests/**/*", "scripts/**/*"],
   "compilerOptions": {
-    "composite": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
-    "noEmit": true
+    "moduleResolution": "Bundler",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "declarationDir": "./dist"
   }
 }

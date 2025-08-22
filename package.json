@@ -2,32 +2,28 @@
   "name": "@inverter-network/abis",
   "description": "INVERTER typescript ABIs",
   "version": "0.3.43",
-  "type": "module",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/types/index.d.ts",
-  "sideEffects": false,
-  "directories": {
-    "tool": "scripts",
-    "tests": "tests"
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts",
+      "production": {
+        "types": "./dist/types/index.d.ts",
+        "import": "./dist/esm/index.js",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist"
   ],
+  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
-  "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "default": "./dist/cjs/index.js"
-    },
-    "./package.json": "./package.json"
-  },
   "scripts": {
-    "watch": "tsc -w -p ./tsconfig.json",
-    "dev": "nodemon",
+    "watch": "rm tsconfig.tsbuildinfo || true && tsc -w",
     "type-check": "tsc-files --pretty --project ./tsconfig.build.json --noEmit --module ESNext --declaration",
     "prep:configs": "bun scripts/prep/configs/index.ts && prettier --write ./deployments > /dev/null 2>&1",
     "clean:configs": "bun scripts/clean/configs.ts",
@@ -43,14 +39,11 @@
     "prepack": "pinst --disable",
     "package": "bun run build && npm pack",
     "postpack": "pinst --enable",
-    "pre-commit": "lint-staged",
-    "pre-push": "bun run build",
     "release": "standard-version -a",
     "release:alpha": "standard-version -a --prerelease alpha --skip.changelog",
     "release:beta": "standard-version -a --prerelease beta --skip.changelog",
     "release:pub": "git push --follow-tags origin $(git rev-parse --abbrev-ref HEAD)",
-    "trans:tags": "bun scripts/transition/singleTagToTagArray.ts && prettier --write ./deployments > /dev/null 2>&1",
-    "cp:dist-sdk": "bun compile && bun run build && cp -r dist ../sdk/node_modules/@inverter-network/abis/ && cp package.json ../sdk/node_modules/@inverter-network/abis/"
+    "trans:tags": "bun scripts/transition/singleTagToTagArray.ts && prettier --write ./deployments > /dev/null 2>&1"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
@@ -70,7 +63,6 @@
     "abitype": "^1",
     "husky": "^9",
     "lint-staged": "^15",
-    "nodemon": "^3.1.7",
     "pinst": "^3",
     "prettier": "^3",
     "standard-version": "^9",

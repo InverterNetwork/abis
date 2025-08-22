@@ -1,1 +1,1 @@
-bun pre-push
+bun run build
